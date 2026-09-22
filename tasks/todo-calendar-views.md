@@ -67,6 +67,20 @@ calendar was cut to five events.
       empty month) plus the story-docs entry; wide sizes added to the entity-card story.
 - [x] Docs: iCloud section in `docs/integrations.md`, sidecar README defaults. Changeset added.
 
+## Follow-up: the views were invisible at the default card size
+
+Reported after the first commit: nothing changed in the app. Cause was my own routing, not the
+data. `supportsRichViews` excluded `medium`, and a calendar card added to a dashboard is `medium`,
+so the new views only appeared if the card was resized first. Picking "Month" in settings on a
+medium card silently did nothing.
+
+- [x] Both views now render from `medium` up; only the compact tile keeps the old list, because a
+      seven-column grid in a 176 px square is not a calendar.
+- [x] `__tests__/calendar-card-views.test.tsx` asserts which view renders at every size, so this
+      cannot regress quietly again.
+- [x] The entity-card story fed hex colours where the card renders `color` as a class name, so its
+      source colour bars never drew. Swapped for the Tailwind classes the real pipeline supplies.
+
 ## Verification
 
 - `vitest run --config vitest.unit.config.ts` - 554 files, 3957 tests, all passing

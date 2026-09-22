@@ -36,7 +36,7 @@ const events = [
     startDateTime: toIsoDate(0, 0, 0),
     isAllDay: true,
     type: 'event' as const,
-    color: '#f59e0b',
+    color: 'bg-amber-500',
     sortKey: toIsoDate(0, 0, 0),
   },
   {
@@ -48,7 +48,7 @@ const events = [
     startDateTime: toIsoDate(0, 10, 0),
     endDateTime: toIsoDate(0, 10, 45),
     type: 'meeting' as const,
-    color: '#60a5fa',
+    color: 'bg-blue-500',
     sortKey: toIsoDate(0, 10, 0),
   },
   {
@@ -60,7 +60,7 @@ const events = [
     startDateTime: toIsoDate(1, 13, 0),
     endDateTime: toIsoDate(1, 13, 30),
     type: 'call' as const,
-    color: '#34d399',
+    color: 'bg-green-500',
     sortKey: toIsoDate(1, 13, 0),
   },
 ];

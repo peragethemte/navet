@@ -96,10 +96,11 @@ export const CalendarCard = memo(function CalendarCard({
 
   const isSmall = isCompactCardSize(effectiveSize);
   const isMedium = effectiveSize === 'medium';
-  // The month grid and the split agenda both need real width; below that the card keeps the list
-  // it has always shown rather than clipping a wide composition into a small tile.
+  // The split lane needs real width; the stacked agenda and the month grid only need a card taller
+  // than one row. Only the compact tile keeps the old list, because a seven-column grid in a
+  // 176 px square is not a calendar. Anything above that honours the view the user actually chose.
   const isWide = effectiveSize === 'extra-large' || effectiveSize === 'extra-wide';
-  const supportsRichViews = !isSmall && !isMedium;
+  const supportsRichViews = !isSmall;
   const showMonthView = viewMode === 'month' && supportsRichViews;
   const showAgendaDaysView = viewMode === 'days' && supportsRichViews;
   const displayName = name ?? t('calendar.defaultTitle');
