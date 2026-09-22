@@ -107,4 +107,3 @@ the change touches its interface:
 - shared rendering inputs: [provider-neutral UI](../architecture/provider-neutral-ui.md)
 - dashboard persistence and sync: [dashboard profile ownership](../architecture/dashboard-profile-ownership.md)
 - compatibility reads: [persisted-data migrations](../architecture/persisted-data-migrations.md)
-- provider test layers: [provider testing strategy](../testing/provider-testing-strategy.md)

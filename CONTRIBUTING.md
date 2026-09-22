@@ -94,4 +94,4 @@ Important repo policy:
 
 - prefer realistic fixtures and contract-focused assertions
 - do not update tests only to match the current implementation
-- use `ai/skills/testing-architecture.md` and `docs/agents/testing.md` for test work
+- see `AGENTS.md` for this fork's test policy

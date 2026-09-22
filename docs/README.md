@@ -94,15 +94,9 @@ Git history and the linked issue retain that context without presenting it as a 
   Visual and interaction rules.
 - [STORYBOOK_WORKFLOW.md](STORYBOOK_WORKFLOW.md)
   Story placement and review workflow.
-- [testing/provider-testing-strategy.md](testing/provider-testing-strategy.md)
-  Testing layers and boundary expectations.
-- [testing/test-tier-inventory.md](testing/test-tier-inventory.md)
-  Current tier inventory by subsystem.
 
 ## Maintainer Docs
 
-- [engineering/agentic-development.md](engineering/agentic-development.md)
-  Issue-to-preview workflow, agent roles, permissions, approval gates, and stewardship.
 - [engineering/private-home-testing.md](engineering/private-home-testing.md)
   Secure branch testing against a private Home Assistant installation.
 
@@ -121,11 +115,8 @@ Git history and the linked issue retain that context without presenting it as a 
 
 - [../AGENTS.md](../AGENTS.md)
   Complete baseline rules, code-location shortcuts, and task router.
-- [../ai/agents.md](../ai/agents.md)
-  Optional navigation index for locating deeper area guidance.
 - [../ai/skills/home-assistant-integration.md](../ai/skills/home-assistant-integration.md)
 - [../ai/skills/auth-deployment.md](../ai/skills/auth-deployment.md)
-- [../ai/skills/testing-architecture.md](../ai/skills/testing-architecture.md)
 - [../ai/skills/entity-fixtures.md](../ai/skills/entity-fixtures.md)
 - [../ai/skills/external-resources.md](../ai/skills/external-resources.md)
 - [../ai/skills/navet-ux.md](../ai/skills/navet-ux.md)

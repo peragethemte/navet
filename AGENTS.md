@@ -1,48 +1,44 @@
 # Navet AI Working Guide
 
-This file is the complete baseline for repository work. Do not preload every linked document.
-Read one additional area guide only when the task-routing table says it applies.
+This file is the complete baseline. Open one area guide only when the router below sends you there.
 
-## Authority And Product Constitution
+## This Is A Personal Fork
 
-When instructions disagree, use this order:
+Single maintainer, no users, no releases, no upstream pull requests, no published documentation
+site. It runs as one Docker container on a wall-mounted Raspberry Pi. Upstream process documents
+still present in this repo describe a public project and do not apply here.
 
-1. `docs/product/vision.md` and `docs/product/design-principles.md` for durable product intent.
-2. `docs/product/dashboard-principles.md` for dashboard behavior and UX decisions.
-3. `docs/architecture/` for current technical contracts and ownership.
-4. This file and scoped `AGENTS.md` files for agent behavior.
-5. Area guides, conventions, and temporary implementation plans.
+Fork-local context, decisions, and current state live in `navet-local/HANDOFF.md`. Read it before
+feature work. It is the only document that describes what this fork is actually for.
 
-Do not silently reinterpret or edit the first three levels to make an implementation easier. A
-change to product principles or a foundational architecture contract needs explicit maintainer
-approval. Current code is evidence of behavior, not automatic authority over those principles.
+Providers in use: Homey, Yr, iCloud, Entur. Home Assistant and openHAB are upstream code retained
+for merge compatibility only. Do not write features, tests, or validation for them.
 
-## Product And Architecture
+## Default Effort
 
-Navet is a provider-neutral smart-home dashboard. It runs as a standalone Docker app, a Home
-Assistant add-on through Ingress, and a Home Assistant custom panel.
+Make the smallest change that works, then stop.
 
-- Home Assistant is the reference adapter and supports the full feature set.
-- Homey supports rooms, realtime entities, lighting, switches, sensors, locks, covers, thermostats, speaker
-  controls, runnable flows and moods, people, notifications, Insights history, device capabilities,
-  favorites, and app browsing.
-- openHAB supports rooms, realtime entities, lighting, switches, fans, climate setpoints,
-  speaker playback and volume, locks, covers, security sensors, batteries, and utility measurements.
-- Hubitat and SmartThings are planned catalog metadata only; they have no runtime adapters.
-- Shared product behavior belongs behind Navet-owned contracts, not Home Assistant payloads.
-- Connected providers are peers. Users choose entities or sources per feature; do not introduce a
-  global primary-provider preference. Route requests to each source's owning provider and expose
-  only capabilities its adapter supports.
+- Add a test only for provider contracts, auth, or a bug that has already bitten twice.
+- Do not add Storybook stories, `.changes/` fragments, changelog entries, or documentation updates
+  unless asked.
+- Do not refactor toward `@navet/ui` unless the task is that extraction.
+- Do not audit, classify, or rewrite existing tests. If a test is wrong and in the way, delete it
+  and say so in one line.
+- New user-facing strings: write `no` and `en` properly, then copy the English string verbatim into
+  the other 11 locales. Norwegian is the language that matters here.
+- Report what you did in a few lines. No per-step narration.
 
-Target dependency direction:
+## Done Means
 
-```text
-@navet/core <- @navet/ui <- @navet/app
-@navet/core <- provider packages <- @navet/app
-```
+`pnpm typecheck` passes and you ran the narrowest thing that proves the behavior: a focused vitest
+file, `pnpm dev`, or the real container. Nothing broader unless asked.
 
-`@navet/app` still owns current compatibility models and much shared UI. Improve this
-incrementally; do not move code merely to make the target tree look complete.
+Run these only when the change touches them:
+
+- `pnpm check:provider-boundaries` for provider package changes
+- `pnpm check:i18n` for string changes
+- `pnpm check:docker` for anything under `docker/` or a Dockerfile. Run it unpiped; piping to
+  `tail` hides the failure because the exit status becomes `tail`'s.
 
 ## Find The Code First
 
@@ -51,87 +47,46 @@ incrementally; do not move code merely to make the target tree look complete.
 | Product composition, dashboard behavior, state, services | `packages/app/src` |
 | Provider-neutral contracts and runtime types | `packages/core/src` |
 | Provider-neutral shared UI | `packages/ui/src` |
-| Home Assistant, Homey, or openHAB behavior | `packages/provider-<provider>/src` |
-| Standalone, demo, website, docs, panel, Storybook entrypoints | `apps/<app>/src` or `apps/<app>` |
-| Home Assistant release surfaces | `platform/home-assistant` |
-| Local marketing plans, WIP, videos, tutorials | `marketing` |
+| Homey, Yr, or iCloud behavior | `packages/provider-<provider>/src` |
+| Docker runtime, nginx, sidecars | `docker/` and the root `Dockerfile` |
 
-Do not assume a root `src/`. Search the narrowest likely package first with `rg`; broaden only
-when the first search does not identify the owner or callers.
+There is no root `src/`. Search the narrowest likely package first with `rg`.
 
 ## Task Router
 
-Open only the first matching guide. Follow a linked deep reference only when the task changes that
-specific contract or policy. If the work genuinely crosses two areas, open those two guides; do
-not expand that into the whole table.
+Open at most one. If nothing matches, this file is enough.
 
 | Task | Area guide |
 | --- | --- |
-| Architecture, package ownership, provider/runtime contracts | `docs/agents/architecture.md` |
-| Home Assistant mapping, actions, or entity behavior | `ai/skills/home-assistant-integration.md` |
-| Authentication, sessions, runtime detection, deployment | `ai/skills/auth-deployment.md` |
-| Dashboard UI, cards, settings, dialogs, navigation | `ai/skills/navet-ux.md` |
-| Cameras, media artwork, RSS, entity pictures, external URLs | `ai/skills/external-resources.md` |
-| Performance, kiosk, rendering, animation, bundle size | `ai/skills/performance.md` |
-| Tests, fixtures, test deletion, or tier changes | `ai/skills/testing-architecture.md` |
-| Marketing, community content, videos, tutorials | `ai/skills/marketing-workspace.md` |
-| Release, CI, or uncertainty about validation commands | `docs/agents/commands.md` |
-| Agent workflow, approval gates, previews, or stewardship | `docs/engineering/agentic-development.md` |
+| Package boundaries, provider contracts, where new code belongs | `docs/agents/architecture.md` |
+| Dashboard UI, cards, layout, dialogs, visual hierarchy | `ai/skills/navet-ux.md` |
+| Reuse, composition, and performance conventions | `docs/agents/coding-standards.md` |
 
-If no row matches, this file is sufficient. `ai/agents.md` is a navigation index, not mandatory
-second-stage reading.
+`ai/skills/` also holds short notes on auth and deployment, performance, external resources, and
+entity fixtures. Open one only when the task sits squarely inside it.
 
-## Non-Negotiable Rules
+## Hard Rules
 
-- `@navet/core` must not import React, provider SDKs, API clients, or provider-specific code.
-- `@navet/ui` must not import provider-specific code.
-- Shared UI uses normalized Navet state and provider-neutral commands. Do not add raw
-  `HassEntity`, Home Assistant service payloads, or backend conditionals to shared interfaces.
-- Provider auth, transport, mapping, realtime updates, and command translation belong in provider
-  packages or an explicitly documented migration seam.
-- Prefer `IntegrationProviderId`, `SmartHomeProviderAdapter`, `NavetEntity`, `NavetCommand`,
-  `CommandResult`, provider-scoped IDs, canonical IDs, runtime, contract, capability, feature
-  service, and resource resolution.
-- `NavetDevice`, `NavetRoom`, `NavetRoomDescriptor`, and `NavetProviderSnapshot` are current
-  `@navet/app` compatibility models, not target public contracts.
-- Home Assistant behavior: official documentation first; inspect `/homeassistant/core` only for
-  implementation details and edge cases. It does not define Navet architecture.
-- Preserve persisted-data compatibility. Consult `docs/architecture/persisted-data-migrations.md`
-  only when changing or removing a migration.
-- Do not change tests merely to match an implementation. Classify touched legacy tests as Keep,
-  Rewrite, or Delete.
-- Never use or suggest `--no-verify` for commits or pushes.
+- `@navet/core` must not import React or provider SDKs. Provider packages must not import app
+  services or stores. `@navet/ui` must not import provider-specific code.
+- Shared UI renders normalized Navet state and provider-neutral commands, never raw provider
+  payloads.
+- Preserve persisted-data compatibility. A live dashboard profile exists on the Pi.
+- Never use `--no-verify`.
 - Preserve unrelated dirty-worktree changes.
-- The root `marketing/` directory is local and fully Git-ignored. Never force-add it.
+- `marketing/` is gitignored. Never force-add it.
 
-## Documentation Policy
+## Dead Zones
 
-- Write product documentation for first-time users. Assume no knowledge of Navet's previous
-  releases, removed features, or internal terminology. Explain unfamiliar terms when needed.
-- Describe the current workflow directly: what users need, what they do, and what happens next.
-  Use current UI labels and concrete steps. Avoid historical comparisons such as "no setup code
-  is required"; reserve them for changelogs or migration guides where they help existing users.
-- Keep explanations clear, concise, and focused on the reader's task. Include technical details
-  when they help the intended audience choose, configure, troubleshoot, or contribute.
-- Update the relevant documentation whenever a change affects product behavior, capabilities,
-  architecture, setup, or supported workflows. A code change alone does not require a docs update.
-- Revise the existing explanation as a coherent whole. Remove obsolete instructions and verify
-  affected steps, examples, and links against the current implementation.
-- Document lasting behavior. Do not append patch-specific notes about individual bug fixes,
-  temporary workarounds, or implementation details. Put release-specific changes in the changelog
-  when requested.
-- Keep shared guidance provider-neutral. Explain provider or deployment differences in the
-  appropriate guide when they affect users, and link to it instead of duplicating instructions.
-- Apply this policy to area guides as well as product documentation.
+Do not read, edit, test, validate, or update these unless the task is explicitly about them:
 
-## Work Efficiently
+- Home Assistant: `packages/provider-homeassistant`, `platform/home-assistant`, `apps/ha-panel`,
+  `pnpm test:ha-integration`, `pnpm build:ha-panel`, HACS export and sync
+- openHAB: `packages/provider-openhab`
+- Public surfaces: `apps/website`, `apps/docs`, `apps/demo`, `README.md`, `CONTRIBUTING.md`,
+  `CHANGELOG.md`, `.changes/`, and everything under `docs/` except `docs/agents/`
+- Release, brand, and marketing tooling: every `pnpm release:*`, `sync:hacs`, `export:hacs`,
+  `brand:*`, `marketing:*`, `wallpapers:*`
 
-1. Identify the owning module and its direct callers.
-2. Read the single routed area guide.
-3. Inspect the nearest implementation, test, and story relevant to the change.
-4. Make the smallest change that improves the current interface without creating a competing one.
-5. Run the narrowest validation that proves the behavior. Use `pnpm validate -- --dry-run` when
-   the correct scope is unclear.
-
-Stop reading when the owner, rules, and verification path are clear. Existing plans and Markdown
-are leads to verify, not evidence that the product still behaves that way.
+Upstream documents that survive in `docs/` describe the public project. Treat them as history, not
+as instructions.
