@@ -24,6 +24,8 @@ release-assets
 
 *.log
 *.tsbuildinfo
+.venv
+__pycache__
 .DS_Store
 Thumbs.db
 
