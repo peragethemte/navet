@@ -22,7 +22,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Local services settings tab - the household weather location, with the server-configured location as the fallback.',
+          'Local services settings tab - the household weather location, with the server-configured location as the fallback, and the recurring transit journeys the departures card plans.',
       },
     },
   },

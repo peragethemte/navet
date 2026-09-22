@@ -30,6 +30,7 @@ Widgets are included in dashboard export and import.
 | `button` | custom action button |
 | `assist` | text and microphone access to a Home Assistant Assist pipeline |
 | `map` | people and tracker locations |
+| `transit` | departures for the journeys saved under Local services |
 | `entity` | generic fallback card for a normalized provider entity |
 
 ## What You Can Do With Widgets
@@ -52,7 +53,7 @@ Widget sizing is per widget type, not global.
 | `button`, `assist` | `tiny`, `extra-small`, `small` |
 | `photo`, `note` | `small`, `medium`, `large`, `extra-large` |
 | `info`, `entity` | `extra-small`, `small`, `medium`, `large` |
-| `battery`, `ups`, `energy-now`, `media-stack`, `map` | `small`, `medium`, `large` |
+| `battery`, `ups`, `energy-now`, `media-stack`, `map`, `transit` | `small`, `medium`, `large` |
 | `rss` | `medium`, `large` in the Add card flow |
 
 ## Placement

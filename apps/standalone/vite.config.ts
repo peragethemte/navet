@@ -31,6 +31,7 @@ import {
   homeyProxyPlugin,
   openhabProxyPlugin,
 } from '../../scripts/vite-provider-proxy-plugins.ts';
+import { enturProxyPlugin } from '../../scripts/vite-entur-proxy-plugin.ts';
 import { yrProxyPlugin } from '../../scripts/vite-yr-proxy-plugin.ts';
 import {
   authSessionStorePlugin,
@@ -245,6 +246,13 @@ export default defineConfig(({ command, mode }) => {
         (req, res) => openhabSessionPlugin.api.getOpenHABSession?.(req, res) ?? null
       ),
       yrProxyPlugin((req, res) =>
+        Boolean(
+          resolveAuthenticatedPrincipal(req) ||
+            homeySessionPlugin.api.getHomeySession(req, res) ||
+            openhabSessionPlugin.api.getOpenHABSession(req, res)
+        )
+      ),
+      enturProxyPlugin((req, res) =>
         Boolean(
           resolveAuthenticatedPrincipal(req) ||
             homeySessionPlugin.api.getHomeySession(req, res) ||

@@ -2,6 +2,7 @@ import { BaseCard } from '@navet/app/components/primitives';
 import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { useEditModeSettingsRequest } from '@navet/app/components/shared/edit-mode-settings-request';
 import type { RSSCardData } from '@navet/app/features/rss';
+import type { TransitCardData } from '@navet/app/features/transit';
 import { useI18n } from '@navet/app/i18n';
 import { Component, lazy, type ReactNode, Suspense, useState } from 'react';
 import type { CustomCard } from '../stores/custom-cards-store';
@@ -102,6 +103,11 @@ const RSSFeedCard = lazy(async () => {
   return { default: module.RSSFeedCard };
 });
 
+const TransitDeparturesCard = lazy(async () => {
+  const module = await import('@navet/app/features/transit');
+  return { default: module.TransitDeparturesCard };
+});
+
 function isMapMarker(value: unknown): value is MapMarker {
   if (!value || typeof value !== 'object') {
     return false;
@@ -184,6 +190,19 @@ export function WidgetCard({
           onTintColorChange={(tintColor) =>
             handleCardUpdate(card.id, { data: { ...card.data, tintColor } })
           }
+          openSettingsRequestKey={resolvedOpenSettingsRequestKey}
+        />
+      );
+      break;
+    case 'transit':
+      widgetContent = (
+        <TransitDeparturesCard
+          size={card.size}
+          room={card.room}
+          data={card.data as TransitCardData | undefined}
+          onRoomChange={(room) => handleCardUpdate(card.id, { room })}
+          onUpdate={(data) => handleCardUpdate(card.id, { data: { ...card.data, ...data } })}
+          isEditMode={isEditMode}
           openSettingsRequestKey={resolvedOpenSettingsRequestKey}
         />
       );

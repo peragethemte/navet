@@ -1,5 +1,6 @@
 import { isCredentialBearingUrl as isCredentialBearingSettingsUrl } from '@navet/core/credential-policy';
 import { normalizeGeoLocation } from '@navet/core/geo-location';
+import { normalizeTransitJourneys } from '@navet/core/transit-journey';
 
 export {
   isCredentialBearingUrl as isCredentialBearingSettingsUrl,
@@ -66,6 +67,7 @@ export const SETTINGS_PROFILE_CLASSIFICATION = {
   weatherMetricIds: 'shared',
   // The household has one home, and re-entering it on every panel and phone would be tedious.
   weatherLocation: 'shared',
+  transitJourneys: 'shared',
   advancedCustomizationEnabled: 'shared',
   customSidebarActions: 'shared',
   customSummaryPills: 'shared',
@@ -189,6 +191,9 @@ function sanitizeSettingValue(key: keyof UserSettings, value: unknown): unknown 
   if (key === 'weatherLocation') {
     // Null is a real value here ("use the server default"), so return it rather than undefined.
     return value === null ? null : (normalizeGeoLocation(value) ?? undefined);
+  }
+  if (key === 'transitJourneys') {
+    return Array.isArray(value) ? normalizeTransitJourneys(value) : undefined;
   }
   if (key === 'weatherMetricIds') {
     return Array.isArray(value)
