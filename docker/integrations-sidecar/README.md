@@ -31,11 +31,12 @@ keeps working.
 
 ## Run it
 
+Put the credentials in `.env.local` next to this file. It is gitignored, and keeping them there
+rather than on the command line keeps them out of shell history.
+
 ```sh
-docker/integrations-sidecar/run-tests.sh          # bootstraps .venv on first use
-NAVET_ICLOUD_APPLE_ID=you@example.com \
-NAVET_ICLOUD_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx \
-  .venv/bin/python -m uvicorn app.main:app --port 8091
+docker/integrations-sidecar/run-tests.sh   # bootstraps .venv on first use
+docker/integrations-sidecar/run-dev.sh     # serves on 127.0.0.1:8091, PORT overrides
 ```
 
 Inside the container it runs over a Unix socket instead, supervised beside nginx.
