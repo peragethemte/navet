@@ -26,7 +26,7 @@ import type {
   ChoreWorkspaceData,
 } from '@navet/core/chores';
 import { CalendarCheck, ChevronDown, Plus, Users } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { getChoreCardAction } from '../chore-card-action';
 import {
   getDefinition,
@@ -36,6 +36,7 @@ import {
   getTodayChoresForParticipant,
 } from '../chore-dashboard-selectors';
 import { excludeHomework } from '../chore-homework-selectors';
+import { useChoreClock } from '../use-chore-clock';
 import { ChoreFocusCard } from './chore-card';
 import { ChoreDashboardGrid } from './chore-dashboard-grid';
 import { HousePulse, MissionCard, RewardGoalCard } from './chore-support-cards';
@@ -193,18 +194,7 @@ export function ChoreTodayView({
   const choreCount = excludeHomework(Object.values(data.definitionsById)).length;
   const breakpointCols = useBreakpointCols();
   const cardsPerRow = Math.max(1, Math.floor(breakpointCols / 2));
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const refresh = () => {
-      if (document.visibilityState === 'visible') setNow(new Date());
-    };
-    const interval = window.setInterval(refresh, 30_000);
-    document.addEventListener('visibilitychange', refresh);
-    return () => {
-      window.clearInterval(interval);
-      document.removeEventListener('visibilitychange', refresh);
-    };
-  }, []);
+  const now = useChoreClock();
   const experience = normalizeChoreExperienceState(data.experience);
   const occurrences = useMemo(
     () => getTodayChoresForParticipant(data, selectedParticipantId, now),

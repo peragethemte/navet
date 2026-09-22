@@ -31,6 +31,9 @@ Widgets are included in dashboard export and import.
 | `assist` | text and microphone access to a Home Assistant Assist pipeline |
 | `map` | people and tracker locations |
 | `transit` | departures for the journeys saved under Local services |
+| `countdown` | days, or days down to seconds, until a date you choose |
+| `chores` | today's household chores, ticked off from the dashboard |
+| `homework` | today's homework, plus anything still overdue |
 | `entity` | generic fallback card for a normalized provider entity |
 
 ## What You Can Do With Widgets
@@ -51,9 +54,9 @@ Widget sizing is per widget type, not global.
 | Widget | Supported sizes |
 |---|---|
 | `button`, `assist` | `tiny`, `extra-small`, `small` |
-| `photo`, `note` | `small`, `medium`, `large`, `extra-large` |
+| `photo`, `note`, `countdown` | `small`, `medium`, `large`, `extra-large` |
 | `info`, `entity` | `extra-small`, `small`, `medium`, `large` |
-| `battery`, `ups`, `energy-now`, `media-stack`, `map`, `transit` | `small`, `medium`, `large` |
+| `battery`, `ups`, `energy-now`, `media-stack`, `map`, `transit`, `chores`, `homework` | `small`, `medium`, `large` |
 | `rss` | `medium`, `large` in the Add card flow |
 
 ## Placement
@@ -71,14 +74,22 @@ directly.
 ## Limits And Notes
 
 - Widgets are part of Navet itself, not provider-native card definitions.
-- The Widgets tab offers twelve choices when Home Assistant is connected. Ten create the base
-  `info`, `rss`, `photo`, `note`, `battery`, `ups`, `energy-now`, `button`, `assist`, and `map`
-  types; scene and energy-metric are presets of `button` and `info`. The `assist` choice is hidden
-  when no Home Assistant session is configured. Generic `entity` cards come from the Cards library
-  rather than the Widgets
-  tab. `media-stack` remains runtime-supported
-  for compatible saved and imported dashboard profiles, but is intentionally hidden from the
-  custom-widget chooser.
+- The Widgets tab offers sixteen choices when Home Assistant is connected and household chores are
+  on. Fourteen create the base `info`, `rss`, `transit`, `countdown`, `photo`, `note`, `battery`,
+  `ups`, `energy-now`, `button`, `assist`, `map`, `chores`, and `homework` types; scene and
+  energy-metric are presets of `button` and `info`. The `assist` choice is hidden when no Home Assistant session
+  is configured, and `chores` and `homework` are hidden when household chores are turned off in
+  settings. Generic `entity` cards come from the Cards library rather than the Widgets tab.
+  `media-stack` remains runtime-supported for compatible saved and imported dashboard profiles, but
+  is intentionally hidden from the custom-widget chooser.
+- The `chores` and `homework` widgets each show one person or the whole household. Open the card's
+  settings to choose. They read the same household workspace as the Household section, so ticking
+  an item off on the dashboard updates it everywhere.
+- The `countdown` widget counts toward one date. Open its settings to set a title, choose whether
+  the target is a whole day or a day and a time, and choose whether the card shows whole days or
+  days, hours, minutes and seconds. The background is a built-in image, an image address of your
+  own, or a plain card colour. On the day itself the card reads **Today**, and at midnight after
+  that day it removes itself unless you turn **Remove when the day is over** off.
 - RSS uses Navet's same-origin proxy instead of direct browser fetches.
 - The `entity` widget is a fallback for entities without a richer dedicated Navet card.
 - Assist conversations and microphone audio remain in memory for the open dialog only. Dashboard

@@ -25,8 +25,8 @@ want to Home through this library.
 ## Find what you need
 
 - Use **All cards** for devices and other normalized provider entities.
-- Use **Custom cards** for Navet content such as notes, RSS, photos, actions, maps, battery summaries,
-  UPS status, and energy summaries.
+- Use **Custom cards** for Navet content such as notes, RSS, photos, countdowns, actions, maps,
+  battery summaries, UPS status, and energy summaries.
 - Search by the visible device or room name.
 - Use an explicit native identifier when you need to find one exact provider entity.
 - In **Custom cards**, search by card name, sort the results, or filter by supported card size.

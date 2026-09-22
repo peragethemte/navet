@@ -88,6 +88,19 @@ Home shows a Chores summary pill when work remains. Rooms with chores show their
 pending chore also appears as a room card. An overdue chore changes the relevant summary pill to the
 same restrained red alert treatment used by Security.
 
+## Put chores and homework on the dashboard
+
+Add a **Chores** or **Homework** card the same way as any other widget: enter edit mode, choose
+**Add card**, open **Widgets**, and pick the one you want. Both come in small, medium, and large.
+
+Each card shows the whole household by default. Open the card's settings to show one person
+instead, so a shared screen can carry one card per family member. Chores and homework have separate
+cards, so neither counts the same item twice.
+
+The cards work like Today. Tick an item off and it is completed in the household workspace
+straight away, on every screen. The Homework card lists today's homework and anything still
+overdue; later days stay on the Homework board in Household.
+
 ## What to do next
 
 - Use **Missions** or **Rewards** only when a shared goal helps the household. Core chores work

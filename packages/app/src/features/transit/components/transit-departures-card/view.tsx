@@ -188,8 +188,12 @@ export function TransitDeparturesCardView({
         ) : (
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto">
             {visible.map((entry) => {
-              const dayLabel = formatJourneyDay(entry.arrival, locale, now);
+              const dayLabel = formatJourneyDay(entry.target, locale, now);
               const departures = entry.departures.slice(0, departureCount);
+              const targetKey =
+                entry.journey.timeMode === 'departAfter'
+                  ? ({ day: 'transit.departAfterOn', plain: 'transit.departAfter' } as const)
+                  : ({ day: 'transit.arriveByOn', plain: 'transit.arriveBy' } as const);
 
               return (
                 <section key={entry.journey.id}>
@@ -199,12 +203,12 @@ export function TransitDeparturesCardView({
                     </span>
                     <span className={`ml-auto shrink-0 text-xs ${surface.textSecondary}`}>
                       {dayLabel
-                        ? t('transit.arriveByOn', {
+                        ? t(targetKey.day, {
                             day: dayLabel,
-                            time: formatDepartureClock(entry.arrival, locale, use24HourTime),
+                            time: formatDepartureClock(entry.target, locale, use24HourTime),
                           })
-                        : t('transit.arriveBy', {
-                            time: formatDepartureClock(entry.arrival, locale, use24HourTime),
+                        : t(targetKey.plain, {
+                            time: formatDepartureClock(entry.target, locale, use24HourTime),
                           })}
                     </span>
                   </div>

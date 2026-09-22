@@ -1,6 +1,8 @@
 import { BaseCard } from '@navet/app/components/primitives';
 import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { useEditModeSettingsRequest } from '@navet/app/components/shared/edit-mode-settings-request';
+import type { ChoresCardData } from '@navet/app/features/chores/components/chores-card';
+import type { HomeworkCardData } from '@navet/app/features/chores/components/homework-card';
 import type { RSSCardData } from '@navet/app/features/rss';
 import type { TransitCardData } from '@navet/app/features/transit';
 import { useI18n } from '@navet/app/i18n';
@@ -9,6 +11,7 @@ import type { CustomCard } from '../stores/custom-cards-store';
 import { useCustomCardsStore } from '../stores/custom-cards-store';
 import type { AssistWidgetData } from './widgets/assist-widget';
 import type { BatteryOverviewWidgetData } from './widgets/battery-overview-widget';
+import type { CountdownCardData } from './widgets/countdown-widget-data';
 import type { EnergyNowWidgetData } from './widgets/energy-now-dashboard-widget';
 import type { GenericEntityWidgetData } from './widgets/generic-entity-widget';
 import type { InfoWidgetData } from './widgets/info-widget';
@@ -108,6 +111,21 @@ const TransitDeparturesCard = lazy(async () => {
   return { default: module.TransitDeparturesCard };
 });
 
+const CountdownWidget = lazy(async () => {
+  const module = await import('./widgets/countdown-widget');
+  return { default: module.CountdownWidget };
+});
+
+const ChoresCard = lazy(async () => {
+  const module = await import('@navet/app/features/chores/components/chores-card');
+  return { default: module.ChoresCard };
+});
+
+const HomeworkCard = lazy(async () => {
+  const module = await import('@navet/app/features/chores/components/homework-card');
+  return { default: module.HomeworkCard };
+});
+
 function isMapMarker(value: unknown): value is MapMarker {
   if (!value || typeof value !== 'object') {
     return false;
@@ -200,6 +218,19 @@ export function WidgetCard({
           size={card.size}
           room={card.room}
           data={card.data as TransitCardData | undefined}
+          onRoomChange={(room) => handleCardUpdate(card.id, { room })}
+          onUpdate={(data) => handleCardUpdate(card.id, { data: { ...card.data, ...data } })}
+          isEditMode={isEditMode}
+          openSettingsRequestKey={resolvedOpenSettingsRequestKey}
+        />
+      );
+      break;
+    case 'countdown':
+      widgetContent = (
+        <CountdownWidget
+          size={card.size}
+          room={card.room}
+          data={card.data as CountdownCardData | undefined}
           onRoomChange={(room) => handleCardUpdate(card.id, { room })}
           onUpdate={(data) => handleCardUpdate(card.id, { data: { ...card.data, ...data } })}
           isEditMode={isEditMode}
@@ -342,6 +373,36 @@ export function WidgetCard({
           markers={
             Array.isArray(card.data?.markers) ? card.data.markers.filter(isMapMarker) : undefined
           }
+        />
+      );
+      break;
+    case 'chores':
+      widgetContent = (
+        <ChoresCard
+          size={card.size}
+          room={card.room}
+          data={card.data as ChoresCardData | undefined}
+          onRoomChange={(nextRoom) => handleCardUpdate(card.id, { room: nextRoom })}
+          onUpdate={(nextData) =>
+            handleCardUpdate(card.id, { data: { ...card.data, ...nextData } })
+          }
+          isEditMode={isEditMode}
+          openSettingsRequestKey={resolvedOpenSettingsRequestKey}
+        />
+      );
+      break;
+    case 'homework':
+      widgetContent = (
+        <HomeworkCard
+          size={card.size}
+          room={card.room}
+          data={card.data as HomeworkCardData | undefined}
+          onRoomChange={(nextRoom) => handleCardUpdate(card.id, { room: nextRoom })}
+          onUpdate={(nextData) =>
+            handleCardUpdate(card.id, { data: { ...card.data, ...nextData } })
+          }
+          isEditMode={isEditMode}
+          openSettingsRequestKey={resolvedOpenSettingsRequestKey}
         />
       );
       break;

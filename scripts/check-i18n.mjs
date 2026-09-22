@@ -279,6 +279,14 @@ const allowedIdenticalKeys = new Set([
   'providerDetails.sections.apps',
   // This message contains only interpolated values and punctuation.
   'energy.dashboard.usageShareStatus',
+  // Countdown unit abbreviations are the same across most of these languages.
+  'widgets.countdown.unit.dayShort',
+  'widgets.countdown.unit.minutes',
+  'widgets.countdown.unit.seconds',
+  // "Countdown" is the borrowed term in German, and "Date" is the French word.
+  'widgets.countdown.title',
+  'dashboard.addCard.templates.countdown.name',
+  'widgets.countdown.settings.date',
 ]);
 
 function isAllowedIdentical(language, key, value) {

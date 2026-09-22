@@ -1,5 +1,6 @@
 import { FieldBlock } from '@navet/app/components/patterns';
 import { Button, Input, Radio } from '@navet/app/components/primitives';
+import { WallpaperPreviewImage } from '@navet/app/components/shared/wallpaper-preview-image';
 import {
   getThemeFocusRingClassName,
   getThemeSurfaceTokens,
@@ -17,7 +18,6 @@ import { useId } from 'react';
 import type { RoomWorkspaceImageReferenceV2 } from '../room-workspace-v2';
 import { RoomOperationDialogFrame } from './room-operation-dialog-frame';
 import { RoomSymbolIcon } from './room-symbol-icon';
-import { RoomWallpaperPreviewImage } from './room-wallpaper-preview-image';
 
 export interface RoomSymbolChoice {
   value: string;
@@ -269,7 +269,7 @@ export function RoomAppearanceDialog({
                     surface.border
                   )}
                 >
-                  <RoomWallpaperPreviewImage
+                  <WallpaperPreviewImage
                     value={image.value}
                     alt={imagePreviewAlt}
                     className="h-full w-full object-cover"
@@ -316,7 +316,7 @@ export function RoomAppearanceDialog({
                         checked={isSelected}
                         onChange={() => onImageChange({ kind: 'asset', value: wallpaper.token })}
                       />
-                      <RoomWallpaperPreviewImage
+                      <WallpaperPreviewImage
                         value={wallpaper.token}
                         alt=""
                         className="h-full w-full object-cover"

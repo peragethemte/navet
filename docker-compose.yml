@@ -7,11 +7,18 @@ services:
         NAVET_ENABLE_DEMO: "false"
     image: navet:local
     ports:
-      - "8082:80"
+      - "8080:80"
     env_file:
       - .env
     volumes:
       - navet-data:/data
+    environment:
+      # Homey OAuth credentials come from .env, which is git-ignored.
+      # Set NAVET_HOMEY_REDIRECT_URI there only if Navet cannot infer the callback URL.
+      # Homey's local LAN API cert isn't in the public CA bundle nginx trusts, so the
+      # proxy at /__navet_homey_proxy__ 502s with "unable to get local issuer certificate"
+      # unless verification is relaxed for provider connections.
+      NAVET_ALLOW_INSECURE_PROVIDER_TLS: "true"
     restart: unless-stopped
 
 volumes:

@@ -68,12 +68,13 @@ export async function searchTransitPlaces(
 
 export async function planJourney(
   journey: TransitJourney,
-  arrival: Date,
+  searchTime: Date,
   alternatives: number,
   options: { signal?: AbortSignal } = {}
 ): Promise<TransitDeparture[]> {
-  const variables = buildTripVariables(journey, arrival, alternatives);
-  const cacheKey = `${journey.from.id}>${journey.to.id}@${variables.dateTime}:${alternatives}`;
+  const variables = buildTripVariables(journey, searchTime, alternatives);
+  // The same stop pair and minute answers differently per direction, so the mode belongs in the key.
+  const cacheKey = `${journey.from.id}>${journey.to.id}@${variables.dateTime}:${variables.arriveBy}:${alternatives}`;
   const cached = departureCache.get(cacheKey);
   if (cached && Date.now() - cached.fetchedAt < DEPARTURE_CACHE_TTL_MS) {
     return cached.departures;

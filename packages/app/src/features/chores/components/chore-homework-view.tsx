@@ -17,31 +17,13 @@ import {
   type HomeworkBoardEntry,
   localDateKey,
 } from '../chore-homework-selectors';
+import { useChoreClock } from '../use-chore-clock';
 import { ParticipantAvatar } from './chore-today-view';
-
-const CLOCK_INTERVAL_MS = 30_000;
 
 export interface HomeworkEntryDraft {
   participantId: string;
   dateKey: string;
   title: string;
-}
-
-function useNow() {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const tick = () => {
-      if (document.visibilityState !== 'visible') return;
-      setNow(new Date());
-    };
-    const interval = window.setInterval(tick, CLOCK_INTERVAL_MS);
-    document.addEventListener('visibilitychange', tick);
-    return () => {
-      window.clearInterval(interval);
-      document.removeEventListener('visibilitychange', tick);
-    };
-  }, []);
-  return now;
 }
 
 function TitleField({
@@ -278,7 +260,7 @@ export function ChoreHomeworkView({
   const { theme, accentColor } = useTheme();
   const surface = getThemeSurfaceTokens(theme);
   const isMobile = useMediaQuery('(max-width: 767px)');
-  const now = useNow();
+  const now = useChoreClock();
   const [selectedParticipantId, setSelectedParticipantId] = useState(
     () => participants[0]?.id ?? ''
   );

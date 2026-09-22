@@ -829,6 +829,21 @@ const STORY_DOCS: Record<string, string> = {
       'Check that the currently selected energy source or usage sensor remains visually obvious.',
     ]
   ),
+  'Cards/Custom/Countdown': doc(
+    'Custom countdown card that counts whole days, or days down to seconds, toward a date the household chose.',
+    [
+      'How a single large number stays readable at every supported card size.',
+      'How an optional background image sits behind live text without hurting contrast.',
+    ],
+    [
+      'Use this story when changing the countdown layout, unit labels, or the reached-today state.',
+      'Review it before changing how often the card ticks, because the full breakdown updates every second.',
+    ],
+    [
+      'Check the days and full displays at small through extra-large, with and without a background.',
+      'Check that a long title still wraps to two lines and that the target date stays legible over an image.',
+    ]
+  ),
   'Cards/Custom/Photo': doc(
     'Custom photo-frame card used to surface imagery as a dashboard-native visual widget.',
     [
@@ -842,6 +857,21 @@ const STORY_DOCS: Record<string, string> = {
     [
       'Check cropping, readability of any overlaid content, and overall visual restraint.',
       'Check that the card still feels intentional within a functional dashboard layout.',
+    ]
+  ),
+  'Cards/Dialogs/Countdown': doc(
+    'Settings dialog for the countdown card: title, target day or day and time, display granularity, and background.',
+    [
+      'How two independent settings, target precision and display granularity, stay understandable side by side.',
+      'How the built-in wallpaper grid and a custom image address share one appearance tab.',
+    ],
+    [
+      'Use this story when changing countdown wording, validation, or the appearance controls.',
+      'Keep it aligned with the other custom-card dialogs instead of introducing a separate date form style.',
+    ],
+    [
+      'Check that switching the target precision shows and hides the time field cleanly.',
+      'Check that an invalid image address is explained rather than silently ignored.',
     ]
   ),
   'Cards/Dialogs/Photo': doc(

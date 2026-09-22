@@ -9,19 +9,21 @@ import type { TransitJourney } from '@navet/core/transit-journey';
  *   argument is omitted entirely, so a partial object nulls them and the planner refuses to walk to
  *   or from the stop. Spelling out both is equivalent to the default and additionally removes the
  *   walk-only itinerary between close stops.
- * - `arriveBy: true` returns patterns latest-arrival first. The board sorts by departure.
+ * - `arriveBy: true` reads `dateTime` as a deadline and returns patterns latest-arrival first,
+ *   `arriveBy: false` reads it as the earliest departure. The board sorts by departure either way.
  */
 export const ENTUR_TRIP_QUERY = `query NavetTransitTrip(
   $from: Location!
   $to: Location!
   $dateTime: DateTime!
+  $arriveBy: Boolean!
   $numTripPatterns: Int!
 ) {
   trip(
     from: $from
     to: $to
     dateTime: $dateTime
-    arriveBy: true
+    arriveBy: $arriveBy
     numTripPatterns: $numTripPatterns
     modes: { accessMode: foot, egressMode: foot, directMode: null }
   ) {
@@ -60,18 +62,20 @@ export interface EnturTripVariables {
   from: { place: string };
   to: { place: string };
   dateTime: string;
+  arriveBy: boolean;
   numTripPatterns: number;
 }
 
 export function buildTripVariables(
   journey: TransitJourney,
-  arrival: Date,
+  searchTime: Date,
   alternatives: number
 ): EnturTripVariables {
   return {
     from: { place: journey.from.id },
     to: { place: journey.to.id },
-    dateTime: arrival.toISOString(),
+    dateTime: searchTime.toISOString(),
+    arriveBy: journey.timeMode !== 'departAfter',
     numTripPatterns: alternatives,
   };
 }
@@ -204,8 +208,8 @@ function mapTripPattern(pattern: RawTripPattern): TransitDeparture | null {
 }
 
 /**
- * Turns a trip response into departures ordered by departure time. Entur returns arrive-by results
- * latest first, and drops nothing that would otherwise render as an empty row.
+ * Turns a trip response into departures ordered by departure time, whichever direction Entur
+ * planned in, and drops nothing that would otherwise render as an empty row.
  */
 export function mapTripResponse(response: EnturTripResponse): TransitDeparture[] {
   const patterns = response.data?.trip?.tripPatterns ?? [];

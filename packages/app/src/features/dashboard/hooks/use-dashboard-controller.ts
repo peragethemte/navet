@@ -66,6 +66,7 @@ import { resolveDashboardRoomPreferences } from './dashboard-room-preferences';
 import { useAvailableRooms } from './use-available-rooms';
 import { useCardOrdering } from './use-card-ordering';
 import { useCardZones } from './use-card-zones';
+import { useCountdownCardRetention } from './use-countdown-card-retention';
 import { useDashboardCardActions } from './use-dashboard-card-actions';
 import type {
   DashboardClimateSectionGroup,
@@ -596,6 +597,25 @@ export function useDashboardController(): DashboardComposition {
     addHomeLayoutCard,
     removeHomeLayoutCard,
     addHomeLayoutSection,
+  });
+
+  // Mirrors handleDeleteCard without the toast: an automatic sweep should not announce itself.
+  const handleExpireCountdownCard = useCallback(
+    (cardId: string) => {
+      removeSharedCard(cardId);
+      removeActiveCustomCard(cardId);
+      removeHomeLayoutCard(cardId);
+    },
+    [removeActiveCustomCard, removeHomeLayoutCard, removeSharedCard]
+  );
+  const retainableCards = useMemo(
+    () => [...globalCards, ...activeHomeCustomCards],
+    [activeHomeCustomCards, globalCards]
+  );
+  useCountdownCardRetention({
+    enabled: !isEditMode,
+    cards: retainableCards,
+    onExpired: handleExpireCountdownCard,
   });
 
   const state: DashboardController = {

@@ -70,23 +70,35 @@ capability is wanted later (charging state), it's a one-line addition to that pr
 - **Weather location persists to the shared synced profile**, not per-device, matching the sibling
   `weatherForecastMode`/`weatherMetricIds` settings. Env vars remain as fallback defaults so
   existing Docker deploys keep working.
-- **Transit journeys are modelled as "arrive by", not "depart after"** (decided 2026-09-22).
-  Entur's trip query takes `arriveBy: true`. "Be at school by 08:00" is the question actually
-  being asked; the departure times fall out of the answer, while the reverse does not hold.
+- **Transit journeys carry a timing mode, defaulting to "arrive by"** (arrive-by decided
+  2026-09-22, depart-after added 2026-09-23). "Be at school by 08:00" is the question on the way
+  out, and the departure times fall out of the answer. Coming home it inverts to "what leaves after
+  16:00", so the mode is per journey rather than global: the same household has both. Entur's trip
+  query takes the direction as `$arriveBy`, and a depart-after journey rolls its `dateTime` forward
+  with the clock once its own time has passed.
 
 ## Transit design (built)
 
 Journeys are configured centrally in the Local services settings section, not per-card. Each is
-name, from/to (Entur stop search), `arriveByMinute`, `leadMinutes` and **days of week** - without
-days, Friday evening would show Saturday's school bus.
+name, from/to (Entur stop search), `timeMode`, `targetMinute`, `leadMinutes` and **days of week** -
+without days, Friday evening would show Saturday's school bus. `targetMinute` replaced
+`arriveByMinute` when the timing mode arrived; `normalizeTransitJourney` still reads the old key, so
+dashboards saved before that keep working. The reverse does not hold: an older build drops journeys
+saved by this one.
 
-The card shows every journey inside its lead window ordered by deadline; when none is active
+The card shows every journey inside its lead window ordered by target time; when none is active
 (evening) it rolls forward to the next one. 2-3 alternatives per journey, by card size.
 
-**The agreed "active time window" became `arriveByMinute` + `leadMinutes`.** Under arrive-by
-modelling a window and a deadline are two ways of saying the same thing, and a separate window can
-be configured so it does not contain its own journey. A lead time cannot. `leadMinutes` only
-decides how early the card starts showing the journey.
+**The agreed "active time window" became `targetMinute` + `leadMinutes`.** A window and a deadline
+are two ways of saying the same thing, and a separate window can be configured so it does not
+contain its own journey. A lead time cannot. `leadMinutes` only decides how early the card starts
+showing the journey.
+
+**A depart-after journey outlives its own time by `TRANSIT_DEPART_TRAIL_MINUTES` (60).** Its target
+is a floor rather than a deadline, so dropping it at 16:00 sharp would hide the journey home from
+anyone still standing at the stop. Inside that trail `journeySearchTime` plans from `now` floored to
+the minute, which both keeps departed buses off the board and gives the request cache a key that
+changes once a minute rather than on every 30 s clock tick.
 
 **Stop search is bounded by the weather location.** Entur's `bbox` is its only hard filter -
 verified: `lat`/`lon` focus and `radius` are weak bias, and a search for "skole" centred on

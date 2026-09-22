@@ -9,6 +9,7 @@ import {
   type ChoreWorkspaceData,
   getChoreExperiencePointBalances,
   getChoreTiming,
+  isHomeworkDefinition,
 } from '@navet/core/chores';
 
 const DAY_MS = 86_400_000;
@@ -88,14 +89,25 @@ function definitionFor(data: ChoreWorkspaceData, occurrence: ChoreOccurrence) {
   return definition && !definition.archivedAt ? definition : undefined;
 }
 
+/**
+ * Homework is an ordinary occurrence, so Today shows it alongside chores. A surface that pairs a
+ * chores view with a separate homework view opts out instead of double-counting the same item.
+ */
+export interface ChoreTodayOptions {
+  includeHomework?: boolean;
+}
+
 export function getHouseholdTodayOccurrences(
   data: ChoreWorkspaceData,
-  now = new Date()
+  now = new Date(),
+  { includeHomework = true }: ChoreTodayOptions = {}
 ): ChoreOccurrence[] {
   const dayStart = startOfLocalDay(now);
   return Object.values(data.occurrencesById)
     .filter((occurrence) => {
-      if (!definitionFor(data, occurrence) || !isVisibleWork(occurrence)) return false;
+      const definition = definitionFor(data, occurrence);
+      if (!definition || !isVisibleWork(occurrence)) return false;
+      if (!includeHomework && isHomeworkDefinition(definition)) return false;
       if (occursOnLocalDay(occurrence, dayStart)) return true;
       return !isFinal(occurrence) && getChoreTiming(occurrence, now) === 'overdue';
     })
@@ -117,9 +129,10 @@ export function getHouseholdTodayOccurrences(
 export function getTodayChoresForParticipant(
   data: ChoreWorkspaceData,
   participantId: string,
-  now = new Date()
+  now = new Date(),
+  options: ChoreTodayOptions = {}
 ) {
-  return getHouseholdTodayOccurrences(data, now).filter((occurrence) => {
+  return getHouseholdTodayOccurrences(data, now, options).filter((occurrence) => {
     const definition = definitionFor(data, occurrence);
     return (
       participantId === 'all' ||

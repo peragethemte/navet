@@ -30,6 +30,7 @@ import {
   Select,
 } from '@navet/app/components/primitives';
 import { getDndTransformStyle } from '@navet/app/components/shared/dnd-transform-style';
+import { WallpaperPreviewImage } from '@navet/app/components/shared/wallpaper-preview-image';
 import {
   getThemeFocusRingClassName,
   getThemeSurfaceTokens,
@@ -80,7 +81,6 @@ import {
 } from 'lucide-react';
 import { type ReactNode, useId, useMemo, useState } from 'react';
 import { RoomSymbolIcon } from './room-symbol-icon';
-import { RoomWallpaperPreviewImage } from './room-wallpaper-preview-image';
 import type {
   RoomWorkspaceActions,
   RoomWorkspaceComponentProps,
@@ -323,7 +323,7 @@ function RoomImagePreview({
         className
       )}
     >
-      <RoomWallpaperPreviewImage
+      <WallpaperPreviewImage
         value={room.image}
         alt=""
         className="absolute inset-0 h-full w-full object-cover"

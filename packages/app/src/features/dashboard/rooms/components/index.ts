@@ -16,10 +16,6 @@ export {
   type RoomTargetDialogProps,
 } from './room-target-dialog';
 export {
-  RoomWallpaperPreviewImage,
-  type RoomWallpaperPreviewImageProps,
-} from './room-wallpaper-preview-image';
-export {
   RoomsWorkspace,
   RoomsWorkspaceDesktop,
   RoomsWorkspacePhone,

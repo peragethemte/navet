@@ -42,14 +42,21 @@ address of a forecast page.
 
 ## Add a transit journey
 
-A journey describes a trip your household takes regularly, such as the morning run to school. Navet
-plans it backwards from the time you need to arrive, so the card answers whether you get there on
-time rather than only listing what leaves next.
+A journey describes a trip your household takes regularly, such as the morning run to school or the
+way home afterwards. Each one is built around a single time of day, and **Timing** decides what that
+time means:
+
+- **Arrive by** plans backwards from a deadline, so the card answers whether you get there on time
+  rather than only listing what leaves next. This suits the trip out.
+- **Depart after** plans forward from the earliest time you want to leave, which is the question on
+  the way back. The journey stays on the card for an hour after its time, and once that time has
+  passed the card lists departures from now rather than ones that have already gone.
 
 1. Open **Settings → Local services** and select **Add journey**.
 2. Enter a **Name**, for example `School run`. It labels the journey on the card.
 3. Type into **From** and **To** to search for stops, then select one from the results.
-4. Set **Arrive by** to the time you need to be at the destination.
+4. Choose a **Timing** mode, then set the time below it: **Arrive by** is when you need to be at the
+   destination, **Depart after** is the earliest you want to leave.
 5. Set **Show from** to how long before that time the journey should appear on the card.
 6. Select the **Days** the journey runs. A journey with no days selected is never shown, and days
    matter more than they look: without them a Friday evening dashboard would offer Saturday's
@@ -68,7 +75,7 @@ Without a weather location the search runs nationwide, so include the place name
 
 Journeys only appear once the card is on a dashboard. Enter edit mode, select **Add card**, and
 choose **Departures**. The card shows every journey currently inside its **Show from** window,
-earliest deadline first, with two or three alternatives each depending on the card size. When no
+earliest time first, with two or three alternatives each depending on the card size. When no
 journey is active, it rolls forward to the next one so an evening dashboard shows tomorrow morning.
 
 Live delays, platform numbers, walking distance, and cancellations come from the transport

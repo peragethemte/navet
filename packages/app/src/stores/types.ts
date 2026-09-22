@@ -70,6 +70,9 @@ export type CardType =
   | 'assist'
   | 'map'
   | 'transit'
+  | 'countdown'
+  | 'chores'
+  | 'homework'
   | 'entity';
 
 export interface CustomCard {

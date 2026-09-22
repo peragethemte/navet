@@ -47,12 +47,15 @@ export interface ChoreCardAction {
   disabled?: boolean;
 }
 
-function ChoreActionControl({
+export function ChoreActionControl({
   action,
   participantsById,
+  compact = false,
 }: {
   action: ChoreCardAction;
   participantsById: Record<string, ChoreParticipant>;
+  /** Dashboard card rows have no room for the label; keep the icon and move the label to the name. */
+  compact?: boolean;
 }) {
   const choices = (action.participantIds ?? [])
     .map((id) => participantsById[id])
@@ -64,15 +67,16 @@ function ChoreActionControl({
     <Button
       size="compact"
       variant={action.kind === 'approve' ? 'primary' : 'secondary'}
-      className="min-w-28 justify-center px-4"
+      className={compact ? 'justify-center px-2' : 'min-w-28 justify-center px-4'}
       leading={<ActionIcon className="h-4 w-4" aria-hidden="true" />}
       trailing={
         chooseParticipant ? <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" /> : null
       }
       disabled={action.disabled}
+      aria-label={compact ? action.label : undefined}
       onClick={chooseParticipant ? undefined : action.onSelect}
     >
-      {action.label}
+      {compact ? null : action.label}
     </Button>
   );
 
@@ -134,7 +138,11 @@ function occurrenceScheduleLabel(
   return `${day} · ${i18n.formatTime(scheduledAt)}`;
 }
 
-function statusDetails(occurrence: ChoreOccurrence, now: Date, i18n: ReturnType<typeof useI18n>) {
+export function getChoreStatusDetails(
+  occurrence: ChoreOccurrence,
+  now: Date,
+  i18n: ReturnType<typeof useI18n>
+) {
   const { t } = i18n;
   const timing = getChoreTiming(occurrence, now);
   if (occurrence.status === 'done') {
@@ -186,7 +194,7 @@ function participantInitials(displayName: string) {
     .join('');
 }
 
-function ChoreAssigneeAvatar({ participant }: { participant?: ChoreParticipant }) {
+export function ChoreAssigneeAvatar({ participant }: { participant?: ChoreParticipant }) {
   const { accentColor } = useTheme();
   const AvatarIcon = participant?.avatarIcon
     ? resolveLightIconComponent(participant.avatarIcon)
@@ -316,7 +324,7 @@ export function ChoreFocusCard({
   const { t } = i18n;
   const { theme } = useTheme();
   const surface = getThemeSurfaceTokens(theme);
-  const status = statusDetails(occurrence, now, i18n);
+  const status = getChoreStatusDetails(occurrence, now, i18n);
   const missedScheduleLabel =
     occurrence.status === 'missed' ? occurrenceScheduleLabel(occurrence, now, i18n) : undefined;
   const completed = occurrence.status === 'done';

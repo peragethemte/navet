@@ -1,10 +1,12 @@
 /**
  * Provider-neutral configuration for a recurring public-transport journey, such as a school run.
  *
- * A journey is modelled as "be there by 08:15 on school days", not "leave after 06:30". The
- * deadline is the question a household actually asks, and the departures that satisfy it fall out
- * of the journey planner's answer. `leadMinutes` only decides how early the dashboard starts
- * showing the journey; it cannot describe a window that fails to contain the journey.
+ * A journey states one time of day and what that time means. "Be there by 08:15 on school days" is
+ * the question a household asks on the way out, and the departures that satisfy it fall out of the
+ * journey planner's answer. Coming home the question inverts: "what leaves after 16:00", where the
+ * time is a floor rather than a deadline. `timeMode` picks between the two, and `leadMinutes` only
+ * decides how early the dashboard starts showing the journey; it cannot describe a window that
+ * fails to contain the journey.
  */
 export interface TransitPlace {
   /** Opaque stop identifier from the journey planner, for example `NSR:StopPlace:2952`. */
@@ -12,14 +14,21 @@ export interface TransitPlace {
   name: string;
 }
 
+/** Whether `targetMinute` is the arrival deadline or the earliest acceptable departure. */
+export type TransitTimeMode = 'arriveBy' | 'departAfter';
+
 export interface TransitJourney {
   id: string;
   name: string;
   from: TransitPlace;
   to: TransitPlace;
-  /** Target arrival time as minutes from local midnight. */
-  arriveByMinute: number;
-  /** How long before the arrival time the journey becomes the dashboard's active one. */
+  timeMode: TransitTimeMode;
+  /**
+   * Minutes from local midnight. The arrival deadline in `arriveBy` mode, the earliest departure
+   * in `departAfter` mode.
+   */
+  targetMinute: number;
+  /** How long before the target time the journey becomes the dashboard's active one. */
   leadMinutes: number;
   /** Days the journey runs, as `Date.getDay()` values where 0 is Sunday. */
   weekdays: number[];
@@ -33,6 +42,11 @@ export const TRANSIT_LEAD_MINUTES_MAX = 12 * 60;
 export const TRANSIT_LEAD_MINUTES_DEFAULT = 120;
 /** Journeys are per household rather than per person, so a short list keeps the card glanceable. */
 export const TRANSIT_JOURNEY_MAX_COUNT = 8;
+/**
+ * How long a `departAfter` journey outlives its own time. The target is a floor, not a deadline, so
+ * dropping it the minute it passes would hide the journey home from anyone still standing there.
+ */
+export const TRANSIT_DEPART_TRAIL_MINUTES = 60;
 
 const ALL_WEEKDAYS = [0, 1, 2, 3, 4, 5, 6];
 /** Monday first, matching every locale Navet ships. `Date.getDay()` starts on Sunday. */
@@ -119,10 +133,15 @@ export function normalizeTransitJourney(value: unknown): TransitJourney | null {
   const id = typeof value.id === 'string' ? value.id.trim() : '';
   const from = normalizeTransitPlace(value.from);
   const to = normalizeTransitPlace(value.to);
-  const arriveByMinute = clampInteger(value.arriveByMinute, 0, MINUTES_PER_DAY - 1);
+  // `arriveByMinute` is what journeys saved before the timing mode existed carry.
+  const targetMinute = clampInteger(
+    value.targetMinute ?? value.arriveByMinute,
+    0,
+    MINUTES_PER_DAY - 1
+  );
   const weekdays = normalizeWeekdays(value.weekdays);
 
-  if (id.length === 0 || !from || !to || arriveByMinute === null || weekdays.length === 0) {
+  if (id.length === 0 || !from || !to || targetMinute === null || weekdays.length === 0) {
     return null;
   }
 
@@ -134,7 +153,8 @@ export function normalizeTransitJourney(value: unknown): TransitJourney | null {
         : '',
     from,
     to,
-    arriveByMinute,
+    timeMode: value.timeMode === 'departAfter' ? 'departAfter' : 'arriveBy',
+    targetMinute,
     leadMinutes:
       clampInteger(value.leadMinutes, TRANSIT_LEAD_MINUTES_MIN, TRANSIT_LEAD_MINUTES_MAX) ??
       TRANSIT_LEAD_MINUTES_DEFAULT,
@@ -164,21 +184,30 @@ export function normalizeTransitJourneys(value: unknown): TransitJourney[] {
   return journeys;
 }
 
+function trailMs(journey: TransitJourney): number {
+  return journey.timeMode === 'departAfter' ? TRANSIT_DEPART_TRAIL_MINUTES * 60_000 : 0;
+}
+
 /**
- * The next moment the journey must be completed by, at or after `now`, in local time. Today counts
- * only while its arrival time has not passed; a journey with no weekdays never occurs.
+ * The journey's next target time in local time: the arrival deadline, or the earliest departure.
+ * Today counts while its target has not passed, plus the depart-after trail; a journey with no
+ * weekdays never occurs.
  */
-export function nextJourneyArrival(journey: TransitJourney, now: Date): Date | null {
+export function nextJourneyTarget(journey: TransitJourney, now: Date): Date | null {
   if (journey.weekdays.length === 0) {
     return null;
   }
 
+  const trail = trailMs(journey);
   for (let offset = 0; offset <= 7; offset += 1) {
     const candidate = new Date(now);
     candidate.setDate(candidate.getDate() + offset);
-    candidate.setHours(0, journey.arriveByMinute, 0, 0);
+    candidate.setHours(0, journey.targetMinute, 0, 0);
 
-    if (candidate.getTime() >= now.getTime() && journey.weekdays.includes(candidate.getDay())) {
+    if (
+      candidate.getTime() + trail >= now.getTime() &&
+      journey.weekdays.includes(candidate.getDay())
+    ) {
       return candidate;
     }
   }
@@ -186,23 +215,41 @@ export function nextJourneyArrival(journey: TransitJourney, now: Date): Date | n
   return null;
 }
 
+/**
+ * When to ask the journey planner about. An arrive-by journey always asks about its deadline. A
+ * depart-after journey asks about its target until that passes, then rolls forward with the clock
+ * so the board never offers departures that have already gone. Rounded down to the whole minute so
+ * a ticking clock does not produce a new request every few seconds.
+ */
+export function journeySearchTime(journey: TransitJourney, target: Date, now: Date): Date {
+  if (journey.timeMode !== 'departAfter' || now.getTime() <= target.getTime()) {
+    return target;
+  }
+
+  const floored = new Date(now);
+  floored.setSeconds(0, 0);
+  return floored;
+}
+
 export function isJourneyActiveAt(journey: TransitJourney, now: Date): boolean {
-  const arrival = nextJourneyArrival(journey, now);
-  if (!arrival) {
+  const target = nextJourneyTarget(journey, now);
+  if (!target) {
     return false;
   }
 
-  return arrival.getTime() - now.getTime() <= journey.leadMinutes * 60_000;
+  return target.getTime() - now.getTime() <= journey.leadMinutes * 60_000;
 }
 
 export interface TransitJourneyOccurrence {
   journey: TransitJourney;
-  arrival: Date;
+  target: Date;
+  /** The moment handed to the journey planner, which for a depart-after journey rolls with `now`. */
+  searchTime: Date;
   active: boolean;
 }
 
 /**
- * What the card should render right now: every journey inside its lead window, earliest deadline
+ * What the card should render right now: every journey inside its lead window, earliest target
  * first. Outside every window it rolls forward to the single next journey, so an evening dashboard
  * shows tomorrow morning's run instead of an empty card.
  */
@@ -212,18 +259,19 @@ export function resolveTransitBoard(
 ): TransitJourneyOccurrence[] {
   const occurrences: TransitJourneyOccurrence[] = [];
   for (const journey of journeys) {
-    const arrival = nextJourneyArrival(journey, now);
-    if (!arrival) {
+    const target = nextJourneyTarget(journey, now);
+    if (!target) {
       continue;
     }
     occurrences.push({
       journey,
-      arrival,
-      active: arrival.getTime() - now.getTime() <= journey.leadMinutes * 60_000,
+      target,
+      searchTime: journeySearchTime(journey, target, now),
+      active: target.getTime() - now.getTime() <= journey.leadMinutes * 60_000,
     });
   }
 
-  occurrences.sort((left, right) => left.arrival.getTime() - right.arrival.getTime());
+  occurrences.sort((left, right) => left.target.getTime() - right.target.getTime());
 
   const active = occurrences.filter((occurrence) => occurrence.active);
   return active.length > 0 ? active : occurrences.slice(0, 1);

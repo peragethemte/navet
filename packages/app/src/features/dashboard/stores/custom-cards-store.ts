@@ -28,6 +28,9 @@ export type CardType =
   | 'assist'
   | 'map'
   | 'transit'
+  | 'countdown'
+  | 'chores'
+  | 'homework'
   | 'entity';
 
 export interface CustomCard {
@@ -138,6 +141,25 @@ export function normalizeCustomCard(card: NormalizableCustomCard): CustomCard {
 
   if (
     normalizedCard.type === 'transit' &&
+    normalizedCard.size !== 'small' &&
+    normalizedCard.size !== 'medium' &&
+    normalizedCard.size !== 'large'
+  ) {
+    return { ...normalizedCard, size: 'medium' };
+  }
+
+  if (
+    normalizedCard.type === 'countdown' &&
+    normalizedCard.size !== 'small' &&
+    normalizedCard.size !== 'medium' &&
+    normalizedCard.size !== 'large' &&
+    normalizedCard.size !== 'extra-large'
+  ) {
+    return { ...normalizedCard, size: 'medium' };
+  }
+
+  if (
+    (normalizedCard.type === 'chores' || normalizedCard.type === 'homework') &&
     normalizedCard.size !== 'small' &&
     normalizedCard.size !== 'medium' &&
     normalizedCard.size !== 'large'

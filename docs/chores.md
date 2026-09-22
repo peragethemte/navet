@@ -62,6 +62,13 @@ Every household keeps at least one manager. Managers can change people and chore
 approve work, manage data, and optionally protect those changes with a management PIN. Ordinary
 completion actions remain available on a shared screen after a PIN is configured.
 
+## Chores on the dashboard
+
+Chores and homework are also available as dashboard cards. Add them from the widget chooser, and
+give each card a person or leave it on the whole household. A card reads and writes the same
+household workspace as the Household section, so completing an item on the dashboard completes it
+everywhere. The cards are hidden from the chooser while household chores are turned off in settings.
+
 ## Assignment and schedules
 
 A chore can belong to one person, be open to anyone, create one occurrence for everyone, or rotate
