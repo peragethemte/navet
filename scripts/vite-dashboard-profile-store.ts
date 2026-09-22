@@ -502,10 +502,14 @@ export function createViteDashboardProfileStore(
   const authorizePrincipal = (
     principal: ViteDashboardProfilePrincipal
   ): boolean => {
-    if (
-      principal.providerId !== 'home_assistant' ||
-      !TENANT_ID_PATTERN.test(principal.tenantId)
-    ) {
+    // Mirrors docker/njs/profile-store.js: a provider session is enough, because an
+    // installation whose only provider is Homey or openHAB never gets a Home Assistant
+    // principal and would otherwise never persist its dashboard.
+    if (principal.providerId !== 'home_assistant') {
+      return Boolean(principal.sessionId)
+    }
+
+    if (!TENANT_ID_PATTERN.test(principal.tenantId)) {
       return false
     }
 

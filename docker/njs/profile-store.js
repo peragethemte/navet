@@ -2,7 +2,9 @@ import profilePolicy from '../shared/dashboard-profile-policy.js';
 import fs from 'fs';
 import hashCrypto from 'crypto';
 import authStore from './auth-store.js';
+import homeyStore from './homey-store.js';
 import installationCookieScope from './installation-cookie-scope.js';
+import openhabStore from './openhab-store.js';
 import providerSessionStore from './provider-session-store.js';
 
 const isValidProfile = profilePolicy.isValidProfile;
@@ -97,12 +99,30 @@ let activeTenantSuffix = '';
 function storagePath(value) {
   return activeTenantSuffix ? value + '.' + activeTenantSuffix : value;
 }
-let principalResolver = function (r, options) {
+// A Home Assistant login is not the only way to be authenticated here. An installation whose
+// only provider is Homey or openHAB has no Home Assistant principal and never will, so without
+// this fallback its dashboard can never leave the browser it was built in. The chore store
+// already extends the same trust over the same workspace.
+function resolveProfilePrincipal(r, options) {
   if (!authStore || typeof authStore.resolveAuthenticatedPrincipal !== 'function') {
     return null;
   }
-  return authStore.resolveAuthenticatedPrincipal(r, options);
-};
+
+  const principal = authStore.resolveAuthenticatedPrincipal(r, options);
+  if (principal) {
+    return principal;
+  }
+
+  const homey = homeyStore.resolveHomeySession(r);
+  if (homey) {
+    return { providerId: 'homey', sessionId: homey.cookieId };
+  }
+
+  const openhab = openhabStore.resolveOpenHABSession(r);
+  return openhab ? { providerId: 'openhab', sessionId: openhab.cookieId } : null;
+}
+
+let principalResolver = resolveProfilePrincipal;
 
 function setProfileStoreFsForTests(mockFs) {
   fsModule = mockFs;
@@ -110,12 +130,7 @@ function setProfileStoreFsForTests(mockFs) {
 
 function resetProfileStoreFsForTests() {
   fsModule = fs;
-  principalResolver = function (r, options) {
-    if (!authStore || typeof authStore.resolveAuthenticatedPrincipal !== 'function') {
-      return null;
-    }
-    return authStore.resolveAuthenticatedPrincipal(r, options);
-  };
+  principalResolver = resolveProfilePrincipal;
 }
 
 function setProfileStorePrincipalResolverForTests(resolver) {
@@ -634,12 +649,20 @@ function readOrCreateWorkspace() {
 }
 
 function authorizeWorkspacePrincipal(principal) {
-  if (
-    !principal ||
-    principal.providerId !== 'home_assistant' ||
-    typeof principal.tenantId !== 'string' ||
-    !TENANT_ID_PATTERN.test(principal.tenantId)
-  ) {
+  if (!principal) {
+    return null;
+  }
+
+  // Provider sessions carry no tenant, and an installation has exactly one hub, so there is
+  // nothing to isolate. The workspace stays unbound rather than growing a second binding shape,
+  // which also keeps it readable by the chore store that shares this file.
+  if (principal.providerId !== 'home_assistant') {
+    return typeof principal.sessionId === 'string' && principal.sessionId
+      ? readOrCreateWorkspace()
+      : null;
+  }
+
+  if (typeof principal.tenantId !== 'string' || !TENANT_ID_PATTERN.test(principal.tenantId)) {
     return null;
   }
 

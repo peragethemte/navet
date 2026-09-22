@@ -199,10 +199,31 @@ export default defineConfig(({ command, mode }) => {
     );
     const resolveAuthenticatedPrincipal = (req: IncomingMessage) =>
       authSessionPlugin.api.resolveAuthenticatedPrincipal(req, { trustIngressHeaders: false });
-    const dashboardProfilePlugin = dashboardProfileStorePlugin(
-      installationAuthority,
-      resolveAuthenticatedPrincipal
-    );
+    // Mirrors docker/njs/profile-store.js: an installation whose only provider is Homey or
+    // openHAB has no Home Assistant principal, and without this its dashboard could never
+    // leave the browser it was built in. The session plugins below are referenced lazily.
+    const dashboardProfilePlugin = dashboardProfileStorePlugin(installationAuthority, (req) => {
+      const principal = resolveAuthenticatedPrincipal(req);
+      if (principal) {
+        return principal;
+      }
+
+      const providerId = homeySessionPlugin.api.getHomeySession(req)
+        ? 'homey'
+        : openhabSessionPlugin.api.getOpenHABSession(req)
+          ? 'openhab'
+          : null;
+
+      return providerId
+        ? {
+            providerId,
+            userId: null,
+            userName: null,
+            tenantId: '',
+            sessionId: 'authenticated-provider-session',
+          }
+        : null;
+    });
     const homeySessionPlugin = homeySessionStorePlugin(
       installationAuthority,
       deviceSessionAuthority

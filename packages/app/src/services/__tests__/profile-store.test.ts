@@ -166,6 +166,80 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+const HOMEY_PRINCIPAL = {
+  providerId: 'homey',
+  tenantId: '',
+  sessionId: 'nps_homey_session',
+  userId: null,
+  userName: null,
+};
+
+describe('provider-session dashboard ownership', () => {
+  it('lets a Homey session read and write the shared profile', () => {
+    const mockFs = createMockFs();
+    profileStore.setProfileStoreFsForTests(mockFs);
+    setPrincipal(() => HOMEY_PRINCIPAL);
+
+    const empty = createRequest();
+    profileStore.handle(empty);
+    expect(empty.return).toHaveBeenCalledWith(204);
+
+    expect(writeProfile(0).return.mock.calls.at(-1)?.[0]).toBe(200);
+    expect(JSON.parse(readMockFile(mockFs, PROFILE_PATH)).dashboard).toEqual({
+      title: 'Revision 1',
+    });
+  });
+
+  it('leaves the workspace unbound so the chore store still accepts it', () => {
+    const mockFs = createMockFs();
+    profileStore.setProfileStoreFsForTests(mockFs);
+    setPrincipal(() => HOMEY_PRINCIPAL);
+
+    writeProfile(0);
+
+    // A Home Assistant tenant binding here would make the chore store, which shares this file,
+    // reject the workspace outright.
+    expect(JSON.parse(readMockFile(mockFs, WORKSPACE_PATH)).tenantBinding).toBeUndefined();
+  });
+
+  it('still refuses a provider principal with no session', () => {
+    profileStore.setProfileStoreFsForTests(createMockFs());
+    setPrincipal(() => ({ ...HOMEY_PRINCIPAL, sessionId: '' }));
+
+    const request = createRequest();
+    profileStore.handle(request);
+
+    expect(request.return.mock.calls.at(-1)?.[0]).toBe(403);
+  });
+
+  it('keeps Home Assistant tenant isolation intact', () => {
+    const mockFs = createMockFs();
+    profileStore.setProfileStoreFsForTests(mockFs);
+    setPrincipal(() => PRINCIPAL);
+    writeProfile(0);
+
+    // A second Home Assistant tenant gets its own namespace rather than the first one's data.
+    setPrincipal(() => ({ ...PRINCIPAL, tenantId: `hat_${'b'.repeat(64)}` }));
+    const otherTenant = createRequest();
+    profileStore.handle(otherTenant);
+
+    expect(otherTenant.return).toHaveBeenCalledWith(204);
+    expect(JSON.parse(readMockFile(mockFs, PROFILE_PATH)).dashboard).toEqual({
+      title: 'Revision 1',
+    });
+  });
+
+  it('rejects a Home Assistant principal whose tenant is malformed', () => {
+    profileStore.setProfileStoreFsForTests(createMockFs());
+    setPrincipal(() => ({ ...PRINCIPAL, tenantId: 'not-a-tenant' }));
+
+    const request = createRequest();
+    profileStore.handle(request);
+
+    expect(request.return.mock.calls.at(-1)?.[0]).toBe(403);
+  });
+});
+
 describe('revisioned NJS dashboard profile store', () => {
   it('rejects anonymous normal routes and only enables ingress identity in the explicit handler', () => {
     profileStore.setProfileStoreFsForTests(createMockFs());
