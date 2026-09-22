@@ -1,5 +1,5 @@
 import { renderWithProviders } from '@navet/app/test/render';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { NetworkStatusBanner } from './network-status-banner';
 
@@ -40,5 +40,46 @@ describe('NetworkStatusBanner', () => {
         'openHAB authentication failed. Check your username, password, and API Security settings.'
       )
     ).toBeInTheDocument();
+  });
+
+  it('hides the banner when the close control is clicked', () => {
+    renderWithProviders(
+      <NetworkStatusBanner
+        connected={false}
+        connecting={false}
+        reconnecting={false}
+        isOnline
+        providerLabel="openHAB"
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(screen.queryByText('openHAB disconnected')).not.toBeInTheDocument();
+  });
+
+  it('shows the banner again when the connection status changes after a dismiss', () => {
+    const { rerender } = renderWithProviders(
+      <NetworkStatusBanner
+        connected={false}
+        connecting={false}
+        reconnecting={false}
+        isOnline
+        providerLabel="openHAB"
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    rerender(
+      <NetworkStatusBanner
+        connected={false}
+        connecting
+        reconnecting
+        isOnline
+        providerLabel="openHAB"
+      />
+    );
+
+    expect(screen.getByText('Reconnecting to openHAB')).toBeInTheDocument();
   });
 });

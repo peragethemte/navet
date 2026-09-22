@@ -1,9 +1,12 @@
 import { getThemeSurfaceTokens } from '@navet/app/components/shared/theme/theme-surface-tokens';
-import { navetSemanticColorTokens } from '@navet/app/components/system/tokens';
+import {
+  getThemeFocusRingClassName,
+  navetSemanticColorTokens,
+} from '@navet/app/components/system/tokens';
 import { useI18n, useTheme } from '@navet/app/hooks';
 import type { ThemeType } from '@navet/app/hooks/use-theme';
-import { CheckCircle2, Info, OctagonAlert, WifiOff } from 'lucide-react';
-import type { CSSProperties } from 'react';
+import { CheckCircle2, Info, OctagonAlert, WifiOff, X } from 'lucide-react';
+import { type CSSProperties, useState } from 'react';
 
 type BannerTone = 'info' | 'success' | 'warning' | 'error';
 
@@ -76,12 +79,21 @@ export function NetworkStatusBanner({
   const { theme } = useTheme();
   const { t } = useI18n();
   const surface = getThemeSurfaceTokens(theme);
+  const [dismissedStatus, setDismissedStatus] = useState<string | null>(null);
 
-  if (isOnline && connected) {
+  const isOffline = !isOnline;
+  const isReconnecting = reconnecting || connecting;
+  // Dismissal only hides the status it was made for, so a new problem surfaces again.
+  const status = `${isOffline}|${connected}|${isReconnecting}|${providerLabel ?? ''}|${lastError ?? ''}`;
+
+  if (dismissedStatus !== null && dismissedStatus !== status) {
+    setDismissedStatus(null);
+  }
+
+  if ((isOnline && connected) || dismissedStatus === status) {
     return null;
   }
 
-  const isOffline = !isOnline;
   const derivedTone: BannerTone = isOffline ? 'error' : 'warning';
   const tone = toneProp ?? derivedTone;
   const bannerSurfaceClassName = getBannerSurfaceClass(theme, tone);
@@ -89,12 +101,12 @@ export function NetworkStatusBanner({
   const Icon = toneIcons[tone];
   const title = isOffline
     ? t('network.offlineTitle')
-    : reconnecting || connecting
+    : isReconnecting
       ? t('network.reconnectingTitle', { provider: providerLabel ?? 'provider' })
       : t('network.disconnectedTitle', { provider: providerLabel ?? 'provider' });
   const description = isOffline
     ? t('network.offlineDescription')
-    : reconnecting || connecting
+    : isReconnecting
       ? t('network.reconnectingDescription', { provider: providerLabel ?? 'provider' })
       : lastError?.trim() ||
         t('network.disconnectedDescription', { provider: providerLabel ?? 'provider' });
@@ -112,10 +124,18 @@ export function NetworkStatusBanner({
         >
           <Icon className="h-4 w-4" />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className={`text-sm font-semibold ${surface.textPrimary}`}>{title}</p>
           <p className={`mt-1 text-sm leading-relaxed ${surface.textSecondary}`}>{description}</p>
         </div>
+        <button
+          type="button"
+          onClick={() => setDismissedStatus(status)}
+          aria-label={t('common.close')}
+          className={`pointer-events-auto -mr-1 mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors ${surface.border} ${surface.textMuted} ${surface.hoverBg} ${getThemeFocusRingClassName(theme)}`}
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
