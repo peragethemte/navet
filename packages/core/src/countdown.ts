@@ -12,6 +12,8 @@
  * correct; they answer different questions.
  */
 
+import { formatLocalDateKey } from './calendar-dates.ts';
+
 export const COUNTDOWN_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 export const COUNTDOWN_TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
@@ -100,13 +102,7 @@ export function parseCountdownTarget(input: CountdownTargetInput): CountdownTarg
   return { date: input.date, time, precision };
 }
 
-export function formatLocalDateKey(date: Date): string {
-  return [
-    String(date.getFullYear()).padStart(4, '0'),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0'),
-  ].join('-');
-}
+export { formatLocalDateKey };
 
 function toLocalInstant(dateKey: string, time: string, dayOffset = 0): number {
   const [year, month, day] = dateKey.split('-').map(Number);

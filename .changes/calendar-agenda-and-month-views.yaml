@@ -1,0 +1,6 @@
+type: new
+audiences:
+  - standalone
+  - home-assistant
+  - docs
+summary: The calendar card can show the next few days as a wide agenda, with today and tomorrow beside the rest of the range, or the whole month as a grid. Pick the view and the number of days in the card's settings, and give the card one of the new wider sizes for the full layout.

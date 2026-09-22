@@ -2,38 +2,37 @@ import { STORAGE_KEYS } from '@navet/app/constants/storage-keys';
 import { useI18n, usePersistedState, useProviderCalendarDevicesCollection } from '@navet/app/hooks';
 import { parseProviderScopedId } from '@navet/app/utils/provider-ids';
 import { subscribeVisibilityAwareTask } from '@navet/app/utils/visibility-aware-scheduler';
+import { getFirstDayOfWeek } from '@navet/core/calendar-dates';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   getCalendarEventSortValue,
   isCalendarEventVisibleInWindow,
 } from './calendar-event-visibility';
 import { resolveCalendarSourceColor } from './calendar-source-colors';
+import {
+  type CalendarViewMode,
+  clampCalendarDayCount,
+  normalizeCalendarViewMode,
+  resolveCalendarCardWindow,
+} from './calendar-view-mode';
 import type { CalendarEvent } from './types';
 
 type PersistedCalendarSources = Record<string, string[]>;
-type CalendarViewMode = 'day' | 'week' | 'month';
-type PersistedCalendarViewModes = Record<string, CalendarViewMode>;
+// Stored loosely: profiles written before the day count existed hold the retired `week` value.
+type PersistedCalendarViewModes = Record<string, string>;
+type PersistedCalendarDayCounts = Record<string, number>;
 type PersistedCalendarTintColors = Record<string, string>;
 
 const CALENDAR_TIME_WINDOW_REFRESH_MS = 60 * 1000;
-const EVENT_LIMIT_BY_VIEW_MODE: Record<CalendarViewMode, number> = { day: 12, week: 7, month: 12 };
 
-// Day means the rest of today, so the card empties as the evening ends rather than rolling into
-// tomorrow. Week and month stay rolling windows, which is how they already behaved.
-function resolveWindowEnd(now: Date, viewMode: CalendarViewMode): Date {
-  if (viewMode === 'day') {
-    const endOfDay = new Date(now);
-    endOfDay.setHours(23, 59, 59, 999);
-    return endOfDay;
-  }
-
-  const endDate = new Date(now);
-  endDate.setDate(now.getDate() + (viewMode === 'week' ? 7 : 31));
-  return endDate;
-}
+/**
+ * Render ceiling for one card. A month of a busy household sits well inside this; it exists so a
+ * misconfigured calendar cannot hand the view an unbounded list.
+ */
+const MAX_CALENDAR_CARD_EVENTS = 400;
 
 export function useCalendarCardSources(cardId?: string, fallbackEvents: CalendarEvent[] = []) {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
   // The card's own id names the provider that owns it. Resolving from that rather than from the
   // current provider is what lets a calendar-only provider - one that is never the current
   // session, such as iCloud next to a Homey hub - still populate the source picker.
@@ -46,6 +45,10 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
   );
   const [calendarViewModes, setCalendarViewModes] = usePersistedState<PersistedCalendarViewModes>(
     STORAGE_KEYS.calendarCardViewModes,
+    {}
+  );
+  const [calendarDayCounts, setCalendarDayCounts] = usePersistedState<PersistedCalendarDayCounts>(
+    STORAGE_KEYS.calendarCardDayCounts,
     {}
   );
   const [calendarTintColors, setCalendarTintColors] =
@@ -92,13 +95,14 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
 
     return [cardId];
   }, [calendarSources, calendars, cardId]);
-  const viewMode = useMemo<CalendarViewMode>(() => {
-    if (!cardId) {
-      return 'week';
-    }
-
-    return calendarViewModes[cardId] ?? 'week';
-  }, [calendarViewModes, cardId]);
+  const viewMode = useMemo<CalendarViewMode>(
+    () => normalizeCalendarViewMode(cardId ? calendarViewModes[cardId] : undefined),
+    [calendarViewModes, cardId]
+  );
+  const dayCount = useMemo(
+    () => clampCalendarDayCount(cardId ? calendarDayCounts[cardId] : undefined),
+    [calendarDayCounts, cardId]
+  );
   const tintColor = useMemo(() => {
     if (!cardId) {
       return undefined;
@@ -106,6 +110,12 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
 
     return calendarTintColors[cardId];
   }, [calendarTintColors, cardId]);
+  const firstDayOfWeek = useMemo(() => getFirstDayOfWeek(locale), [locale]);
+  // Re-resolved on the minute tick so the window rolls over midnight without a reload.
+  const calendarWindow = useMemo(
+    () => resolveCalendarCardWindow(new Date(timeWindowTick), viewMode, dayCount, firstDayOfWeek),
+    [dayCount, firstDayOfWeek, timeWindowTick, viewMode]
+  );
 
   const selectedEvents = useMemo(() => {
     if (!cardId) {
@@ -124,9 +134,6 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
       return lastResolvedSelectedEventsRef.current;
     }
 
-    const now = new Date(timeWindowTick);
-    const endDate = resolveWindowEnd(now, viewMode);
-
     return matchedCalendars
       .flatMap((calendar) =>
         calendar.events.map((event) => ({
@@ -134,14 +141,16 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
           color: calendar.color,
         }))
       )
-      .filter((event) => isCalendarEventVisibleInWindow(event, now, endDate))
+      .filter((event) =>
+        isCalendarEventVisibleInWindow(event, calendarWindow.start, calendarWindow.end)
+      )
       .sort((left, right) => {
         const leftKey = getCalendarEventSortValue(left);
         const rightKey = getCalendarEventSortValue(right);
         return leftKey.localeCompare(rightKey);
       })
-      .slice(0, EVENT_LIMIT_BY_VIEW_MODE[viewMode]);
-  }, [availableCalendars, cardId, fallbackEvents, selectedCalendarIds, timeWindowTick, viewMode]);
+      .slice(0, MAX_CALENDAR_CARD_EVENTS);
+  }, [availableCalendars, calendarWindow, cardId, fallbackEvents, selectedCalendarIds]);
 
   useEffect(() => {
     if (selectedEvents.length > 0 || fallbackEvents.length === 0) {
@@ -187,6 +196,17 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
     }));
   };
 
+  const setDayCount = (nextDayCount: number) => {
+    if (!cardId) {
+      return;
+    }
+
+    setCalendarDayCounts((current) => ({
+      ...current,
+      [cardId]: clampCalendarDayCount(nextDayCount),
+    }));
+  };
+
   const setTintColor = (nextTintColor?: string) => {
     if (!cardId) {
       return;
@@ -207,9 +227,13 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
 
   return {
     availableCalendars,
+    calendarWindow,
+    dayCount,
+    firstDayOfWeek,
     selectedCalendarIds,
     selectedCalendarLabel,
     selectedEvents,
+    setDayCount,
     setSelectedCalendarIds,
     setTintColor,
     setViewMode,

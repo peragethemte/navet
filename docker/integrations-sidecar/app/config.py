@@ -11,11 +11,14 @@ from dataclasses import dataclass
 
 DEFAULT_CALDAV_URL = "https://caldav.icloud.com/"
 DEFAULT_POLL_SECONDS = 300
-DEFAULT_WINDOW_DAYS = 31
-# A day of history keeps an event that is already under way, and today's all-day events,
-# inside the window navet then filters down itself.
-DEFAULT_PAST_DAYS = 1
-DEFAULT_MAX_EVENTS_PER_CALENDAR = 25
+# Wide enough for the calendar card's longest agenda and for the tail of a month grid viewed from
+# the first of the month. navet asks for the range it actually needs and filters what comes back.
+DEFAULT_WINDOW_DAYS = 60
+# A month grid starts up to six days before the first of the month, so history has to reach back
+# past the start of the current month rather than just far enough to catch an event under way.
+DEFAULT_PAST_DAYS = 45
+# A month of a busy shared family calendar, not just the next few appointments.
+DEFAULT_MAX_EVENTS_PER_CALENDAR = 400
 
 
 @dataclass(frozen=True)

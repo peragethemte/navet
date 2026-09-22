@@ -16,9 +16,9 @@ the same kind of problem in Go.
 | `NAVET_ICLOUD_APP_PASSWORD` | - | App-specific password, not the account password |
 | `NAVET_ICLOUD_CALDAV_URL` | `https://caldav.icloud.com/` | CalDAV entry point |
 | `NAVET_ICLOUD_CALENDAR_POLL_SECONDS` | `300` | How often iCloud is polled |
-| `NAVET_ICLOUD_CALENDAR_DAYS` | `31` | How far ahead events are fetched |
-| `NAVET_ICLOUD_CALENDAR_PAST_DAYS` | `1` | History kept so events already under way still show |
-| `NAVET_ICLOUD_MAX_EVENTS_PER_CALENDAR` | `25` | Cap per calendar |
+| `NAVET_ICLOUD_CALENDAR_DAYS` | `60` | How far ahead events are fetched |
+| `NAVET_ICLOUD_CALENDAR_PAST_DAYS` | `45` | History kept so the month view can fill days already past |
+| `NAVET_ICLOUD_MAX_EVENTS_PER_CALENDAR` | `400` | Cap per calendar |
 
 Both credential variables also accept a `_FILE` twin pointing at a mounted secret, for example
 `NAVET_ICLOUD_APP_PASSWORD_FILE=/run/secrets/icloud`.

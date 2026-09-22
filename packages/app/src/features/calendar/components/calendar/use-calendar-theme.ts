@@ -12,6 +12,9 @@ interface CalendarThemeColors {
   hoverText: string;
   dotColor: string;
   moreEventsColor: string;
+  chipBg: string;
+  chipHoverBg: string;
+  todayBg: string;
 }
 
 export function useCalendarTheme(
@@ -43,6 +46,11 @@ export function useCalendarTheme(
   const dotColor = theme === 'light' ? 'text-slate-400' : backgroundColor ? '' : 'text-white/72';
   const moreEventsColor =
     theme === 'light' ? 'text-slate-600' : backgroundColor ? '' : 'text-white/78';
+  // Event chips sit on the card surface, so they lean on the same neutral wash the dividers use
+  // rather than introducing a second material.
+  const chipBg = theme === 'light' ? 'bg-slate-900/6' : 'bg-white/10';
+  const chipHoverBg = theme === 'light' ? 'hover:bg-slate-900/12' : 'hover:bg-white/16';
+  const todayBg = theme === 'light' ? 'bg-slate-900/8' : 'bg-white/12';
 
   return {
     textPrimary,
@@ -55,5 +63,8 @@ export function useCalendarTheme(
     hoverText,
     dotColor,
     moreEventsColor,
+    chipBg,
+    chipHoverBg,
+    todayBg,
   };
 }

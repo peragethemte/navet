@@ -12,6 +12,9 @@ import { getThemeSurfaceTokens } from '@navet/app/components/shared/theme/theme-
 import { useI18n } from '@navet/app/hooks';
 import { type ThemeType, useTheme } from '@navet/app/hooks/use-theme';
 import { getEntityTypeLabel } from '@navet/app/utils/entity-type-label';
+import { CALENDAR_DAY_COUNT_MAX, CALENDAR_DAY_COUNT_MIN } from '@navet/core/calendar-agenda';
+import { Minus, Plus } from 'lucide-react';
+import { CALENDAR_VIEW_MODES, type CalendarViewMode } from './calendar-view-mode';
 
 interface CalendarSourceOption {
   id: string;
@@ -29,10 +32,43 @@ interface CalendarSettingsDialogProps {
   calendars: CalendarSourceOption[];
   selectedCalendarIds: string[];
   onSelectedCalendarIdsChange: (ids: string[]) => void;
-  viewMode: 'day' | 'week' | 'month';
-  onViewModeChange: (viewMode: 'day' | 'week' | 'month') => void;
+  viewMode: CalendarViewMode;
+  onViewModeChange: (viewMode: CalendarViewMode) => void;
+  dayCount: number;
+  onDayCountChange: (dayCount: number) => void;
   tintColor?: string;
   onTintColorChange?: (color: string) => void;
+}
+
+interface DayCountButtonProps {
+  label: string;
+  disabled: boolean;
+  surfaceClassName: string;
+  style?: React.CSSProperties;
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+function DayCountButton({
+  label,
+  disabled,
+  surfaceClassName,
+  style,
+  onClick,
+  children,
+}: DayCountButtonProps) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      style={style}
+      className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-colors disabled:opacity-40 ${surfaceClassName}`}
+    >
+      {children}
+    </button>
+  );
 }
 
 export function CalendarSettingsDialog({
@@ -46,6 +82,8 @@ export function CalendarSettingsDialog({
   onSelectedCalendarIdsChange,
   viewMode,
   onViewModeChange,
+  dayCount,
+  onDayCountChange,
   tintColor,
   onTintColorChange,
 }: CalendarSettingsDialogProps) {
@@ -66,7 +104,7 @@ export function CalendarSettingsDialog({
     <div className="space-y-4">
       <CardDialogSection label={t('calendar.settings.view')} className="mb-4">
         <div className="inline-flex items-center gap-1">
-          {(['day', 'week', 'month'] as const).map((option) => (
+          {CALENDAR_VIEW_MODES.map((option) => (
             <CardDialogChoicePill
               key={option}
               active={viewMode === option}
@@ -76,13 +114,46 @@ export function CalendarSettingsDialog({
             >
               {option === 'day'
                 ? t('calendar.settings.today')
-                : option === 'week'
-                  ? t('calendar.settings.thisWeek')
+                : option === 'days'
+                  ? t('calendar.settings.nextDays')
                   : t('calendar.settings.thisMonth')}
             </CardDialogChoicePill>
           ))}
         </div>
       </CardDialogSection>
+
+      {viewMode === 'days' ? (
+        <CardDialogSection label={t('calendar.settings.dayCount')} className="mb-4">
+          <div className="inline-flex items-center gap-2">
+            <DayCountButton
+              label={t('calendar.settings.fewerDays')}
+              disabled={dayCount <= CALENDAR_DAY_COUNT_MIN}
+              surfaceClassName={`${surface.hoverBg} ${surface.textPrimary}`}
+              style={sectionStyle}
+              onClick={() => onDayCountChange(dayCount - 1)}
+            >
+              <Minus className="h-4 w-4" />
+            </DayCountButton>
+
+            <span
+              className={`min-w-16 text-center text-sm font-semibold ${surface.textPrimary}`}
+              aria-live="polite"
+            >
+              {t('calendar.settings.dayCountValue', { count: dayCount })}
+            </span>
+
+            <DayCountButton
+              label={t('calendar.settings.moreDays')}
+              disabled={dayCount >= CALENDAR_DAY_COUNT_MAX}
+              surfaceClassName={`${surface.hoverBg} ${surface.textPrimary}`}
+              style={sectionStyle}
+              onClick={() => onDayCountChange(dayCount + 1)}
+            >
+              <Plus className="h-4 w-4" />
+            </DayCountButton>
+          </div>
+        </CardDialogSection>
+      ) : null}
 
       <CardDialogSection label={t('calendar.settings.calendars')}>
         <div className="space-y-2">

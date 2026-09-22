@@ -1,63 +1,21 @@
+import {
+  addCalendarDays,
+  differenceInCalendarDays,
+  getDayOfWeek,
+  getLastDayOfMonth,
+  parseDateKey,
+} from './calendar-dates.ts';
 import type { ChoreAssignment, ChoreParticipant, ChoreSchedule } from './chores.ts';
 
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
-export function parseDateKey(dateKey: string) {
-  if (!DATE_PATTERN.test(dateKey)) {
-    throw new Error(`Invalid chore date: ${dateKey}`);
-  }
-
-  const parts = dateKey.split('-').map(Number);
-  const year = parts[0];
-  const month = parts[1];
-  const day = parts[2];
-  const candidate = new Date(Date.UTC(year, month - 1, day));
-  if (
-    candidate.getUTCFullYear() !== year ||
-    candidate.getUTCMonth() !== month - 1 ||
-    candidate.getUTCDate() !== day
-  ) {
-    throw new Error(`Invalid chore date: ${dateKey}`);
-  }
-
-  return { year, month, day };
-}
-
-export function formatDateKey(date: Date) {
-  return [
-    String(date.getUTCFullYear()).padStart(4, '0'),
-    String(date.getUTCMonth() + 1).padStart(2, '0'),
-    String(date.getUTCDate()).padStart(2, '0'),
-  ].join('-');
-}
-
-export function addCalendarDays(dateKey: string, days: number) {
-  const date = parseDateKey(dateKey);
-  const year = date.year;
-  const month = date.month;
-  const day = date.day;
-  return formatDateKey(new Date(Date.UTC(year, month - 1, day + days)));
-}
-
-export function differenceInCalendarDays(left: string, right: string) {
-  const leftDate = parseDateKey(left);
-  const rightDate = parseDateKey(right);
-  const leftTime = Date.UTC(leftDate.year, leftDate.month - 1, leftDate.day);
-  const rightTime = Date.UTC(rightDate.year, rightDate.month - 1, rightDate.day);
-  return Math.round((leftTime - rightTime) / 86_400_000);
-}
-
-export function getDayOfWeek(dateKey: string) {
-  const date = parseDateKey(dateKey);
-  const year = date.year;
-  const month = date.month;
-  const day = date.day;
-  return new Date(Date.UTC(year, month - 1, day)).getUTCDay();
-}
-
-function getLastDayOfMonth(year: number, month: number) {
-  return new Date(Date.UTC(year, month, 0)).getUTCDate();
-}
+// Date-key arithmetic moved to `calendar-dates.ts` so the calendar card can share it. Re-exported
+// here so every existing chore call site keeps its import path.
+export {
+  addCalendarDays,
+  differenceInCalendarDays,
+  formatDateKey,
+  getDayOfWeek,
+  parseDateKey,
+} from './calendar-dates.ts';
 
 export function scheduleStartDate(schedule: ChoreSchedule) {
   return schedule.frequency === 'once' ? schedule.date : schedule.startDate;

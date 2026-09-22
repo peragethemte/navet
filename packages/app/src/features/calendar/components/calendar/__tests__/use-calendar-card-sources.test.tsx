@@ -133,20 +133,49 @@ describe('calendar view windows', () => {
     expect(result.current.selectedEvents.map((item) => item.id)).toEqual(['later-today']);
   });
 
-  it('keeps the week window rolling past midnight', () => {
+  it('shows the chosen number of days, rolling past midnight', () => {
     const { result } = renderHook(() => useCalendarCardSources(ICLOUD_CARD_ID));
 
     act(() => {
-      result.current.setViewMode('week');
+      result.current.setViewMode('days');
     });
 
+    // Seven days by default, so an event eight days out stays off the card.
+    expect(result.current.dayCount).toBe(7);
     expect(result.current.selectedEvents.map((item) => item.id)).toEqual([
       'later-today',
       'tomorrow',
     ]);
   });
 
-  it('reaches further ahead in month mode', () => {
+  it('reaches further as the day count grows', () => {
+    const { result } = renderHook(() => useCalendarCardSources(ICLOUD_CARD_ID));
+
+    act(() => {
+      result.current.setViewMode('days');
+    });
+    act(() => {
+      result.current.setDayCount(14);
+    });
+
+    expect(result.current.selectedEvents.map((item) => item.id)).toEqual([
+      'later-today',
+      'tomorrow',
+      'next-week',
+    ]);
+  });
+
+  it('clamps a day count outside the supported range', () => {
+    const { result } = renderHook(() => useCalendarCardSources(ICLOUD_CARD_ID));
+
+    act(() => {
+      result.current.setDayCount(99);
+    });
+
+    expect(result.current.dayCount).toBe(14);
+  });
+
+  it('covers the whole month grid in month mode, including days already past', () => {
     const { result } = renderHook(() => useCalendarCardSources(ICLOUD_CARD_ID));
 
     act(() => {
@@ -158,5 +187,8 @@ describe('calendar view windows', () => {
       'tomorrow',
       'next-week',
     ]);
+    // The grid opens on the Monday before 1 September, so the window has to start in the past.
+    expect(result.current.calendarWindow.startDateKey).toBe('2026-08-31');
+    expect(result.current.calendarWindow.endDateKey).toBe('2026-10-04');
   });
 });

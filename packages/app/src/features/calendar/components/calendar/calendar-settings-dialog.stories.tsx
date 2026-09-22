@@ -5,11 +5,13 @@ import { SettingsDialogStoryFrame } from '@navet/app/storybook/story-frames';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { CalendarSettingsDialog } from './calendar-settings-dialog';
+import type { CalendarViewMode } from './calendar-view-mode';
 
 function CalendarSettingsDialogStory() {
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('week');
+  const [viewMode, setViewMode] = useState<CalendarViewMode>('days');
+  const [dayCount, setDayCount] = useState(7);
   const [tintColor, setTintColor] = useState<string | undefined>('#6366f1');
   const [selectedCalendarIds, setSelectedCalendarIds] = useState([
     'calendar.family',
@@ -38,6 +40,8 @@ function CalendarSettingsDialogStory() {
         onSelectedCalendarIdsChange={setSelectedCalendarIds}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
+        dayCount={dayCount}
+        onDayCountChange={setDayCount}
         tintColor={tintColor}
         onTintColorChange={setTintColor}
       />

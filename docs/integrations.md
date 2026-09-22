@@ -91,7 +91,7 @@ own password is rejected. Both values also accept a `_FILE` twin pointing at a m
 
 Every calendar in the account appears as a separate source, including calendars shared with you.
 Add a calendar card, open its settings in edit mode, and select the ones this dashboard should
-show. The same settings choose how far ahead the card looks: today, this week, or this month.
+show. The same settings choose what the card shows: today, the next few days, or the whole month.
 Events refresh every few minutes; if iCloud becomes unreachable the card keeps showing the last
 events it received rather than emptying.
 

@@ -23,8 +23,8 @@ export const icloudCalendarFeatureService: ProviderCalendarFeatureService = {
 };
 
 /**
- * The shared calendar hook does not pass a range today and the sidecar already serves a bounded
- * window, so this only narrows an explicitly requested one.
+ * The sidecar already serves a bounded window, so this narrows it to the range the card asked for.
+ * A request reaching past the sidecar's own window simply returns what the sidecar holds.
  */
 function isWithinRequestedRange(
   event: ICloudEvent,

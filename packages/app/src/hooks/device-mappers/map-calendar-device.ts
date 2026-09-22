@@ -7,6 +7,12 @@ import {
   parseCalendarDate,
 } from '../entity-utils';
 
+/**
+ * Per-calendar ceiling. The card used to show at most a handful of upcoming events; a month grid
+ * needs every event in the window, so this is sized for a busy shared family calendar.
+ */
+const MAX_EVENTS_PER_CALENDAR_SOURCE = 200;
+
 type CalendarServiceEvent = Record<string, unknown>;
 type CalendarEntityLike = {
   state: string;
@@ -114,7 +120,7 @@ export function mapCalendarSources(
       const rightTime = right.startDate?.getTime() ?? Number.MAX_SAFE_INTEGER;
       return leftTime - rightTime;
     })
-    .slice(0, 5)
+    .slice(0, MAX_EVENTS_PER_CALENDAR_SOURCE)
     .map(({ startDate: _startDate, ...event }) => event);
 
   const accentColor =

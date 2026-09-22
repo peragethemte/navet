@@ -1,5 +1,11 @@
 import { useI18n } from '@navet/app/hooks';
 import { getLocaleForLanguage } from '@navet/app/i18n';
+import {
+  type CalendarDayOccurrence,
+  expandCalendarEventsByDay,
+  getCalendarEventDayRange,
+} from '@navet/core/calendar-agenda';
+import { parseLocalDateKey } from '@navet/core/calendar-dates';
 import { useMemo } from 'react';
 import type { CalendarEvent, CalendarEventGroup } from './types';
 
@@ -16,13 +22,19 @@ function formatMockTime(locale: string, hours: number, minutes = 0) {
   );
 }
 
+/**
+ * Group events under the day the household reads them on.
+ *
+ * The day comes from `getCalendarEventDayRange`, which reads timed events on the local clock and
+ * all-day events in UTC. Deriving the key from the event's own instant instead - as this did while
+ * it used `toISOString()` - filed anything between midnight and the UTC offset under the day before.
+ */
 function groupEventsByDay(events: CalendarEvent[]): CalendarEventGroup[] {
   const groups = new Map<string, CalendarEventGroup>();
 
   for (const event of events) {
-    const eventDate = event.sortKey ? new Date(event.sortKey) : null;
-    const isValidDate = eventDate && !Number.isNaN(eventDate.getTime());
-    const key = isValidDate ? eventDate.toISOString().slice(0, 10) : `unknown-${event.id}`;
+    const range = getCalendarEventDayRange(event);
+    const key = range ? range.firstDateKey : `unknown-${event.id}`;
 
     const existing = groups.get(key);
     if (existing) {
@@ -32,12 +44,29 @@ function groupEventsByDay(events: CalendarEvent[]): CalendarEventGroup[] {
 
     groups.set(key, {
       key,
-      date: isValidDate ? eventDate : null,
+      date: range ? parseLocalDateKey(range.firstDateKey) : null,
       events: [event],
     });
   }
 
   return Array.from(groups.values());
+}
+
+/**
+ * Events spread across every day they cover, for the views that render a day at a time.
+ *
+ * Kept apart from `useCalendarData` because the range depends on the card's own view mode, which
+ * `useCalendarCardSources` owns.
+ */
+export function useCalendarDayOccurrences(
+  events: CalendarEvent[],
+  rangeStartDateKey: string,
+  rangeEndDateKey: string
+): Map<string, CalendarDayOccurrence<CalendarEvent>[]> {
+  return useMemo(
+    () => expandCalendarEventsByDay(events, rangeStartDateKey, rangeEndDateKey),
+    [events, rangeEndDateKey, rangeStartDateKey]
+  );
 }
 
 export function useCalendarData(events?: CalendarEvent[]) {

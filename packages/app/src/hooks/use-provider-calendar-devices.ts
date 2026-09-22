@@ -5,7 +5,6 @@ import type {
   PlatformCalendarDevice,
   PlatformCalendarEvent,
 } from '@navet/app/platform/provider-feature-models';
-import { integrationCalendarFeatureService } from '@navet/app/services/integration-calendar-feature.service';
 import { settingsSelectors } from '@navet/app/stores/selectors';
 import { useSettingsStore } from '@navet/app/stores/settings-store';
 import type { IntegrationProviderId } from '@navet/app/types/provider';
@@ -13,6 +12,7 @@ import { UNKNOWN_ROOM_LABEL } from '@navet/app/utils/device-location';
 import { createProviderScopedId } from '@navet/app/utils/provider-ids';
 import { areStringArraysEqual } from '@navet/app/utils/structural-equality';
 import { useCallback, useMemo, useRef } from 'react';
+import { requestCalendarEvents, resolveCalendarFetchWindow } from './calendar-events-request';
 import { useIntegrationStore } from './use-integration-store';
 import {
   useHydratingProviderCollection,
@@ -28,6 +28,12 @@ const EMPTY_CALENDAR_EVENTS: Record<string, PlatformCalendarEvent[]> = {};
 const EMPTY_CALENDAR_DEVICES: PlatformCalendarDevice[] = [];
 const EMPTY_CALENDAR_ENTITY_IDS: string[] = [];
 const CALENDAR_ENTITY_PREFIXES = ['calendar.'] as const;
+
+/**
+ * Ceiling on the merged fallback list. High enough for a busy month grid, low enough that a
+ * misbehaving provider cannot hand the dashboard an unbounded array to diff and render.
+ */
+const MAX_AGGREGATE_CALENDAR_EVENTS = 500;
 
 function resolveEntityName(
   entityId: string,
@@ -107,11 +113,15 @@ export function useProviderCalendarDevices(
     [entityRegistry]
   );
   const loadEvents = useCallback(async () => {
+    // Resolved per refresh rather than memoised, so a panel left running rolls into the next month.
+    const window = resolveCalendarFetchWindow(new Date());
     const entries = await Promise.all(
       stableCalendarEntityIds.map(async (entityId) => {
-        const events = await integrationCalendarFeatureService
-          .getEvents(createProviderScopedId(resolvedProviderId, entityId))
-          .catch(() => []);
+        const events = await requestCalendarEvents(
+          createProviderScopedId(resolvedProviderId, entityId),
+          window,
+          CALENDAR_EVENTS_REFRESH_INTERVAL
+        );
         return [entityId, events] as const;
       })
     );
@@ -182,7 +192,7 @@ export function useProviderCalendarDevices(
         const rightKey = right.sortKey ?? right.startTime;
         return leftKey.localeCompare(rightKey);
       })
-      .slice(0, 12);
+      .slice(0, MAX_AGGREGATE_CALENDAR_EVENTS);
 
     return [
       {

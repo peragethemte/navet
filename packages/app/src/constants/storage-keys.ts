@@ -18,6 +18,7 @@ export const STORAGE_KEYS = {
   sensorCardIcons: 'navet-sensor-card-icons',
   calendarCardSources: 'navet-calendar-card-sources',
   calendarCardViewModes: 'navet-calendar-card-view-modes',
+  calendarCardDayCounts: 'navet-calendar-card-day-counts',
   calendarCardTintColors: 'navet-calendar-card-tint-colors',
   weatherCardTintColors: 'navet-weather-card-tint-colors',
   energySparklineCardSizes: 'navet-energy-sparkline-card-sizes',

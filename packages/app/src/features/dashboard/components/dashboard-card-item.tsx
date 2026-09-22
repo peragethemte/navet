@@ -735,7 +735,11 @@ function getAllowedSizes(
     case 'hvac':
       return ['small', 'medium', 'large'];
     case 'calendars':
-      return ['small', 'medium', 'large'];
+      // The month grid and the split agenda only work with real width, so the wide sizes are
+      // offered where a wide card belongs and withheld in the narrow zones.
+      return extraLargeAllowed
+        ? ['small', 'medium', 'large', 'extra-large', 'extra-wide']
+        : ['small', 'medium', 'large'];
     case 'weather':
       return ['small', 'medium', 'large'];
     case 'vacuums':

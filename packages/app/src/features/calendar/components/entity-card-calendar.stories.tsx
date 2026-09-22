@@ -72,7 +72,7 @@ const meta = {
   argTypes: {
     size: {
       control: 'inline-radio',
-      options: ['small', 'medium', 'large'],
+      options: ['small', 'medium', 'large', 'extra-large', 'extra-wide'],
     },
   },
   args: {
@@ -119,6 +119,18 @@ export const Medium: Story = {
 export const Large: Story = {
   args: {
     size: 'large',
+  },
+};
+
+export const ExtraLarge: Story = {
+  args: {
+    size: 'extra-large',
+  },
+};
+
+export const ExtraWide: Story = {
+  args: {
+    size: 'extra-wide',
   },
 };
 

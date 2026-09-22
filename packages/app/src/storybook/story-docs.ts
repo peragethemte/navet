@@ -663,6 +663,23 @@ const STORY_DOCS: Record<string, string> = {
       'Check that the card remains useful even when events are sparse or brief.',
     ]
   ),
+  'Cards/Entity/Calendar Views': doc(
+    'The multi-day agenda and the month grid the calendar card renders at its wider sizes.',
+    [
+      'How a chosen number of days is split between the near days and the rest of the range.',
+      'How a month grid degrades from titled chips to coloured dots as its cells narrow.',
+      'How an event spanning several days is carried across every day it covers.',
+    ],
+    [
+      'Use these stories when changing day density, chip content, or the month-cell breakpoint.',
+      'Review the narrow-cell month story before changing chip typography: it is the first layout to break.',
+    ],
+    [
+      'Check that today reads first and that an empty day still holds its place in the range.',
+      'Check that a carried-over event shows its direction at both ends of the span.',
+      'Check that the month grid stays legible with no events at all.',
+    ]
+  ),
   'Cards/Dialogs/Calendar': doc(
     'Settings dialog for calendar-card configuration, including selected sources and compact view behavior.',
     [
