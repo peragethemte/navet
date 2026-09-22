@@ -37,9 +37,12 @@ export const ZONE_DEFAULTS_BY_DEVICE_TYPE: Record<string, ZoneName> = {
   // Custom widget defaults
   photo: 'hero',
   rss: 'hero',
+  countdown: 'hero',
   note: 'status',
   battery: 'status',
   button: 'actions',
   assist: 'actions',
+  chores: 'actions',
+  homework: 'actions',
   presence: 'status',
 };

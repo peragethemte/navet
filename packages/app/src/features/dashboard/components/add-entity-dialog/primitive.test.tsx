@@ -1,7 +1,8 @@
 import { integrationStore } from '@navet/app/stores/integration-store';
+import { useSettingsStore } from '@navet/app/stores/settings-store';
 import { renderWithProviders } from '@navet/app/test/render';
 import { fireEvent, screen, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AddEntityDialogPrimitive } from './primitive';
 
 const demoLibraryCards = [
@@ -290,6 +291,46 @@ describe('AddEntityDialogPrimitive', () => {
       }),
       'small'
     );
+  });
+
+  afterEach(() => {
+    useSettingsStore.setState({ choresEnabled: true });
+  });
+
+  it('hides the chores and homework templates when chores are turned off', () => {
+    useSettingsStore.setState({ choresEnabled: false });
+
+    renderWithProviders(
+      <AddEntityDialogPrimitive
+        open
+        onClose={() => {}}
+        onAddCard={vi.fn()}
+        onAddLibraryCard={() => {}}
+        currentRoom="Kitchen"
+        libraryCards={demoLibraryCards}
+        showCardsTab={false}
+      />
+    );
+
+    expect(screen.queryByText('Chores')).not.toBeInTheDocument();
+    expect(screen.queryByText('Homework')).not.toBeInTheDocument();
+  });
+
+  it('offers the chores and homework templates while chores are on', () => {
+    renderWithProviders(
+      <AddEntityDialogPrimitive
+        open
+        onClose={() => {}}
+        onAddCard={vi.fn()}
+        onAddLibraryCard={() => {}}
+        currentRoom="Kitchen"
+        libraryCards={demoLibraryCards}
+        showCardsTab={false}
+      />
+    );
+
+    expect(screen.getByText('Chores')).toBeInTheDocument();
+    expect(screen.getByText('Homework')).toBeInTheDocument();
   });
 
   it('shows the energy metric template and maps it to an info card when added', () => {

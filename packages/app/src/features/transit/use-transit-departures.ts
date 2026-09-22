@@ -23,7 +23,11 @@ interface JourneyResult {
 }
 
 function occurrenceKey(occurrences: TransitJourneyOccurrence[]): string {
-  return occurrences.map((entry) => `${entry.journey.id}@${entry.arrival.toISOString()}`).join('|');
+  // The search time carries the identity: it rolls with the clock on a depart-after journey, which
+  // is exactly when the board has to ask again.
+  return occurrences
+    .map((entry) => `${entry.journey.id}@${entry.searchTime.toISOString()}`)
+    .join('|');
 }
 
 export function useTransitDepartures(alternatives: number) {
@@ -67,7 +71,7 @@ export function useTransitDepartures(alternatives: number) {
     void Promise.all(
       occurrences.map(async (entry) => {
         try {
-          const departures = await planJourney(entry.journey, entry.arrival, alternatives, {
+          const departures = await planJourney(entry.journey, entry.searchTime, alternatives, {
             signal: controller.signal,
           });
           return [entry.journey.id, { departures, errorKey: null }] as const;

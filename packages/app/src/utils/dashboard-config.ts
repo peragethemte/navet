@@ -1,4 +1,5 @@
 import type { CardSize } from '@navet/app/components/shared/card-size-selector';
+import { isBuiltInWallpaperToken } from '@navet/app/constants/built-in-wallpapers';
 import { DASHBOARD_CONFIG_VERSION } from '@navet/app/constants/dashboard-config-version';
 import { ALL_ROOMS_ID, HOME_WIDGET_ROOM, isAllRooms } from '@navet/app/constants/rooms';
 import { STORAGE_KEYS, STORE_STORAGE_KEYS } from '@navet/app/constants/storage-keys';
@@ -46,6 +47,7 @@ import { removeLocalStorageWithMigration } from '@navet/app/utils/local-storage-
 import { notifyPersistedStateChanged } from '@navet/app/utils/persisted-state-events';
 import { storage } from '@navet/app/utils/storage';
 import { sanitizeExternalUrl, sanitizeImageUrl } from '@navet/app/utils/url-security';
+import { isCountdownDateKey, isCountdownTimeValue } from '@navet/core/countdown';
 import {
   applySettingsPreferenceLayerToStore,
   isCredentialBearingSettingsUrl,
@@ -283,6 +285,10 @@ const cardTypes = new Set<CardType>([
   'button',
   'assist',
   'map',
+  'transit',
+  'countdown',
+  'chores',
+  'homework',
   'entity',
 ]);
 const cardSizes = new Set([
@@ -461,6 +467,33 @@ function sanitizeCustomCardData(
     });
   }
 
+  if (type === 'countdown') {
+    const baseUrl = typeof window !== 'undefined' ? window.location.href : undefined;
+    const rawBackground = stringValue(data.background, 2000);
+    const background = !rawBackground
+      ? undefined
+      : isBuiltInWallpaperToken(rawBackground)
+        ? rawBackground
+        : isCredentialBearingSettingsUrl(rawBackground)
+          ? undefined
+          : (sanitizeImageUrl(rawBackground, baseUrl) ?? undefined);
+    const targetDate = stringValue(data.targetDate, 10);
+    const targetTime = stringValue(data.targetTime, 5);
+
+    return omitUndefinedEntries({
+      title: stringValue(data.title, 80),
+      targetDate: isCountdownDateKey(targetDate) ? targetDate : undefined,
+      targetTime: isCountdownTimeValue(targetTime) ? targetTime : undefined,
+      precision:
+        data.precision === 'datetime' || data.precision === 'date' ? data.precision : undefined,
+      display: data.display === 'full' || data.display === 'days' ? data.display : undefined,
+      background,
+      tintColor: stringValue(data.tintColor, 40),
+      removeWhenFinished:
+        typeof data.removeWhenFinished === 'boolean' ? data.removeWhenFinished : undefined,
+    });
+  }
+
   if (type === 'photo') {
     const baseUrl = typeof window !== 'undefined' ? window.location.href : undefined;
     const photoUrls = Array.isArray(data.photoUrls)
@@ -596,6 +629,13 @@ function sanitizeCustomCardData(
         data.accentColor === 'emerald'
           ? data.accentColor
           : undefined,
+    });
+  }
+
+  if (type === 'chores' || type === 'homework') {
+    return omitUndefinedEntries({
+      participantId: stringValue(data.participantId, 120),
+      tintColor: stringValue(data.tintColor, 40),
     });
   }
 

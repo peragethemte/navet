@@ -13,17 +13,20 @@ const SCHOOL: TransitJourney = {
   name: 'Skolen',
   from: { id: 'NSR:StopPlace:2952', name: 'Sarpsborg bussterminal' },
   to: { id: 'NSR:StopPlace:2719', name: 'Greåker vgs.' },
-  arriveByMinute: 8 * 60 + 15,
+  timeMode: 'arriveBy',
+  targetMinute: 8 * 60 + 15,
   leadMinutes: 120,
   weekdays: [1, 2, 3, 4, 5],
 };
 
+// The journey home: the time is the earliest departure, not a deadline.
 const TRAINING: TransitJourney = {
   id: 'training',
-  name: 'Trening',
+  name: 'Hjem',
   from: { id: 'NSR:StopPlace:2545', name: 'Greåker' },
   to: { id: 'NSR:StopPlace:2952', name: 'Sarpsborg bussterminal' },
-  arriveByMinute: 17 * 60,
+  timeMode: 'departAfter',
+  targetMinute: 17 * 60,
   leadMinutes: 90,
   weekdays: [3],
 };
@@ -65,7 +68,8 @@ const SCHOOL_DEPARTURES = [
 function board(entries: Partial<TransitJourneyBoard>[]): TransitJourneyBoard[] {
   return entries.map((entry) => ({
     journey: SCHOOL,
-    arrival: new Date(2026, 8, 23, 8, 15),
+    target: new Date(2026, 8, 23, 8, 15),
+    searchTime: new Date(2026, 8, 23, 8, 15),
     active: true,
     departures: SCHOOL_DEPARTURES,
     isLoading: false,
@@ -114,7 +118,8 @@ function TransitStory({
           ? board([
               {
                 journey: TRAINING,
-                arrival: new Date(2026, 8, 24, 17, 0),
+                target: new Date(2026, 8, 24, 17, 0),
+                searchTime: new Date(2026, 8, 24, 17, 0),
                 active: false,
                 departures: SCHOOL_DEPARTURES.slice(0, 2),
               },
@@ -125,7 +130,14 @@ function TransitStory({
               ? board([{ departures: [], errorKey: 'transit.error.unavailable' }])
               : state === 'empty'
                 ? []
-                : board([{}, { journey: TRAINING, arrival: new Date(2026, 8, 23, 17, 0) }]);
+                : board([
+                    {},
+                    {
+                      journey: TRAINING,
+                      target: new Date(2026, 8, 23, 17, 0),
+                      searchTime: new Date(2026, 8, 23, 17, 0),
+                    },
+                  ]);
 
   return (
     <div style={{ width: size === 'small' ? 180 : 340, height: size === 'large' ? 360 : 180 }}>
@@ -158,7 +170,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Departure board for the journeys configured under Settings, Local services. Each journey is planned backwards from its arrival deadline, so the card answers whether the household gets there on time.',
+          'Departure board for the journeys configured under Settings, Local services. A journey is planned either backwards from an arrival deadline, so the card answers whether the household gets there on time, or forwards from the earliest departure for the trip home.',
       },
     },
   },

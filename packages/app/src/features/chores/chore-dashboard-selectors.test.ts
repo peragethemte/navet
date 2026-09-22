@@ -2,6 +2,7 @@ import { createChoreExperienceState } from '@navet/core/chore-experience';
 import type { ChoreDefinition, ChoreOccurrence, ChoreWorkspaceData } from '@navet/core/chores';
 import { describe, expect, it } from 'vitest';
 import {
+  getHouseholdTodayOccurrences,
   getHousePulse,
   getMissionProgressList,
   getParticipantPointHistory,
@@ -108,6 +109,39 @@ function workspace(): ChoreWorkspaceData {
     experience,
   };
 }
+
+function homeworkWorkspace(): ChoreWorkspaceData {
+  const data = workspace();
+  data.definitionsById.reading = {
+    ...definition('reading', 'Kitchen'),
+    kind: 'homework',
+    roomRef: undefined,
+  };
+  data.occurrencesById.reading = occurrence('reading', 'reading', 'available');
+  return data;
+}
+
+describe('homework in the shared today selectors', () => {
+  it('keeps homework in Today by default, matching the Household tab', () => {
+    expect(
+      getHouseholdTodayOccurrences(homeworkWorkspace(), now).map((entry) => entry.definitionId)
+    ).toContain('reading');
+  });
+
+  it('leaves homework out when a surface renders it on its own card', () => {
+    const data = homeworkWorkspace();
+    expect(
+      getHouseholdTodayOccurrences(data, now, { includeHomework: false }).map(
+        (entry) => entry.definitionId
+      )
+    ).not.toContain('reading');
+    expect(
+      getTodayChoresForParticipant(data, 'maya', now, { includeHomework: false }).map(
+        (entry) => entry.definitionId
+      )
+    ).not.toContain('reading');
+  });
+});
 
 describe('chore dashboard selectors', () => {
   it('builds a real household pulse from current task state', () => {

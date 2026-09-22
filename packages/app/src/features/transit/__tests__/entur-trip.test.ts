@@ -12,7 +12,8 @@ const journey: TransitJourney = {
   name: 'School',
   from: { id: 'NSR:StopPlace:2952', name: 'Sarpsborg bussterminal' },
   to: { id: 'NSR:StopPlace:2719', name: 'Greåker vgs.' },
-  arriveByMinute: 8 * 60 + 15,
+  timeMode: 'arriveBy',
+  targetMinute: 8 * 60 + 15,
   leadMinutes: 120,
   weekdays: [1, 2, 3, 4, 5],
 };
@@ -54,8 +55,9 @@ describe('ENTUR_TRIP_QUERY', () => {
     expect(ENTUR_TRIP_QUERY).toContain('egressMode: foot');
   });
 
-  it('asks for an arrive-by plan', () => {
-    expect(ENTUR_TRIP_QUERY).toContain('arriveBy: true');
+  it('takes the plan direction as a variable', () => {
+    expect(ENTUR_TRIP_QUERY).toContain('$arriveBy: Boolean!');
+    expect(ENTUR_TRIP_QUERY).toContain('arriveBy: $arriveBy');
   });
 });
 
@@ -66,8 +68,19 @@ describe('buildTripVariables', () => {
       from: { place: 'NSR:StopPlace:2952' },
       to: { place: 'NSR:StopPlace:2719' },
       dateTime: '2026-09-23T06:15:00.000Z',
+      arriveBy: true,
       numTripPatterns: 3,
     });
+  });
+
+  it('plans forward for a depart-after journey', () => {
+    const variables = buildTripVariables(
+      { ...journey, timeMode: 'departAfter', targetMinute: 16 * 60 },
+      new Date('2026-09-23T16:00:00+02:00'),
+      3
+    );
+    expect(variables.arriveBy).toBe(false);
+    expect(variables.dateTime).toBe('2026-09-23T14:00:00.000Z');
   });
 });
 

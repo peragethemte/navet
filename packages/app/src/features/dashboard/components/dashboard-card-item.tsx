@@ -694,7 +694,10 @@ function getAllowedSizes(
     if (card.type === 'button' || card.type === 'assist') {
       return ['tiny', 'extra-small', 'small'];
     }
-    if (extraLargeAllowed && (card.type === 'photo' || card.type === 'rss')) {
+    if (
+      extraLargeAllowed &&
+      (card.type === 'photo' || card.type === 'rss' || card.type === 'countdown')
+    ) {
       return ['small', 'medium', 'large', 'extra-large'];
     }
     if (card.type === 'energy-now' || card.type === 'media-stack') {
@@ -816,6 +819,10 @@ function supportsCustomCardEditModeSettingsDock(card?: CustomCard) {
     'media-stack',
     'button',
     'assist',
+    'transit',
+    'countdown',
+    'chores',
+    'homework',
   ].includes(card.type);
 }
 

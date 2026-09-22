@@ -18,10 +18,6 @@ import { TasksSection } from '@navet/app/features/tasks/components/tasks-section
 import { useI18n } from '@navet/app/hooks';
 import { isHomeAssistantPanelMode } from '@navet/app/runtime/app-mode';
 import {
-  type ChoreRuntimeCapabilities,
-  getChoreWorkspaceTransport,
-} from '@navet/app/services/chore-workspace.service';
-import {
   publishIntegrationChoreProjection,
   subscribeIntegrationChoreActionRequests,
 } from '@navet/app/services/integration-chore-projection.service';
@@ -53,9 +49,10 @@ import {
 } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { createHomeworkId, excludeHomework } from '../chore-homework-selectors';
-import { getChoreMaterializationRange, materializeChoreWorkspace } from '../chore-workspace-model';
+import { getChoreMaterializationRange } from '../chore-workspace-model';
 import { useChoreWorkspaceStore } from '../chore-workspace-store';
 import { useChoreHomeworkRetention } from '../use-chore-homework-retention';
+import { useChoreMaterialization } from '../use-chore-materialization';
 import { useChoreReminderDelivery } from '../use-chore-reminder-delivery';
 import { useChoreWorkspaceSync } from '../use-chore-workspace-sync';
 import { ChoreDataRecovery } from './chore-data-recovery';
@@ -294,25 +291,15 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
     () => integrationStore.getState().roomDescriptors,
     () => integrationStore.getState().roomDescriptors
   );
-  const [runtimeCapabilities, setRuntimeCapabilities] = useState<ChoreRuntimeCapabilities | null>(
-    null
-  );
-
-  useEffect(() => {
-    if (!syncEnabled) return;
-    let active = true;
-    void getChoreWorkspaceTransport()
-      .loadCapabilities()
-      .then((capabilities) => {
-        if (active) setRuntimeCapabilities(capabilities);
-      });
-    return () => {
-      active = false;
-    };
-  }, [syncEnabled]);
+  // The homework board writes one definition per entry; hold materialization so a burst of entries
+  // costs one pass instead of one per entry.
+  const homeworkBatchRef = useRef(false);
+  const { runtimeCapabilities } = useChoreMaterialization({
+    enabled: syncEnabled,
+    paused: homeworkBatchRef.current,
+  });
 
   const panelAuthority = isHomeAssistantPanelMode();
-  const authoritySchedules = panelAuthority || runtimeCapabilities?.backgroundScheduling === true;
   const authorityDeliversNotifications =
     panelAuthority || runtimeCapabilities?.backgroundNotifications === true;
   const authorityPublishesProjection =
@@ -373,10 +360,6 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
     };
   }, [authorityHandlesActions, execute, syncEnabled]);
 
-  // The homework board writes one definition per entry; hold the auto-materialize effect so a
-  // burst of entries costs one materialization instead of one per entry.
-  const homeworkBatchRef = useRef(false);
-
   const allParticipants = useMemo(() => (data ? Object.values(data.participantsById) : []), [data]);
   const participants = useMemo(
     () => allParticipants.filter((participant) => !participant.pausedAt),
@@ -391,22 +374,6 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
       setSelectedParticipantId('all');
     }
   }, [participants, selectedParticipantId]);
-
-  useEffect(() => {
-    if (
-      !syncEnabled ||
-      authoritySchedules ||
-      homeworkBatchRef.current ||
-      status !== 'ready' ||
-      !data ||
-      Object.keys(data.definitionsById).length === 0
-    ) {
-      return;
-    }
-    const materialized = materializeChoreWorkspace(data);
-    if (!materialized.changed) return;
-    void execute({ type: 'materialize_occurrences', ...getChoreMaterializationRange() });
-  }, [authoritySchedules, data, execute, status, syncEnabled]);
 
   const managerActorId =
     participants.find(

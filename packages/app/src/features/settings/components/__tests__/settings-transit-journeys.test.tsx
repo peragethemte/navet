@@ -80,7 +80,8 @@ describe('SettingsTransitJourneys', () => {
     expect(journey?.name).toBe('School');
     expect(journey?.from.id).toBe('NSR:StopPlace:2952');
     expect(journey?.to.id).toBe('NSR:StopPlace:2719');
-    expect(journey?.arriveByMinute).toBe(480);
+    expect(journey?.timeMode).toBe('arriveBy');
+    expect(journey?.targetMinute).toBe(480);
     expect(journey?.weekdays).toEqual([1, 2, 3, 4, 5]);
   });
 
@@ -129,7 +130,8 @@ describe('SettingsTransitJourneys', () => {
             name: 'School',
             from: { id: 'NSR:StopPlace:2952', name: 'Sarpsborg bussterminal' },
             to: { id: 'NSR:StopPlace:2719', name: 'Greåker vgs.' },
-            arriveByMinute: 495,
+            timeMode: 'arriveBy',
+            targetMinute: 495,
             leadMinutes: 120,
             weekdays: [1, 2, 3, 4, 5],
           },
@@ -145,6 +147,35 @@ describe('SettingsTransitJourneys', () => {
     );
   });
 
+  it('switches a journey to depart after and relabels its time', async () => {
+    act(() => {
+      useSettingsStore.getState().updateSettings({
+        transitJourneys: [
+          {
+            id: 'home',
+            name: 'Home',
+            from: { id: 'NSR:StopPlace:2719', name: 'Greåker vgs.' },
+            to: { id: 'NSR:StopPlace:2952', name: 'Sarpsborg bussterminal' },
+            timeMode: 'arriveBy',
+            targetMinute: 960,
+            leadMinutes: 120,
+            weekdays: [1],
+          },
+        ],
+      });
+    });
+    renderWithProviders(<TestBlock />);
+
+    expect(screen.getByLabelText('Arrive by')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Depart after' }));
+
+    await waitFor(() =>
+      expect(useSettingsStore.getState().transitJourneys[0]?.timeMode).toBe('departAfter')
+    );
+    expect(screen.getByLabelText('Depart after')).toBeInTheDocument();
+    expect(useSettingsStore.getState().transitJourneys[0]?.targetMinute).toBe(960);
+  });
+
   it('removes a journey', async () => {
     act(() => {
       useSettingsStore.getState().updateSettings({
@@ -154,7 +185,8 @@ describe('SettingsTransitJourneys', () => {
             name: 'School',
             from: { id: 'NSR:StopPlace:2952', name: 'Sarpsborg bussterminal' },
             to: { id: 'NSR:StopPlace:2719', name: 'Greåker vgs.' },
-            arriveByMinute: 495,
+            timeMode: 'arriveBy',
+            targetMinute: 495,
             leadMinutes: 120,
             weekdays: [1],
           },

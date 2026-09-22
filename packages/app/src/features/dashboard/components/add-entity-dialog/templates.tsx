@@ -1,5 +1,14 @@
 import type { TranslateFn } from '@navet/app/hooks';
-import { BusFront, Zap as EnergyIcon, Gauge, MessageCircle, Sparkles } from 'lucide-react';
+import {
+  BusFront,
+  Zap as EnergyIcon,
+  Gauge,
+  GraduationCap,
+  Hourglass,
+  ListChecks,
+  MessageCircle,
+  Sparkles,
+} from 'lucide-react';
 import type { SVGProps } from 'react';
 import type { ButtonWidgetData } from '../widgets/button-widget';
 import type { CardTemplate } from './types';
@@ -162,6 +171,33 @@ export function createCardTemplates(t: TranslateFn): CardTemplate[] {
       icon: <BusFront className="w-5 h-5" />,
       defaultSize: 'medium',
       supportedSizes: ['small', 'medium', 'large'],
+    },
+    {
+      id: 'chores',
+      cardType: 'chores',
+      nameKey: 'dashboard.addCard.templates.chores.name',
+      descriptionKey: 'dashboard.addCard.templates.chores.description',
+      icon: <ListChecks className="w-5 h-5" />,
+      defaultSize: 'medium',
+      supportedSizes: ['small', 'medium', 'large'],
+    },
+    {
+      id: 'homework',
+      cardType: 'homework',
+      nameKey: 'dashboard.addCard.templates.homework.name',
+      descriptionKey: 'dashboard.addCard.templates.homework.description',
+      icon: <GraduationCap className="w-5 h-5" />,
+      defaultSize: 'medium',
+      supportedSizes: ['small', 'medium', 'large'],
+    },
+    {
+      id: 'countdown',
+      cardType: 'countdown',
+      nameKey: 'dashboard.addCard.templates.countdown.name',
+      descriptionKey: 'dashboard.addCard.templates.countdown.description',
+      icon: <Hourglass className="w-5 h-5" />,
+      defaultSize: 'medium',
+      supportedSizes: ['small', 'medium', 'large', 'extra-large'],
     },
     {
       id: 'photo',

@@ -310,6 +310,96 @@ describe('dashboard-config import hardening', () => {
     ]);
   });
 
+  it('keeps a countdown card and drops an unsafe background through an import', () => {
+    importDashboardConfig({
+      ...baseConfig,
+      customCards: [
+        {
+          id: 'custom-countdown-builtin',
+          type: 'countdown',
+          size: 'large',
+          room: 'Kitchen',
+          createdAt: 1,
+          data: {
+            title: 'Summer holiday',
+            targetDate: '2027-06-20',
+            targetTime: '09:30',
+            precision: 'datetime',
+            display: 'full',
+            background: 'builtin:nocturne-01',
+            removeWhenFinished: false,
+            injected: { nested: true },
+          },
+        },
+        {
+          id: 'custom-countdown-unsafe',
+          type: 'countdown',
+          size: 'medium',
+          room: 'Kitchen',
+          createdAt: 2,
+          data: {
+            targetDate: '2027-02-30',
+            targetTime: '99:99',
+            display: 'hourly',
+            background: 'javascript:alert(1)',
+          },
+        },
+      ],
+    });
+
+    expect(useCustomCardsStore.getState().cards).toEqual([
+      expect.objectContaining({
+        id: 'custom-countdown-builtin',
+        type: 'countdown',
+        data: {
+          title: 'Summer holiday',
+          targetDate: '2027-06-20',
+          targetTime: '09:30',
+          precision: 'datetime',
+          display: 'full',
+          background: 'builtin:nocturne-01',
+          removeWhenFinished: false,
+        },
+      }),
+      expect.objectContaining({ id: 'custom-countdown-unsafe', type: 'countdown', data: {} }),
+    ]);
+  });
+
+  it('keeps transit, chores and homework cards through an import', () => {
+    importDashboardConfig({
+      ...baseConfig,
+      customCards: [
+        { id: 'custom-transit', type: 'transit', size: 'medium', room: 'Kitchen', createdAt: 1 },
+        {
+          id: 'custom-chores',
+          type: 'chores',
+          size: 'medium',
+          room: 'Kitchen',
+          createdAt: 2,
+          data: { participantId: 'person:1', tintColor: '#123456', injected: { nested: true } },
+        },
+        {
+          id: 'custom-homework',
+          type: 'homework',
+          size: 'large',
+          room: 'Kitchen',
+          createdAt: 3,
+          data: { participantId: 42 },
+        },
+      ],
+    });
+
+    expect(useCustomCardsStore.getState().cards).toEqual([
+      expect.objectContaining({ id: 'custom-transit', type: 'transit' }),
+      expect.objectContaining({
+        id: 'custom-chores',
+        type: 'chores',
+        data: { participantId: 'person:1', tintColor: '#123456' },
+      }),
+      expect.objectContaining({ id: 'custom-homework', type: 'homework', data: {} }),
+    ]);
+  });
+
   it('exports home dashboard layout without the persisted storage wrapper', () => {
     useHomeDashboardLayoutStore.getState().replaceLayout({
       mode: 'flow',

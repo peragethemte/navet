@@ -2,7 +2,8 @@ import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { getThemeColorValue } from '@navet/app/components/shared/theme/theme-colors';
 import { useI18n, useTheme } from '@navet/app/hooks';
 import { useIntegrationStore } from '@navet/app/hooks/use-integration-store';
-import { integrationSelectors } from '@navet/app/stores/selectors';
+import { integrationSelectors, settingsSelectors } from '@navet/app/stores/selectors';
+import { useSettingsStore } from '@navet/app/stores/settings-store';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { DashboardLibraryCard, DashboardLibraryEntityType } from '../dashboard-library-list';
 import { createCardTemplates } from './templates';
@@ -42,6 +43,7 @@ export function AddEntityDialogPrimitive({
   const { theme, primaryColor } = useTheme();
   const providerSessions = useIntegrationStore(integrationSelectors.providerSessions);
   const hasHomeAssistantSession = Boolean(providerSessions.home_assistant);
+  const choresEnabled = useSettingsStore(settingsSelectors.choresEnabled);
   const [activeTab, setActiveTab] = useState<'cards' | 'widgets'>(
     showCardsTab || libraryOnly ? 'cards' : 'widgets'
   );
@@ -65,14 +67,19 @@ export function AddEntityDialogPrimitive({
     const providerEligibleTemplates = hasHomeAssistantSession
       ? templates
       : templates.filter((template) => template.id !== 'assist');
+    const featureEligibleTemplates = choresEnabled
+      ? providerEligibleTemplates
+      : providerEligibleTemplates.filter(
+          (template) => template.id !== 'chores' && template.id !== 'homework'
+        );
     const visibleTemplates = allowedIds
-      ? providerEligibleTemplates.filter((template) => allowedIds.has(template.id))
-      : providerEligibleTemplates;
+      ? featureEligibleTemplates.filter((template) => allowedIds.has(template.id))
+      : featureEligibleTemplates;
 
     return visibleTemplates.sort((left, right) =>
       t(left.nameKey).localeCompare(t(right.nameKey), locale)
     );
-  }, [allowedTemplateIds, hasHomeAssistantSession, libraryOnly, locale, t]);
+  }, [allowedTemplateIds, choresEnabled, hasHomeAssistantSession, libraryOnly, locale, t]);
 
   useEffect(() => {
     if (!open) {

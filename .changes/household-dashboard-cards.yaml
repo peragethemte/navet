@@ -1,0 +1,6 @@
+type: new
+audiences:
+  - standalone
+  - home-assistant
+  - docs
+summary: Chores and Homework are now dashboard cards. Add either from the widget chooser, point it at one person or the whole household, and tick items off without leaving Home.

@@ -1,0 +1,6 @@
+type: new
+audiences:
+  - standalone
+  - home-assistant
+  - docs
+summary: A Countdown widget counts down to a date you pick, as whole days or days down to seconds, over a background image or card colour, and clears itself once the day is over.

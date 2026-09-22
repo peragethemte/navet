@@ -99,6 +99,52 @@ describe('normalizeCustomCard', () => {
     ).toBe('large');
   });
 
+  it('clamps an out-of-range countdown card to medium', () => {
+    expect(
+      normalizeCustomCard(
+        buildCard({
+          id: 'custom-countdown',
+          type: 'countdown',
+          size: 'extra-wide',
+        })
+      ).size
+    ).toBe('medium');
+  });
+
+  it('keeps a countdown card at extra-large, which it lays out on purpose', () => {
+    expect(
+      normalizeCustomCard(
+        buildCard({
+          id: 'custom-countdown',
+          type: 'countdown',
+          size: 'extra-large',
+        })
+      ).size
+    ).toBe('extra-large');
+  });
+
+  it('clamps oversized chores and homework cards to medium', () => {
+    expect(
+      normalizeCustomCard(buildCard({ id: 'custom-chores', type: 'chores', size: 'extra-wide' }))
+        .size
+    ).toBe('medium');
+    expect(
+      normalizeCustomCard(
+        buildCard({ id: 'custom-homework', type: 'homework', size: 'extra-small' })
+      ).size
+    ).toBe('medium');
+  });
+
+  it('keeps supported chores and homework card sizes', () => {
+    expect(
+      normalizeCustomCard(buildCard({ id: 'custom-chores', type: 'chores', size: 'small' })).size
+    ).toBe('small');
+    expect(
+      normalizeCustomCard(buildCard({ id: 'custom-homework', type: 'homework', size: 'large' }))
+        .size
+    ).toBe('large');
+  });
+
   it('normalizes persisted media stack card data', () => {
     expect(
       normalizeCustomCard(

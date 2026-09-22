@@ -38,11 +38,17 @@ function createDraft(): TransitJourney {
     name: '',
     from: { id: '', name: '' },
     to: { id: '', name: '' },
-    arriveByMinute: 8 * 60,
+    timeMode: 'arriveBy',
+    targetMinute: 8 * 60,
     leadMinutes: TRANSIT_LEAD_MINUTES_DEFAULT,
     weekdays: DEFAULT_WEEKDAYS,
   };
 }
+
+const TIME_MODES = [
+  { mode: 'arriveBy', labelKey: 'settings.local.transit.arriveBy' },
+  { mode: 'departAfter', labelKey: 'settings.local.transit.departAfter' },
+] as const;
 
 function isComplete(journey: TransitJourney): boolean {
   return journey.from.id.length > 0 && journey.to.id.length > 0 && journey.weekdays.length > 0;
@@ -84,6 +90,41 @@ function Field({
       </label>
       {children}
     </div>
+  );
+}
+
+/** The pill shared by the timing modes and the weekday picker. */
+function ChipButton({
+  active,
+  ariaLabel,
+  className,
+  children,
+  styles,
+  onClick,
+}: {
+  active: boolean;
+  ariaLabel?: string;
+  className?: string;
+  children: ReactNode;
+  styles: SettingsSectionStyles;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      aria-label={ariaLabel}
+      className={cn(
+        'h-9 min-w-11 rounded-full border px-3 text-sm transition-colors',
+        active
+          ? cn('border-transparent font-medium', styles.floatingButtonBg, styles.floatingButtonText)
+          : cn(styles.borderColor, styles.chipTextColor, styles.chipHoverBg),
+        className
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -200,7 +241,11 @@ function JourneyEditor({
 }) {
   const { t, locale } = useI18n();
   const weekdays = useWeekdayLabels(locale);
-  const [timeDraft, setTimeDraft] = useState(() => formatClockTime(journey.arriveByMinute));
+  const [timeDraft, setTimeDraft] = useState(() => formatClockTime(journey.targetMinute));
+  const timeLabelKey =
+    journey.timeMode === 'departAfter'
+      ? 'settings.local.transit.departAfter'
+      : 'settings.local.transit.arriveBy';
 
   const toggleWeekday = (day: number) => {
     const next = journey.weekdays.includes(day)
@@ -256,14 +301,30 @@ function JourneyEditor({
         />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Field
-          id={`${journey.id}-arrive-by`}
-          label={t('settings.local.transit.arriveBy')}
-          styles={styles}
+      <div className="grid gap-1.5">
+        <span
+          className={cn('px-1', navetTypographyTokens.caption, 'font-medium', styles.subtleColor)}
         >
+          {t('settings.local.transit.timing')}
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {TIME_MODES.map(({ mode, labelKey }) => (
+            <ChipButton
+              key={mode}
+              active={journey.timeMode === mode}
+              styles={styles}
+              onClick={() => onChange({ ...journey, timeMode: mode })}
+            >
+              {t(labelKey)}
+            </ChipButton>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field id={`${journey.id}-target`} label={t(timeLabelKey)} styles={styles}>
           <Input
-            id={`${journey.id}-arrive-by`}
+            id={`${journey.id}-target`}
             type="time"
             value={timeDraft}
             onChange={(event) => {
@@ -271,7 +332,7 @@ function JourneyEditor({
               setTimeDraft(next);
               const parsed = parseClockTime(next);
               if (parsed !== null) {
-                onChange({ ...journey, arriveByMinute: parsed });
+                onChange({ ...journey, targetMinute: parsed });
               }
             }}
           />
@@ -298,30 +359,18 @@ function JourneyEditor({
           {t('settings.local.transit.days')}
         </span>
         <div className="flex flex-wrap gap-1.5">
-          {weekdays.map(({ day, short, long }) => {
-            const active = journey.weekdays.includes(day);
-            return (
-              <button
-                key={day}
-                type="button"
-                aria-pressed={active}
-                aria-label={long}
-                className={cn(
-                  'h-9 min-w-11 rounded-full border px-3 text-sm capitalize transition-colors',
-                  active
-                    ? cn(
-                        'border-transparent font-medium',
-                        styles.floatingButtonBg,
-                        styles.floatingButtonText
-                      )
-                    : cn(styles.borderColor, styles.chipTextColor, styles.chipHoverBg)
-                )}
-                onClick={() => toggleWeekday(day)}
-              >
-                {short}
-              </button>
-            );
-          })}
+          {weekdays.map(({ day, short, long }) => (
+            <ChipButton
+              key={day}
+              active={journey.weekdays.includes(day)}
+              ariaLabel={long}
+              className="capitalize"
+              styles={styles}
+              onClick={() => toggleWeekday(day)}
+            >
+              {short}
+            </ChipButton>
+          ))}
         </div>
       </div>
 
