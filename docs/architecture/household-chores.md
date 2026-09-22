@@ -24,6 +24,15 @@ same model. Rotation can preserve its cursor indefinitely or reset within a week
 Occurrence IDs are deterministic from definition, scheduled instant, and assignment slot so repeated
 materialization preserves completed state.
 
+`ChoreDefinition.kind` separates ordinary chores from homework. Homework is a fixed shape: a `once`
+schedule at local midnight with a 1439-minute due window, `person` assignment to exactly one
+participant, no approval, claim, missed, or reminder policy, and no room. It therefore reads as due
+for its whole local day and overdue once that day ends. The authoring window is fixed at today plus
+nine days, and the browser removes homework definitions more than 90 days past their date, matching
+the occurrence retention boundary. The field is optional and validated permissively, so a kind an
+older client does not recognise is treated as an ordinary chore rather than invalidating the
+workspace.
+
 Assignment modes are:
 
 - `person`: one selected active participant
@@ -164,7 +173,9 @@ The workspace's versioned experience state owns the optional `off`, `light`, `fa
 `adventure` presentation modes, per-chore time/point/child labels, optional icon and colour
 overrides, missions, reward goals, and earned participant balances. Without an override, the UI
 uses a stable hash of the chore definition ID to choose from twelve non-semantic card palettes;
-category, icon, and dashboard accent do not affect that choice. Overdue red and completed green
+category, icon, and dashboard accent do not affect that choice. Homework hashes the assigned
+participant instead, because every homework entry is a new definition ID and hashing those would
+scatter one person's homework across the whole palette. Overdue red and completed green
 remain semantic UI state and take priority over presentation metadata. Stored colour overrides are
 validated six-digit hex values and travel with the versioned experience document and chores backup.
 

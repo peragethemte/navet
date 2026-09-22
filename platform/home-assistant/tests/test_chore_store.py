@@ -304,6 +304,7 @@ class ChoreAuthorityTests(unittest.IsolatedAsyncioTestCase):
                 actual = [
                     {
                         "scheduledAt": occurrence["scheduledAt"],
+                        "dueAt": occurrence["dueAt"],
                         "assigneeIds": occurrence["assigneeIds"],
                     }
                     for occurrence in sorted(

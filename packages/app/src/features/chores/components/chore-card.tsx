@@ -33,7 +33,7 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
-import { resolveChoreColorPalette } from '../chore-color-palette';
+import { getChorePaletteKey, resolveChoreColorPalette } from '../chore-color-palette';
 import { ChoreBaseCard } from './chore-base-card';
 import { resolveChoreIconComponent } from './chore-icon';
 import { ChorePointsToken } from './chore-points-token';
@@ -321,8 +321,11 @@ export function ChoreFocusCard({
     occurrence.status === 'missed' ? occurrenceScheduleLabel(occurrence, now, i18n) : undefined;
   const completed = occurrence.status === 'done';
   const title = childMode && presentation?.childTitle ? presentation.childTitle : definition.title;
-  const ChoreIcon = resolveChoreIconComponent(presentation?.icon);
-  const choreGradient = resolveChoreColorPalette(definition.id, presentation?.color);
+  const ChoreIcon = resolveChoreIconComponent(presentation?.icon ?? definition.icon);
+  const choreGradient = resolveChoreColorPalette(
+    getChorePaletteKey(definition),
+    presentation?.color
+  );
   const stateGradient = completed
     ? { primary: themeColorValues.green, secondary: themeColorValues.teal }
     : status.tone === 'danger'

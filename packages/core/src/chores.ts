@@ -146,8 +146,12 @@ export interface ChoreApprovalPolicy {
   approverIds: string[];
 }
 
+export type ChoreDefinitionKind = 'chore' | 'homework';
+
 export interface ChoreDefinition {
   id: string;
+  /** Absent means an ordinary recurring chore. */
+  kind?: ChoreDefinitionKind;
   title: string;
   description?: string;
   icon?: string;
@@ -688,6 +692,8 @@ function isChoreDefinition(value: unknown, expectedId: string) {
     value.title.trim().length > 0 &&
     (value.description === undefined || typeof value.description === 'string') &&
     (value.icon === undefined || typeof value.icon === 'string') &&
+    // Kept open on purpose: an unknown kind must not invalidate the whole workspace.
+    (value.kind === undefined || typeof value.kind === 'string') &&
     (value.roomRef === undefined ||
       (isRecord(value.roomRef) &&
         typeof value.roomRef.canonicalId === 'string' &&
@@ -1031,6 +1037,10 @@ export function createChoreOutboxItem(activity: ChoreActivity): ChoreOutboxItem 
   };
 }
 
+export function isHomeworkDefinition(definition: Pick<ChoreDefinition, 'kind'>) {
+  return definition.kind === 'homework';
+}
+
 export function getChoreTiming(occurrence: ChoreOccurrence, now = new Date()): ChoreTiming {
   const nowTime = now.getTime();
   if (nowTime < new Date(occurrence.scheduledAt).getTime()) {
@@ -1082,6 +1092,10 @@ export function materializeChoreOccurrences({
       !schedule.excludedDates?.includes(nextDate)
     ) {
       scheduledDates.push(nextDate);
+    }
+  } else if (schedule.frequency === 'once') {
+    if (schedule.date <= finalDateKey && isScheduledOnDate(schedule, schedule.date)) {
+      scheduledDates.push(schedule.date);
     }
   } else {
     while (dateKey <= finalDateKey) {

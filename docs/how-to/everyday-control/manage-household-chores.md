@@ -31,6 +31,26 @@ keeping the chore and its history. Choose **Archive** when the definition should
 library; archived chores can be restored later. Deleting a chore stops future reminders but
 preserves completed history.
 
+## Set homework for the next 10 days
+
+Homework is a single line of text for one person on one day, so it does not need the chore steps.
+
+1. Open **Household → Homework**.
+2. Choose the person in the list on the left. On a small screen, choose them in the row across the
+   top.
+3. Find the day you need. The board always shows today and the next nine days.
+4. Choose **Add homework** on that day, type the homework, and press **Enter**. The field stays
+   open, so you can add several lines for the same day without leaving the keyboard.
+5. Select the text of an entry to change it, or choose the bin icon to remove it.
+
+The person ticks homework off in **Today**, next to their chores. Homework uses a graduation-cap
+icon and one colour per person so it is easy to pick out. It stays due for the whole day and turns
+overdue after midnight. Anything still unfinished from an earlier day is grouped above today so it
+can be finished or removed.
+
+To move homework to another day, remove it and add it again on the right day. Homework you set is
+kept for 90 days and then removed automatically.
+
 ## Review progress without ranking people
 
 1. Open **Progress**.

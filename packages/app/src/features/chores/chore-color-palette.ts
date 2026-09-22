@@ -36,6 +36,20 @@ function hashChoreId(choreId: string) {
   return hash >>> 0;
 }
 
+/**
+ * Homework is a fresh definition per item, so hashing its id would scatter one person's homework
+ * across the whole palette. Key it on the assignee instead so each person keeps one colour.
+ */
+export function getChorePaletteKey(definition: {
+  id: string;
+  kind?: string;
+  assignment: { participantIds: string[] };
+}) {
+  return definition.kind === 'homework'
+    ? `homework:${definition.assignment.participantIds[0] ?? 'shared'}`
+    : definition.id;
+}
+
 export function resolveChoreColorPalette(
   choreId: string,
   overrideColor?: string

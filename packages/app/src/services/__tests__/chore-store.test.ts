@@ -218,10 +218,13 @@ describe('NJS chore workspace store', () => {
         undefined
       );
       expect(
-        occurrences.map((occurrence: { scheduledAt: string; assigneeIds: string[] }) => ({
-          scheduledAt: occurrence.scheduledAt,
-          assigneeIds: occurrence.assigneeIds,
-        }))
+        occurrences.map(
+          (occurrence: { scheduledAt: string; dueAt: string; assigneeIds: string[] }) => ({
+            scheduledAt: occurrence.scheduledAt,
+            dueAt: occurrence.dueAt,
+            assigneeIds: occurrence.assigneeIds,
+          })
+        )
       ).toEqual(vector.expected);
     });
   }

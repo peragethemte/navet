@@ -73,6 +73,7 @@ export const TEST_TIERS = {
       'packages/app/src/utils/__tests__/vite-host-runtime.test.ts',
       'packages/app/src/utils/__tests__/vite-public-resource-request.test.ts',
       'packages/app/src/utils/__tests__/vite-rss-proxy.test.ts',
+      'packages/core/src/chore-homework.test.ts',
       'packages/core/src/chore-interchange.test.ts',
       'packages/core/src/chore-conformance.test.ts',
       'packages/core/src/chores.test.ts',
