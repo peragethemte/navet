@@ -1,3 +1,4 @@
+import { ensureCanonicalEntityId } from '@navet/app/utils/provider-entity-id';
 import { describe, expect, it } from 'vitest';
 import {
   createDashboardDefinition,
@@ -46,6 +47,56 @@ describe('dashboard collection contract', () => {
     });
     expect(collection.dashboardsById.home.homeCustomCards).toHaveLength(1);
     expect(collection.dashboardsById.home.homeRoomNames).toBeNull();
+  });
+
+  it('keeps valid free card spans on known cards and drops the rest', () => {
+    const home = createDashboardDefinition({ id: 'home', name: 'Home' });
+    const collection = sanitizeDashboardCollection(
+      {
+        schemaVersion: 1,
+        defaultDashboardId: 'home',
+        order: ['home'],
+        dashboardsById: {
+          home: {
+            ...home,
+            homeLayout: { ...home.homeLayout, cardIds: ['light.kitchen', 'light.hall'] },
+            homeCardSizes: { 'light.kitchen': 'medium' },
+            homeCardSpans: {
+              'light.kitchen': { w: 10, h: 5 },
+              'light.hall': { w: 0, h: 5 },
+              'light.gone': { w: 4, h: 4 },
+            },
+          },
+        },
+        dashboardIdByClientId: {},
+      },
+      createLegacyDashboardCollection({ homeLayout: null })
+    );
+
+    const kitchenId = ensureCanonicalEntityId('light.kitchen');
+    expect(collection.dashboardsById.home?.homeCardSizes).toEqual({ [kitchenId]: 'medium' });
+    expect(collection.dashboardsById.home?.homeCardSpans).toEqual({
+      [kitchenId]: { w: 10, h: 5 },
+    });
+  });
+
+  it('reads a dashboard saved before free card spans existed', () => {
+    const { homeCardSpans: _spans, ...legacyHome } = createDashboardDefinition({
+      id: 'home',
+      name: 'Home',
+    });
+    const collection = sanitizeDashboardCollection(
+      {
+        schemaVersion: 1,
+        defaultDashboardId: 'home',
+        order: ['home'],
+        dashboardsById: { home: legacyHome },
+        dashboardIdByClientId: {},
+      },
+      createLegacyDashboardCollection({ homeLayout: null })
+    );
+
+    expect(collection.dashboardsById.home?.homeCardSpans).toEqual({});
   });
 
   it('resolves direct links before previews, device assignments, and the workspace default', () => {

@@ -1,3 +1,4 @@
+import type { CardSpan } from '@navet/app/components/shared/card-size';
 import { type CardSize, CardSizeSelector } from '@navet/app/components/shared/card-size-selector';
 import { useI18n } from '@navet/app/hooks';
 import type { ReactNode } from 'react';
@@ -82,6 +83,7 @@ export function DashboardEditActions({
 interface DashboardResizeTriggerProps {
   cardSize: CardSize;
   triggerSize?: CardSize;
+  customSpan?: CardSpan;
   allowedSizes: CardSize[];
   onSizeChange: (size: CardSize) => void;
   inline?: boolean;
@@ -90,6 +92,7 @@ interface DashboardResizeTriggerProps {
 export function DashboardResizeTrigger({
   cardSize,
   triggerSize,
+  customSpan,
   allowedSizes,
   onSizeChange,
   inline = false,
@@ -101,6 +104,7 @@ export function DashboardResizeTrigger({
   return (
     <CardSizeSelector
       currentSize={cardSize}
+      customSpan={customSpan}
       onSizeChange={onSizeChange}
       allowedSizes={allowedSizes}
       triggerSize={triggerSize ?? cardSize}

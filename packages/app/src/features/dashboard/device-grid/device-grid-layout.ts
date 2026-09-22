@@ -1,3 +1,4 @@
+import type { CardSpan } from '@navet/app/components/shared/card-size';
 import {
   type CardSize,
   getDashboardCardGridSpan,
@@ -6,6 +7,8 @@ import {
 export interface DashboardGridLayoutItem {
   id: string;
   size: CardSize;
+  /** Free footprint in grid cells; wins over the preset and opts the item out of micro bundling. */
+  span?: CardSpan;
 }
 
 export interface DashboardGridPlacement {
@@ -15,6 +18,8 @@ export interface DashboardGridPlacement {
 
 export interface DashboardGridPackingOptions {
   placementPreference?: 'least-fragmented' | 'leftmost';
+  /** Grid cells per preset micro-track, per axis. */
+  cellScale?: number;
 }
 
 interface DashboardGridPackingMember {
@@ -30,8 +35,19 @@ interface DashboardGridPackingUnit {
   members: DashboardGridPackingMember[];
 }
 
+function getItemSpan(item: DashboardGridLayoutItem, cellScale: number) {
+  if (item.span) return { cols: item.span.w, rows: item.span.h };
+  const span = getDashboardCardGridSpan(item.size);
+  return { cols: span.cols * cellScale, rows: span.rows * cellScale };
+}
+
+function isMicroPreset(item: DashboardGridLayoutItem | undefined) {
+  return !!item && !item.span && (item.size === 'tiny' || item.size === 'extra-small');
+}
+
 function buildMicroCardPackingUnits(
-  items: Array<DashboardGridLayoutItem & { sourceIndex: number }>
+  items: Array<DashboardGridLayoutItem & { sourceIndex: number }>,
+  cellScale: number
 ): DashboardGridPackingUnit[] {
   const tinyItems = items.filter((item) => item.size === 'tiny');
   const extraSmallItems = items.filter((item) => item.size === 'extra-small');
@@ -51,12 +67,12 @@ function buildMicroCardPackingUnits(
     bundledIds.add(extraSmall.id);
     units.push({
       sourceIndex: Math.min(firstTiny.sourceIndex, secondTiny.sourceIndex, extraSmall.sourceIndex),
-      width: 2,
-      height: 2,
+      width: 2 * cellScale,
+      height: 2 * cellScale,
       members: [
         { id: firstTiny.id, columnOffset: 0, rowOffset: 0 },
-        { id: secondTiny.id, columnOffset: 1, rowOffset: 0 },
-        { id: extraSmall.id, columnOffset: 0, rowOffset: 1 },
+        { id: secondTiny.id, columnOffset: cellScale, rowOffset: 0 },
+        { id: extraSmall.id, columnOffset: 0, rowOffset: cellScale },
       ],
     });
   }
@@ -64,7 +80,7 @@ function buildMicroCardPackingUnits(
   for (const item of items) {
     if (bundledIds.has(item.id)) continue;
 
-    const span = getDashboardCardGridSpan(item.size);
+    const span = getItemSpan(item, cellScale);
     units.push({
       sourceIndex: item.sourceIndex,
       width: span.cols,
@@ -78,7 +94,8 @@ function buildMicroCardPackingUnits(
 
 function buildPackingUnits(
   items: DashboardGridLayoutItem[],
-  columnCount: number
+  columnCount: number,
+  cellScale: number
 ): DashboardGridPackingUnit[] {
   const units: DashboardGridPackingUnit[] = [];
   let runStart = 0;
@@ -87,12 +104,9 @@ function buildPackingUnits(
     const firstItem = items[runStart];
     if (!firstItem) break;
 
-    if (columnCount >= 2 && (firstItem.size === 'tiny' || firstItem.size === 'extra-small')) {
+    if (columnCount >= 2 * cellScale && isMicroPreset(firstItem)) {
       let runEnd = runStart + 1;
-      while (
-        runEnd < items.length &&
-        (items[runEnd]?.size === 'tiny' || items[runEnd]?.size === 'extra-small')
-      ) {
+      while (runEnd < items.length && isMicroPreset(items[runEnd])) {
         runEnd += 1;
       }
 
@@ -101,14 +115,15 @@ function buildPackingUnits(
           items.slice(runStart, runEnd).map((item, offset) => ({
             ...item,
             sourceIndex: runStart + offset,
-          }))
+          })),
+          cellScale
         )
       );
       runStart = runEnd;
       continue;
     }
 
-    const span = getDashboardCardGridSpan(firstItem.size);
+    const span = getItemSpan(firstItem, cellScale);
     units.push({
       sourceIndex: runStart,
       width: span.cols,
@@ -185,7 +200,11 @@ export function packDashboardGridItems(
   const safeColumnCount = Math.max(1, Math.round(columnCount));
   const occupied: boolean[][] = [];
   const placements = new Map<string, DashboardGridPlacement>();
-  const packingUnits = buildPackingUnits(items, safeColumnCount);
+  const packingUnits = buildPackingUnits(
+    items,
+    safeColumnCount,
+    Math.max(1, Math.round(options.cellScale ?? 1))
+  );
 
   for (const unit of packingUnits) {
     const width = Math.min(safeColumnCount, unit.width);

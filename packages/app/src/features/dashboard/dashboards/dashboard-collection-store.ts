@@ -1,3 +1,4 @@
+import type { CardSpan } from '@navet/app/components/shared/card-size';
 import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { STORAGE_KEYS } from '@navet/app/constants/storage-keys';
 import { getDashboardClientIdentity } from '@navet/app/features/dashboard/clients/dashboard-client-identity';
@@ -73,6 +74,8 @@ interface DashboardCollectionState {
   undoActiveHomeLayout: () => void;
   redoActiveHomeLayout: () => void;
   updateActiveCardSize: (cardId: string, size: CardSize) => void;
+  /** Sets a free footprint (or clears it with null) together with the preset its content uses. */
+  updateActiveCardSpan: (cardId: string, span: CardSpan | null, contentSize: CardSize) => void;
   updateActiveCardZone: (cardId: string, zone: ZoneName) => void;
   addActiveCustomCard: (
     type: CardType,
@@ -90,6 +93,12 @@ interface DashboardCollectionState {
 interface NavetDashboardDefinitionResult {
   dashboardId: DashboardId;
   created: boolean;
+}
+
+function omitKey<T>(record: Record<string, T>, key: string): Record<string, T> {
+  if (!(key in record)) return record;
+  const { [key]: _omitted, ...rest } = record;
+  return rest;
 }
 
 function readSessionDashboardId() {
@@ -495,6 +504,17 @@ export const useDashboardCollectionStore = create<DashboardCollectionState>()(
           collection: updateDefinition(state, state.activeDashboardId, (definition) => ({
             ...definition,
             homeCardSizes: { ...definition.homeCardSizes, [cardId]: size },
+            homeCardSpans: omitKey(definition.homeCardSpans ?? {}, cardId),
+          })),
+        })),
+      updateActiveCardSpan: (cardId, span, contentSize) =>
+        set((state) => ({
+          collection: updateDefinition(state, state.activeDashboardId, (definition) => ({
+            ...definition,
+            homeCardSizes: { ...definition.homeCardSizes, [cardId]: contentSize },
+            homeCardSpans: span
+              ? { ...definition.homeCardSpans, [cardId]: span }
+              : omitKey(definition.homeCardSpans ?? {}, cardId),
           })),
         })),
       updateActiveCardZone: (cardId, zone) =>
@@ -529,6 +549,7 @@ export const useDashboardCollectionStore = create<DashboardCollectionState>()(
             homeCardSizes: Object.fromEntries(
               Object.entries(definition.homeCardSizes).filter(([id]) => id !== cardId)
             ),
+            homeCardSpans: omitKey(definition.homeCardSpans ?? {}, cardId),
             homeCardZones: Object.fromEntries(
               Object.entries(definition.homeCardZones).filter(([id]) => id !== cardId)
             ),
@@ -569,3 +590,12 @@ export const useDashboardCollectionStore = create<DashboardCollectionState>()(
     }
   )
 );
+
+const EMPTY_CARD_SPANS: Record<string, CardSpan> = {};
+
+export function useActiveHomeCardSpans() {
+  return useDashboardCollectionStore(
+    (state) =>
+      state.collection.dashboardsById[state.activeDashboardId]?.homeCardSpans ?? EMPTY_CARD_SPANS
+  );
+}

@@ -5,7 +5,7 @@ import * as Popover from '@radix-ui/react-popover';
 import { Maximize2 } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
 import { CardEditActionButton } from './card-edit-action-button';
-import type { CardSize } from './card-size';
+import { type CardSize, type CardSpan, HOME_GRID_SUBDIVISION } from './card-size';
 import { getThemeColorValue } from './theme/theme-colors';
 import { getThemeSurfaceTokens } from './theme/theme-surface-tokens';
 
@@ -24,6 +24,8 @@ export {
 
 interface CardSizeSelectorProps {
   currentSize: CardSize;
+  /** A free footprint from the resize handle; no preset is active while it is set. */
+  customSpan?: CardSpan;
   onSizeChange: (size: CardSize) => void;
   allowedSizes?: CardSize[];
   triggerSize?: CardSize;
@@ -120,6 +122,7 @@ export const CardSizeSelector = memo(function CardSizeSelector({
   triggerSize,
   triggerInline = false,
   options,
+  customSpan,
 }: CardSizeSelectorProps) {
   const { t } = useI18n();
   const { theme, primaryColor } = useTheme();
@@ -151,7 +154,7 @@ export const CardSizeSelector = memo(function CardSizeSelector({
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-center gap-2">
         {availableSizes.map((size) => {
-          const isActive = currentSize === size.value;
+          const isActive = !customSpan && currentSize === size.value;
 
           return (
             <button
@@ -191,7 +194,16 @@ export const CardSizeSelector = memo(function CardSizeSelector({
         })}
       </div>
 
-      {selectedSize ? (
+      {customSpan ? (
+        <div className="px-1 text-center">
+          <div className={`text-sm font-semibold ${surface.textPrimary}`}>
+            {t('cardSize.custom.label')}
+          </div>
+          <div className={`mt-1 text-xs ${surface.textSecondary}`}>
+            {formatCustomSpan(customSpan)} • {t('cardSize.custom.description')}
+          </div>
+        </div>
+      ) : selectedSize ? (
         <div className="px-1 text-center">
           <div className={`text-sm font-semibold ${surface.textPrimary}`}>{selectedSize.label}</div>
           <div className={`mt-1 text-xs ${surface.textSecondary}`}>
@@ -392,6 +404,13 @@ function SizePreviewGlyph({
       )}
     </div>
   );
+}
+
+// Same units as the preset descriptions, where a small card is 1 × 1.
+function formatCustomSpan({ w, h }: CardSpan) {
+  const cellsPerUnit = 2 * HOME_GRID_SUBDIVISION;
+  const format = (cells: number) => String(Math.round((cells / cellsPerUnit) * 100) / 100);
+  return `${format(w)} × ${format(h)}`;
 }
 
 export function getCardSpanClass(size: CardSize): string {

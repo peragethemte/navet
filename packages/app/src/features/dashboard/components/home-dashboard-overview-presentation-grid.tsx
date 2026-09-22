@@ -1,9 +1,4 @@
-import {
-  type CardSize,
-  getCardSpanClass,
-  getResponsiveCardSize,
-} from '@navet/app/components/shared/card-size-selector';
-import { cn } from '@navet/app/components/ui/utils';
+import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import type { DeviceWithType } from '@navet/app/types/device.types';
 import { memo } from 'react';
 import { useHomeGridRuntime } from '../hooks/use-home-grid-runtime';
@@ -33,8 +28,7 @@ export const PresentationCardGrid = memo(function PresentationCardGrid({
   densePerformanceMode = false,
 }: PresentationCardGridProps) {
   const {
-    breakpointCols,
-    gridPlacements,
+    getCardGridArea,
     gridStyle,
     innerContainerStyle,
     innerRef,
@@ -59,7 +53,7 @@ export const PresentationCardGrid = memo(function PresentationCardGrid({
         className={`w-full${isAutoScaled ? ' absolute left-0 top-0 origin-top-left' : ''}`}
         style={innerContainerStyle}
       >
-        <div className="grid w-full gap-3 lg:gap-4" style={gridStyle}>
+        <div className="grid w-full" style={gridStyle}>
           {visibleCardIds.map((cardId) => {
             const entry = allCards.get(cardId);
             if (!entry) {
@@ -67,18 +61,9 @@ export const PresentationCardGrid = memo(function PresentationCardGrid({
             }
 
             const size = cardSizes[cardId] ?? entry.size;
-            const resolvedGridSize = getResponsiveCardSize(size, breakpointCols);
-            const placement = gridPlacements.get(cardId);
 
             return (
-              <div
-                key={cardId}
-                className={cn(getCardSpanClass(resolvedGridSize), '[&>*]:h-full')}
-                style={{
-                  gridColumnStart: placement?.column,
-                  gridRowStart: placement?.row,
-                }}
-              >
+              <div key={cardId} className="[&>*]:h-full" style={getCardGridArea(cardId)}>
                 {!isCustomCard(entry) ? (
                   <DashboardCardItem
                     id={cardId}

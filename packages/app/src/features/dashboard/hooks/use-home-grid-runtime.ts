@@ -1,6 +1,12 @@
 import {
+  type CardSpan,
+  getHomeGridFineTrackPx,
+  getPresetCardSpan,
+  HOME_GRID_SUBDIVISION,
+} from '@navet/app/components/shared/card-size';
+import {
   type CardSize,
-  getCardGridAutoRowsStyle,
+  getDashboardCardGridMetrics,
   getResponsiveCardSize,
 } from '@navet/app/components/shared/card-size-selector';
 import { useBreakpointCols } from '@navet/app/hooks/use-breakpoint-cols';
@@ -9,10 +15,8 @@ import { useSettingsStore } from '@navet/app/stores/settings-store';
 import type { DeviceWithType } from '@navet/app/types/device.types';
 import { detectDeviceTier } from '@navet/app/utils/detect-device-tier';
 import { type CSSProperties, useMemo } from 'react';
-import {
-  getCardGridGapPx,
-  getCardGridTargetWidth,
-} from '../components/home-dashboard-overview.shared';
+import { getCardGridGapPx } from '../components/home-dashboard-overview.shared';
+import { useActiveHomeCardSpans } from '../dashboards/dashboard-collection-store';
 import { packDashboardGridItems } from '../device-grid/device-grid-layout';
 import type { CustomCard } from '../stores/custom-cards-store';
 import { useAutoScaledGridMeasurements } from './use-auto-scaled-grid-measurements';
@@ -27,6 +31,8 @@ interface UseHomeGridRuntimeOptions {
   gridCols?: number;
   isEditMode: boolean;
   sortable?: boolean;
+  /** Live footprint while a resize handle is dragged. */
+  spanOverride?: { cardId: string; span: CardSpan } | null;
 }
 
 export function useHomeGridRuntime({
@@ -36,7 +42,9 @@ export function useHomeGridRuntime({
   densePerformanceMode = false,
   gridCols,
   isEditMode,
+  spanOverride,
 }: UseHomeGridRuntimeOptions) {
+  const storedCardSpans = useActiveHomeCardSpans();
   const disableAnimations = useSettingsStore(settingsSelectors.disableAnimations);
   const effectsQuality = useSettingsStore(settingsSelectors.effectsQuality);
   const lowPowerMode = useSettingsStore(settingsSelectors.lowPowerMode);
@@ -84,16 +92,45 @@ export function useHomeGridRuntime({
       }),
     [allCards, cardIds, cardSizes]
   );
+  const cardSpans = useMemo(() => {
+    const spans = new Map<string, CardSpan>();
+    for (const cardId of cardIds) {
+      const entry = allCards.get(cardId);
+      if (!entry) continue;
+      const custom = spanOverride?.cardId === cardId ? spanOverride.span : storedCardSpans[cardId];
+      spans.set(
+        cardId,
+        custom ??
+          getPresetCardSpan(getResponsiveCardSize(cardSizes[cardId] ?? entry.size, breakpointCols))
+      );
+    }
+    return spans;
+  }, [allCards, breakpointCols, cardIds, cardSizes, spanOverride, storedCardSpans]);
   const hasOnlyTinyCards = useMemo(
-    () => resolvedCardSizes.length > 0 && resolvedCardSizes.every((size) => size === 'tiny'),
-    [resolvedCardSizes]
+    () =>
+      resolvedCardSizes.length > 0 &&
+      resolvedCardSizes.every((size) => size === 'tiny') &&
+      cardIds.every((cardId) => !storedCardSpans[cardId] && spanOverride?.cardId !== cardId),
+    [cardIds, resolvedCardSizes, spanOverride, storedCardSpans]
   );
-  const preferredRenderedGridCols = logicalGridCols * 2;
-  const renderedGridCols = hasOnlyTinyCards ? 1 : preferredRenderedGridCols;
-  const { microCardMinWidth, targetGridWidth } = useMemo(
-    () => getCardGridTargetWidth(renderedGridCols, gridGapPx),
-    [gridGapPx, renderedGridCols]
-  );
+  const metricsLogicalCols = hasOnlyTinyCards ? 1 : logicalGridCols;
+  const renderedGridCols = hasOnlyTinyCards
+    ? HOME_GRID_SUBDIVISION
+    : logicalGridCols * 2 * HOME_GRID_SUBDIVISION;
+  const { microCardMinWidth, rowHeightPx, targetGridWidth } = useMemo(() => {
+    const cellWidth = getHomeGridFineTrackPx(
+      getDashboardCardGridMetrics(Math.max(1, Math.ceil(metricsLogicalCols))).microCardMinWidthPx,
+      gridGapPx
+    );
+    return {
+      microCardMinWidth: cellWidth,
+      rowHeightPx: getHomeGridFineTrackPx(
+        getDashboardCardGridMetrics(breakpointCols).rowHeightPx,
+        gridGapPx
+      ),
+      targetGridWidth: renderedGridCols * cellWidth + Math.max(0, renderedGridCols - 1) * gridGapPx,
+    };
+  }, [breakpointCols, gridGapPx, metricsLogicalCols, renderedGridCols]);
   const { outerRef, innerRef, outerWidth, contentHeight } =
     useAutoScaledGridMeasurements(targetGridWidth);
   const autoScale =
@@ -120,10 +157,11 @@ export function useHomeGridRuntime({
       ({
         '--home-card-cols': renderedGridCols,
         '--home-card-min': `${microCardMinWidth}px`,
-        ...getCardGridAutoRowsStyle(breakpointCols),
+        gap: `${gridGapPx}px`,
+        gridAutoRows: `${rowHeightPx}px`,
         gridTemplateColumns: 'repeat(var(--home-card-cols), minmax(var(--home-card-min), 1fr))',
       }) as CSSProperties,
-    [breakpointCols, microCardMinWidth, renderedGridCols]
+    [gridGapPx, microCardMinWidth, renderedGridCols, rowHeightPx]
   );
   const gridPlacements = useMemo(
     () =>
@@ -132,20 +170,37 @@ export function useHomeGridRuntime({
           const entry = allCards.get(cardId);
           if (!entry) return [];
 
+          const custom =
+            spanOverride?.cardId === cardId ? spanOverride.span : storedCardSpans[cardId];
           return [
             {
               id: cardId,
               size: getResponsiveCardSize(cardSizes[cardId] ?? entry.size, breakpointCols),
+              span: custom,
             },
           ];
         }),
         renderedGridCols,
-        { placementPreference: 'leftmost' }
+        { placementPreference: 'leftmost', cellScale: HOME_GRID_SUBDIVISION }
       ),
-    [allCards, breakpointCols, cardIds, cardSizes, renderedGridCols]
+    [allCards, breakpointCols, cardIds, cardSizes, renderedGridCols, spanOverride, storedCardSpans]
   );
+  const getCardGridArea = (cardId: string): CSSProperties => {
+    const span = cardSpans.get(cardId);
+    const placement = gridPlacements.get(cardId);
+    return {
+      gridColumnStart: placement?.column,
+      gridColumnEnd: `span ${Math.min(renderedGridCols, span?.w ?? 1)}`,
+      gridRowStart: placement?.row,
+      gridRowEnd: `span ${span?.h ?? 1}`,
+    };
+  };
   return {
     breakpointCols,
+    cardSpans,
+    getCardGridArea,
+    gridGapPx,
+    gridRowHeightPx: rowHeightPx,
     gridPlacements,
     gridStyle,
     innerContainerStyle,
@@ -157,6 +212,7 @@ export function useHomeGridRuntime({
     outerContainerStyle,
     outerRef,
     renderedGridCols,
+    scale: autoScale,
     targetGridWidth,
     visibleCardIds,
   };

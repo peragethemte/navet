@@ -134,7 +134,7 @@ describe('home dashboard overview grid layout', () => {
       />
     );
 
-    expect(getGridElement(container).style.getPropertyValue('--home-card-cols')).toBe('8');
+    expect(getGridElement(container).style.getPropertyValue('--home-card-cols')).toBe('16');
 
     mockSettingsState.lowPowerMode = true;
     rerender(
@@ -151,7 +151,7 @@ describe('home dashboard overview grid layout', () => {
       />
     );
 
-    expect(getGridElement(container).style.getPropertyValue('--home-card-cols')).toBe('8');
+    expect(getGridElement(container).style.getPropertyValue('--home-card-cols')).toBe('16');
   });
 
   it('still auto-scales the edit grid in low-power mode for multi-column layouts', () => {
@@ -197,7 +197,7 @@ describe('home dashboard overview grid layout', () => {
       />
     );
 
-    expect(getGridElement(container).style.getPropertyValue('--home-card-cols')).toBe('1');
+    expect(getGridElement(container).style.getPropertyValue('--home-card-cols')).toBe('2');
     expect(container.querySelector('[style*="transform: scale"]')).toBeNull();
   });
 
@@ -216,7 +216,7 @@ describe('home dashboard overview grid layout', () => {
       />
     );
 
-    expect(getGridElement(container).style.getPropertyValue('--home-card-cols')).toBe('8');
+    expect(getGridElement(container).style.getPropertyValue('--home-card-cols')).toBe('16');
     expect(measurementMock).toHaveBeenCalledWith(expect.any(Number));
     expect(getScaledInner(container).style.transform).toContain('scale(');
     expect(screen.getByTestId('card-light.kitchen')).toBeInTheDocument();
@@ -246,10 +246,10 @@ describe('home dashboard overview grid layout', () => {
 
     expect(waterPumpSlot?.style.gridColumnStart).toBe('1');
     expect(waterPumpSlot?.style.gridRowStart).toBe('1');
-    expect(stopMusicSlot?.style.gridColumnStart).toBe('2');
+    expect(stopMusicSlot?.style.gridColumnStart).toBe('3');
     expect(stopMusicSlot?.style.gridRowStart).toBe('1');
     expect(feedMowgliSlot?.style.gridColumnStart).toBe('1');
-    expect(feedMowgliSlot?.style.gridRowStart).toBe('2');
+    expect(feedMowgliSlot?.style.gridRowStart).toBe('3');
     expect(getGridElement(container)).toBeInTheDocument();
   });
 
@@ -273,7 +273,7 @@ describe('home dashboard overview grid layout', () => {
     expect(screen.getByTestId('card-battery-overview').parentElement?.style.gridColumnStart).toBe(
       '1'
     );
-    expect(screen.getByTestId('card-weather').parentElement?.style.gridColumnStart).toBe('5');
+    expect(screen.getByTestId('card-weather').parentElement?.style.gridColumnStart).toBe('9');
   });
 
   it('progressively mounts home cards and enables offscreen paint optimization in low-power mode', () => {

@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { getDndTransformStyle } from '@navet/app/components/shared/dnd-transform-style';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { DragMeta, DropMeta } from '../hooks/use-home-dashboard-editor';
 
 function SortableHomeCard({
@@ -9,6 +9,8 @@ function SortableHomeCard({
   sectionId,
   isPreviewHidden,
   className,
+  style,
+  resizeHandle,
   optimizeOffscreenPaint,
   children,
 }: {
@@ -17,6 +19,8 @@ function SortableHomeCard({
   sectionId?: string;
   isPreviewHidden: boolean;
   className: string;
+  style?: CSSProperties;
+  resizeHandle?: ReactNode;
   /** When true, skip layout/paint for off-screen cards (not used at `effectsQuality: high`). */
   optimizeOffscreenPaint: boolean;
   children: ReactNode;
@@ -31,7 +35,7 @@ function SortableHomeCard({
       ref={setNodeRef}
       {...{ ...attributes, 'aria-label': cardLabel ?? cardId }}
       {...listeners}
-      style={isDragging ? undefined : getDndTransformStyle(transform, transition)}
+      style={isDragging ? style : { ...style, ...getDndTransformStyle(transform, transition) }}
       className={`${className} relative h-full cursor-grab active:cursor-grabbing ${
         isPreviewHidden ? 'opacity-0' : isDragging ? 'opacity-40' : ''
       }`}
@@ -47,6 +51,7 @@ function SortableHomeCard({
       >
         {children}
       </div>
+      {isDragging ? null : resizeHandle}
     </div>
   );
 }
@@ -58,6 +63,8 @@ export function HomeCardSlot({
   sectionId,
   isPreviewHidden,
   className,
+  style,
+  resizeHandle,
   content,
   optimizeOffscreenPaint = false,
 }: {
@@ -67,21 +74,24 @@ export function HomeCardSlot({
   sectionId?: string;
   isPreviewHidden: boolean;
   className: string;
+  style?: CSSProperties;
+  resizeHandle?: ReactNode;
   content: ReactNode;
   optimizeOffscreenPaint?: boolean;
 }) {
   if (!sortable) {
-    if (optimizeOffscreenPaint) {
-      return (
-        <div
-          className={`${className} h-full min-h-40 [content-visibility:auto] [contain-intrinsic-block-size:10rem]`}
-        >
-          {content}
-        </div>
-      );
-    }
-
-    return content;
+    return (
+      <div
+        className={`${className} h-full${
+          optimizeOffscreenPaint
+            ? ' min-h-40 [content-visibility:auto] [contain-intrinsic-block-size:10rem]'
+            : ''
+        }`}
+        style={style}
+      >
+        {content}
+      </div>
+    );
   }
 
   return (
@@ -91,6 +101,8 @@ export function HomeCardSlot({
       sectionId={sectionId}
       isPreviewHidden={isPreviewHidden}
       className={className}
+      style={style}
+      resizeHandle={resizeHandle}
       optimizeOffscreenPaint={optimizeOffscreenPaint}
     >
       {content}

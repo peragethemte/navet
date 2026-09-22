@@ -47,6 +47,66 @@ export function getDashboardCardGridSpan(size: CardSize): { cols: number; rows: 
   return CARD_SIZE_RENDERED_SPANS[size];
 }
 
+/** A free card footprint on the home grid, in fine cells. */
+export interface CardSpan {
+  w: number;
+  h: number;
+}
+
+/** Each micro-track of the preset grid splits into this many fine cells per axis on the home grid. */
+export const HOME_GRID_SUBDIVISION = 2;
+export const MAX_CARD_SPAN_CELLS = 48;
+
+export function getPresetCardSpan(size: CardSize): CardSpan {
+  const { cols, rows } = CARD_SIZE_RENDERED_SPANS[size];
+  return { w: cols * HOME_GRID_SUBDIVISION, h: rows * HOME_GRID_SUBDIVISION };
+}
+
+export function isCardSpan(value: unknown): value is CardSpan {
+  if (typeof value !== 'object' || value === null) return false;
+  const { w, h } = value as Record<string, unknown>;
+  return [w, h].every(
+    (cells) =>
+      typeof cells === 'number' &&
+      Number.isInteger(cells) &&
+      cells >= 1 &&
+      cells <= MAX_CARD_SPAN_CELLS
+  );
+}
+
+export function areCardSpansEqual(left?: CardSpan, right?: CardSpan) {
+  return left === right || (!!left && !!right && left.w === right.w && left.h === right.h);
+}
+
+export function getPresetForCardSpan(span: CardSpan, allowedSizes: CardSize[]) {
+  return allowedSizes.find((size) => areCardSpansEqual(getPresetCardSpan(size), span));
+}
+
+/** The largest allowed preset that fits inside the span; cards render their content for it. */
+export function resolveCardSpanContentSize(span: CardSpan, allowedSizes: CardSize[]): CardSize {
+  const byArea = allowedSizes
+    .map((size) => ({ size, span: getPresetCardSpan(size) }))
+    .sort((left, right) => left.span.w * left.span.h - right.span.w * right.span.h);
+  const fitting = byArea.filter((entry) => entry.span.w <= span.w && entry.span.h <= span.h);
+
+  return (fitting.at(-1) ?? byArea[0])?.size ?? 'small';
+}
+
+export function getMinCardSpan(allowedSizes: CardSize[]): CardSpan {
+  const spans = allowedSizes.map(getPresetCardSpan);
+  return spans.length === 0
+    ? { w: 1, h: 1 }
+    : {
+        w: Math.min(...spans.map((span) => span.w)),
+        h: Math.min(...spans.map((span) => span.h)),
+      };
+}
+
+/** Fine-cell track size for the home grid; preset spans land on exactly the same pixels. */
+export function getHomeGridFineTrackPx(microTrackPx: number, gapPx: number) {
+  return Math.max(1, Math.floor((microTrackPx - gapPx) / HOME_GRID_SUBDIVISION));
+}
+
 export function getDashboardCardGridGapPx(logicalColumns: number) {
   if (logicalColumns >= 6) {
     return 16;

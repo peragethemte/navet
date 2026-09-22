@@ -4,6 +4,7 @@ import {
   type PortalActionDockAnchorRect,
 } from '@navet/app/components/patterns/portal-action-dock';
 import { CardEditActionButton } from '@navet/app/components/shared/card-edit-action-button';
+import { areCardSpansEqual, type CardSpan } from '@navet/app/components/shared/card-size';
 import {
   type CardSize,
   getCardSpanClass,
@@ -55,6 +56,8 @@ interface DashboardCardItemProps {
   optimizeOffscreenPaint?: boolean;
   headerSubtitleOverride?: string;
   presentationVariant?: 'media-stack';
+  /** Free footprint from the resize handle; the preset picker then shows no preset as active. */
+  customSpan?: CardSpan;
 }
 
 const DashboardCardItemDraggable = lazy(async () => {
@@ -82,6 +85,7 @@ export const DashboardCardItem = memo(function DashboardCardItem({
   optimizeOffscreenPaint = false,
   headerSubtitleOverride,
   presentationVariant,
+  customSpan,
 }: DashboardCardItemProps) {
   const { t } = useI18n();
   const { theme } = useTheme();
@@ -218,6 +222,7 @@ export const DashboardCardItem = memo(function DashboardCardItem({
                 card,
                 cardId: id,
                 cardSize: editControlSize,
+                customSpan,
                 entityName: device?.name ?? card?.id ?? '',
                 handleEditModeSettingsOpen,
                 handleLockToggle,
@@ -261,6 +266,7 @@ export const DashboardCardItem = memo(function DashboardCardItem({
               card,
               cardId: id,
               cardSize: editControlSize,
+              customSpan,
               entityName: device?.name ?? card?.id ?? '',
               handleEditModeSettingsOpen,
               handleLockToggle,
@@ -499,6 +505,7 @@ function renderEditModeDockActions({
   card,
   cardId,
   cardSize,
+  customSpan,
   entityName,
   handleEditModeSettingsOpen,
   handleLockToggle,
@@ -523,6 +530,7 @@ function renderEditModeDockActions({
   card?: CustomCard;
   cardId: string;
   cardSize: CardSize;
+  customSpan?: CardSpan;
   entityName: string;
   handleEditModeSettingsOpen: (event: MouseEvent<HTMLButtonElement>) => void;
   handleLockToggle: (event: MouseEvent<HTMLButtonElement>) => void;
@@ -604,6 +612,7 @@ function renderEditModeDockActions({
       <DashboardResizeTrigger
         cardSize={resolvedSize}
         triggerSize={cardSize}
+        customSpan={customSpan}
         allowedSizes={allowedSizes}
         onSizeChange={(nextSize) => handleSizeChange(cardId, nextSize)}
         inline
@@ -682,7 +691,7 @@ function LockedCardInteractionFrame({
   );
 }
 
-function getAllowedSizes(
+export function getAllowedSizes(
   device?: DeviceWithType,
   card?: CustomCard,
   extraLargeAllowed = true
@@ -942,6 +951,7 @@ function areDashboardCardItemPropsEqual(
     previous.densePerformanceMode === next.densePerformanceMode &&
     previous.optimizeOffscreenPaint === next.optimizeOffscreenPaint &&
     previous.headerSubtitleOverride === next.headerSubtitleOverride &&
-    previous.presentationVariant === next.presentationVariant
+    previous.presentationVariant === next.presentationVariant &&
+    areCardSpansEqual(previous.customSpan, next.customSpan)
   );
 }

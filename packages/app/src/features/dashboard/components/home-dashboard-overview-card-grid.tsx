@@ -1,19 +1,26 @@
 import { useDroppable } from '@dnd-kit/core';
 import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
 import {
-  type CardSize,
-  getCardSpanClass,
-  getResponsiveCardSize,
-} from '@navet/app/components/shared/card-size-selector';
+  type CardSpan,
+  getMinCardSpan,
+  getPresetForCardSpan,
+  resolveCardSpanContentSize,
+} from '@navet/app/components/shared/card-size';
+import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import type { getThemeSurfaceTokens } from '@navet/app/components/shared/theme/theme-surface-tokens';
 import { useI18n } from '@navet/app/hooks';
 import type { DeviceWithType } from '@navet/app/types/device.types';
 import { Plus } from 'lucide-react';
-import { type CSSProperties, memo, type ReactNode, useCallback, useMemo } from 'react';
+import { type CSSProperties, memo, type ReactNode, useCallback, useMemo, useState } from 'react';
+import {
+  useActiveHomeCardSpans,
+  useDashboardCollectionStore,
+} from '../dashboards/dashboard-collection-store';
 import type { DropMeta } from '../hooks/use-home-dashboard-editor';
 import { useHomeGridRuntime } from '../hooks/use-home-grid-runtime';
 import type { CustomCard } from '../stores/custom-cards-store';
-import { DashboardCardItem } from './dashboard-card-item';
+import { DashboardCardItem, getAllowedSizes } from './dashboard-card-item';
+import { HOME_CARD_GRID_ATTRIBUTE, HomeCardResizeHandle } from './home-card-resize-handle';
 import {
   areCardIdsStable,
   type CardGridProps,
@@ -139,8 +146,15 @@ export const CardGrid = memo(function CardGrid({
 }: CardGridProps) {
   const { t } = useI18n();
   const hasTrailingAddCardSlot = isEditMode && Boolean(onOpenAddCardDialog);
+  const [spanOverride, setSpanOverride] = useState<{ cardId: string; span: CardSpan } | null>(null);
+  const updateActiveCardSpan = useDashboardCollectionStore((state) => state.updateActiveCardSpan);
+  const storedCardSpans = useActiveHomeCardSpans();
+  const canResize = isEditMode && sortable;
   const {
-    breakpointCols,
+    cardSpans,
+    getCardGridArea,
+    gridGapPx,
+    gridRowHeightPx,
     gridStyle,
     innerContainerStyle,
     innerRef,
@@ -149,6 +163,7 @@ export const CardGrid = memo(function CardGrid({
     outerContainerStyle,
     outerRef,
     renderedGridCols,
+    scale,
     visibleCardIds,
   } = useHomeGridRuntime({
     allCards,
@@ -157,8 +172,9 @@ export const CardGrid = memo(function CardGrid({
     gridCols,
     isEditMode,
     sortable,
+    spanOverride,
   });
-  const addCardSlotCols = Math.min(renderedGridCols, 2);
+  const addCardSlotCols = Math.min(renderedGridCols, 4);
   const hasInlineAddCardSlot = hasTrailingAddCardSlot;
   const handleAddCard = useCallback(() => {
     onOpenAddCardDialog?.();
@@ -167,6 +183,7 @@ export const CardGrid = memo(function CardGrid({
     () =>
       ({
         gridColumn: `span ${addCardSlotCols} / span ${addCardSlotCols}`,
+        gridRow: 'span 2 / span 2',
         borderColor: 'rgba(255,255,255,0.16)',
         background:
           'radial-gradient(circle at top left, rgba(159,176,255,0.1), transparent 34%), radial-gradient(circle at bottom right, rgba(159,176,255,0.06), transparent 28%)',
@@ -182,10 +199,9 @@ export const CardGrid = memo(function CardGrid({
         style={innerContainerStyle}
       >
         <div
-          className={`grid w-full gap-3 lg:gap-4 ${
-            hasInlineAddCardSlot ? 'grid-flow-row' : 'grid-flow-row-dense'
-          }`}
+          className="grid w-full grid-flow-row-dense"
           style={gridStyle}
+          {...{ [HOME_CARD_GRID_ATTRIBUTE]: '' }}
         >
           {visibleCardIds.map((cardId) => {
             const entry = allCards.get(cardId);
@@ -194,23 +210,52 @@ export const CardGrid = memo(function CardGrid({
             }
 
             const size = cardSizes[cardId] ?? entry.size;
-            const spanClass = getCardSpanClass(getResponsiveCardSize(size, breakpointCols));
+            const cardLabel = !isCustomCard(entry)
+              ? entry.name
+              : typeof entry.data?.title === 'string'
+                ? entry.data.title
+                : entry.type;
+            const span = cardSpans.get(cardId);
+            const allowedSizes = canResize
+              ? getAllowedSizes(
+                  isCustomCard(entry) ? undefined : entry,
+                  isCustomCard(entry) ? entry : undefined,
+                  showHero
+                )
+              : [];
 
             return (
               <HomeCardSlot
                 key={cardId}
                 sortable={sortable}
                 cardId={cardId}
-                cardLabel={
-                  !isCustomCard(entry)
-                    ? entry.name
-                    : typeof entry.data?.title === 'string'
-                      ? entry.data.title
-                      : entry.type
-                }
+                cardLabel={cardLabel}
                 sectionId={sectionId}
                 isPreviewHidden={activeDragCard === cardId}
-                className={spanClass}
+                className=""
+                style={getCardGridArea(cardId)}
+                resizeHandle={
+                  canResize && span && allowedSizes.length > 0 ? (
+                    <HomeCardResizeHandle
+                      span={span}
+                      minSpan={getMinCardSpan(allowedSizes)}
+                      maxColumns={renderedGridCols}
+                      gapPx={gridGapPx}
+                      rowHeightPx={gridRowHeightPx}
+                      scale={scale}
+                      label={t('dashboard.edit.resizeCardHandle', { name: cardLabel })}
+                      onPreview={(next) => setSpanOverride(next ? { cardId, span: next } : null)}
+                      onCommit={(next) => {
+                        const preset = getPresetForCardSpan(next, allowedSizes);
+                        updateActiveCardSpan(
+                          cardId,
+                          preset ? null : next,
+                          preset ?? resolveCardSpanContentSize(next, allowedSizes)
+                        );
+                      }}
+                    />
+                  ) : null
+                }
                 optimizeOffscreenPaint={optimizeOffscreenPaint}
                 content={
                   !isCustomCard(entry) ? (
@@ -222,6 +267,7 @@ export const CardGrid = memo(function CardGrid({
                       handleSizeChange={updateCardSize}
                       onRemoveFromLayout={onRemoveFromLayout}
                       allowExtraLargeSizes={showHero}
+                      customSpan={isEditMode ? storedCardSpans[cardId] : undefined}
                     />
                   ) : (
                     <DashboardCardItem
@@ -233,6 +279,7 @@ export const CardGrid = memo(function CardGrid({
                       onUpdateCard={onUpdateCard}
                       onRemoveFromLayout={onRemoveFromLayout}
                       allowExtraLargeSizes={showHero}
+                      customSpan={isEditMode ? storedCardSpans[cardId] : undefined}
                     />
                   )
                 }

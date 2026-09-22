@@ -1,3 +1,4 @@
+import { type CardSpan, isCardSpan } from '@navet/app/components/shared/card-size';
 import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { HOME_WIDGET_ROOM, isAllRooms } from '@navet/app/constants/rooms';
 import { ensureCanonicalEntityId } from '@navet/app/utils/provider-entity-id';
@@ -27,6 +28,8 @@ export interface NavetDashboardDefinition {
   homeRoomNames: string[] | null;
   homeLayout: HomeDashboardLayoutState;
   homeCardSizes: Record<string, CardSize>;
+  /** Free footprints set with the resize handle; `homeCardSizes` keeps the matching content preset. */
+  homeCardSpans?: Record<string, CardSpan>;
   homeCustomCards: CustomCard[];
   homeCardZones: Record<string, ZoneName>;
 }
@@ -219,6 +222,23 @@ function sanitizeCardSizes(
   );
 }
 
+function sanitizeCardSpans(
+  value: unknown,
+  allowedIds?: ReadonlySet<string>
+): Record<string, CardSpan> {
+  if (!isRecord(value)) {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(value).flatMap(([rawId, rawSpan]) => {
+      const id = ensureCanonicalEntityId(rawId);
+      return (!allowedIds || allowedIds.has(id)) && isCardSpan(rawSpan)
+        ? [[id, { w: rawSpan.w, h: rawSpan.h }]]
+        : [];
+    })
+  );
+}
+
 function sanitizeCardZones(
   value: unknown,
   allowedIds?: ReadonlySet<string>
@@ -273,6 +293,7 @@ export function createDashboardDefinition(input: DashboardCreateInput): NavetDas
   const source = input.source ?? { kind: 'blank' as const };
   let homeLayout = normalizeHomeDashboardLayout(null);
   let homeCardSizes: Record<string, CardSize> = {};
+  let homeCardSpans: Record<string, CardSpan> = {};
   let homeCustomCards: CustomCard[] = [];
   let homeCardZones: Record<string, ZoneName> = {};
   let homeRoomNames: string[] | null = null;
@@ -304,6 +325,12 @@ export function createDashboardDefinition(input: DashboardCreateInput): NavetDas
       Object.entries(homeCardSizes).map(([cardId, size]) => [
         copiedCardIds.get(cardId) ?? cardId,
         size,
+      ])
+    );
+    homeCardSpans = Object.fromEntries(
+      Object.entries(clone(source.dashboard.homeCardSpans ?? {})).map(([cardId, span]) => [
+        copiedCardIds.get(cardId) ?? cardId,
+        span,
       ])
     );
     homeCardZones = Object.fromEntries(
@@ -345,6 +372,7 @@ export function createDashboardDefinition(input: DashboardCreateInput): NavetDas
     homeRoomNames,
     homeLayout,
     homeCardSizes,
+    homeCardSpans,
     homeCustomCards,
     homeCardZones,
   };
@@ -430,6 +458,7 @@ export function sanitizeDashboardCollection(
           homeRoomNames: sanitizeDashboardRoomNames(rawDefinition.homeRoomNames),
           homeLayout,
           homeCardSizes: sanitizeCardSizes(rawDefinition.homeCardSizes, allowedIds),
+          homeCardSpans: sanitizeCardSpans(rawDefinition.homeCardSpans, allowedIds),
           homeCustomCards,
           homeCardZones: sanitizeCardZones(rawDefinition.homeCardZones, allowedIds),
         };
