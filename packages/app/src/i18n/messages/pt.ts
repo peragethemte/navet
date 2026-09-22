@@ -652,6 +652,8 @@ export const ptMessages = {
   'chores.card.openSettings': 'Definições do cartão de tarefas',
   'chores.card.settingsDescription': 'Escolha de quem este cartão mostra as tarefas.',
   'chores.card.person': 'Mostrar para',
+  'chores.card.name': 'Título do cartão',
+  'chores.card.namePlaceholder': 'Título predefinido',
   'chores.card.noPeople': 'Adicione pessoas em Casa primeiro.',
   'chores.card.more': 'Mais {count}',
   'homework.card.title': 'Trabalhos de casa',
@@ -663,6 +665,15 @@ export const ptMessages = {
   'homework.card.notReady': 'Ainda não está pronto',
   'homework.card.openSettings': 'Definições do cartão de trabalhos de casa',
   'homework.card.settingsDescription': 'Escolha de quem este cartão mostra os trabalhos de casa.',
+  'household.personCard.emptyTitle': 'Nada por fazer hoje',
+  'household.personCard.emptyDescription':
+    'As tarefas e os trabalhos de casa aparecem aqui no dia em que têm de ser feitos.',
+  'household.personCard.openSettings': 'Definições do cartão de pessoa',
+  'household.personCard.settingsDescription':
+    'Escolha de quem este cartão mostra as tarefas e os trabalhos de casa.',
+  'dashboard.addCard.templates.householdPerson.name': 'Tarefas e trabalhos de casa',
+  'dashboard.addCard.templates.householdPerson.description':
+    'As tarefas e os trabalhos de casa de uma pessoa num único cartão',
   'dashboard.addCard.templates.chores.name': 'Tarefas',
   'dashboard.addCard.templates.chores.description':
     'As tarefas domésticas de hoje, marcadas a partir do painel',

@@ -25,6 +25,7 @@ export function HomeworkCardView({
   size,
   theme,
   state,
+  title,
   rows,
   participantsById,
   now,
@@ -36,6 +37,7 @@ export function HomeworkCardView({
   size: CardSize;
   theme: ThemeType;
   state: ChoreWidgetCardState;
+  title: string;
   rows: HomeworkCardRow[];
   participantsById: Record<string, ChoreParticipant>;
   now: Date;
@@ -55,7 +57,7 @@ export function HomeworkCardView({
       size={size}
       theme={theme}
       icon={GraduationCap}
-      title={t('homework.card.title')}
+      title={title}
       meta={
         state === 'ready' ? (
           <span

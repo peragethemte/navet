@@ -661,6 +661,8 @@ export const itMessages = {
   'chores.card.openSettings': 'Impostazioni della scheda Faccende',
   'chores.card.settingsDescription': 'Scegli di chi mostrare le faccende su questa scheda.',
   'chores.card.person': 'Mostra per',
+  'chores.card.name': 'Titolo della scheda',
+  'chores.card.namePlaceholder': 'Titolo predefinito',
   'chores.card.noPeople': 'Aggiungi prima le persone in Famiglia.',
   'chores.card.more': 'Altre {count}',
   'homework.card.title': 'Compiti',
@@ -671,6 +673,15 @@ export const itMessages = {
   'homework.card.notReady': 'Non ancora pronto',
   'homework.card.openSettings': 'Impostazioni della scheda Compiti',
   'homework.card.settingsDescription': 'Scegli di chi mostrare i compiti su questa scheda.',
+  'household.personCard.emptyTitle': 'Niente da fare oggi',
+  'household.personCard.emptyDescription':
+    'Le faccende e i compiti compaiono qui nel giorno in cui vanno svolti.',
+  'household.personCard.openSettings': 'Impostazioni della scheda Persona',
+  'household.personCard.settingsDescription':
+    'Scegli di chi mostrare faccende e compiti su questa scheda.',
+  'dashboard.addCard.templates.householdPerson.name': 'Faccende e compiti',
+  'dashboard.addCard.templates.householdPerson.description':
+    'Le faccende e i compiti di una persona su un’unica scheda',
   'dashboard.addCard.templates.chores.name': 'Faccende',
   'dashboard.addCard.templates.chores.description':
     'Le faccende domestiche di oggi, spuntate dalla dashboard',

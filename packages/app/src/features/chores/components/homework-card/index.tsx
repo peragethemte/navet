@@ -2,22 +2,18 @@ import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { themeColorValues } from '@navet/app/components/shared/theme/theme-colors';
 import { useDashboardWidgetRoomOptions } from '@navet/app/features/dashboard/components/widgets/use-widget-room-options';
 import { useAreaRooms, useI18n, useTheme } from '@navet/app/hooks';
-import { settingsSelectors } from '@navet/app/stores/selectors';
-import { useSettingsStore } from '@navet/app/stores/settings-store';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { getChoreCardAction } from '../../chore-card-action';
 import { resolveChoreColorPalette } from '../../chore-color-palette';
 import { getHomeworkBoard, type HomeworkBoardEntry } from '../../chore-homework-selectors';
-import { useChoreWorkspaceStore } from '../../chore-workspace-store';
-import { useChoreClock } from '../../use-chore-clock';
-import { useChoreMaterialization } from '../../use-chore-materialization';
-import { useChoreWorkspaceSync } from '../../use-chore-workspace-sync';
+import { resolveChoreWidgetState, useChoreCardParticipant } from '../../use-chore-card-participant';
 import { CHORE_CARD_EVERYONE, ChoreCardPersonDialog } from '../chore-card-person-dialog';
-import type { ChoreWidgetCardState } from '../chore-widget-card-shell';
 import { type HomeworkCardRow, HomeworkCardView } from './view';
 
 export interface HomeworkCardData {
   participantId?: string;
+  /** Header override. Empty falls back to the generic "Homework" label. */
+  title?: string;
   tintColor?: string;
 }
 
@@ -46,34 +42,14 @@ export const HomeworkCard = memo(function HomeworkCard({
   const { theme } = useTheme();
   const { t } = useI18n();
   const rooms = useAreaRooms();
-  const choresEnabled = useSettingsStore(settingsSelectors.choresEnabled);
-  const workspace = useChoreWorkspaceStore((state) => state.data);
-  const status = useChoreWorkspaceStore((state) => state.status);
-  const execute = useChoreWorkspaceStore((state) => state.execute);
-  const now = useChoreClock();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { roomValue, roomLabel, roomOptions } = useDashboardWidgetRoomOptions(room, rooms);
-
-  useChoreWorkspaceSync(choresEnabled);
-  useChoreMaterialization({ enabled: choresEnabled });
+  const { choresEnabled, workspace, status, execute, now, participants, participantId } =
+    useChoreCardParticipant(data?.participantId);
 
   useEffect(() => {
     if (openSettingsRequestKey > 0) setIsSettingsOpen(true);
   }, [openSettingsRequestKey]);
-
-  const participants = useMemo(
-    () =>
-      workspace
-        ? Object.values(workspace.participantsById).filter((participant) => !participant.pausedAt)
-        : [],
-    [workspace]
-  );
-  const storedParticipantId = data?.participantId;
-  const participantId =
-    storedParticipantId &&
-    participants.some((participant) => participant.id === storedParticipantId)
-      ? storedParticipantId
-      : CHORE_CARD_EVERYONE;
 
   const rows = useMemo<HomeworkCardRow[]>(() => {
     if (!workspace) return [];
@@ -121,15 +97,12 @@ export const HomeworkCard = memo(function HomeworkCard({
       : undefined;
   }, [data?.tintColor, overdue, participantId, remaining, rows.length, workspace]);
 
-  const state: ChoreWidgetCardState = !choresEnabled
-    ? 'disabled'
-    : status === 'unavailable' || status === 'unauthorized' || status === 'error'
-      ? 'unavailable'
-      : !workspace
-        ? 'loading'
-        : rows.length === 0
-          ? 'empty'
-          : 'ready';
+  const state = resolveChoreWidgetState({
+    choresEnabled,
+    status,
+    hasWorkspace: Boolean(workspace),
+    hasRows: rows.length > 0,
+  });
 
   return (
     <>
@@ -137,6 +110,7 @@ export const HomeworkCard = memo(function HomeworkCard({
         size={size}
         theme={theme}
         state={state}
+        title={data?.title?.trim() || t('homework.card.title')}
         rows={rows}
         participantsById={workspace?.participantsById ?? {}}
         now={now}
@@ -153,6 +127,11 @@ export const HomeworkCard = memo(function HomeworkCard({
           description={t('homework.card.settingsDescription')}
           participants={participants}
           selectedParticipantId={participantId}
+          cardTitle={data?.title}
+          cardTitlePlaceholder={t('homework.card.title')}
+          onCardTitleChange={
+            onUpdate ? (nextTitle) => onUpdate({ ...data, title: nextTitle }) : undefined
+          }
           onSelectedParticipantChange={(nextParticipantId) =>
             onUpdate?.({
               ...data,

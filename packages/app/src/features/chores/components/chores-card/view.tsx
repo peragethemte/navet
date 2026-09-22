@@ -26,6 +26,7 @@ export function ChoresCardView({
   size,
   theme,
   state,
+  title,
   rows,
   participantsById,
   now,
@@ -39,6 +40,7 @@ export function ChoresCardView({
   size: CardSize;
   theme: ThemeType;
   state: ChoreWidgetCardState;
+  title: string;
   rows: ChoresCardRow[];
   participantsById: Record<string, ChoreParticipant>;
   now: Date;
@@ -60,7 +62,7 @@ export function ChoresCardView({
       size={size}
       theme={theme}
       icon={ListChecks}
-      title={t('chores.card.title')}
+      title={title}
       meta={
         state === 'ready' ? (
           <span

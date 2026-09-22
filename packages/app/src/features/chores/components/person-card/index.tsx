@@ -6,37 +6,49 @@ import { normalizeChoreExperienceState } from '@navet/core/chore-experience';
 import { getChoreTiming } from '@navet/core/chores';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { getChoreCardAction } from '../../chore-card-action';
-import { getChorePaletteKey, resolveChoreColorPalette } from '../../chore-color-palette';
+import { resolveChoreColorPalette } from '../../chore-color-palette';
 import { getDefinition, getTodayChoresForParticipant } from '../../chore-dashboard-selectors';
+import { getHomeworkBoard, type HomeworkBoardEntry } from '../../chore-homework-selectors';
 import { resolveChoreWidgetState, useChoreCardParticipant } from '../../use-chore-card-participant';
 import { CHORE_CARD_EVERYONE, ChoreCardPersonDialog } from '../chore-card-person-dialog';
-import { type ChoresCardRow, ChoresCardView } from './view';
+import type { ChoresCardRow } from '../chores-card/view';
+import type { HomeworkCardRow } from '../homework-card/view';
+import { PersonCardView } from './view';
 
-export interface ChoresCardData {
+export interface PersonCardData {
   participantId?: string;
-  /** Header override. Empty falls back to the generic "Chores" label. */
+  /** Header override. Empty falls back to the person's name. */
   title?: string;
   tintColor?: string;
 }
 
-export interface ChoresCardProps {
+export interface PersonCardProps {
   size?: CardSize;
-  data?: ChoresCardData;
-  onUpdate?: (data: ChoresCardData) => void;
+  data?: PersonCardData;
+  onUpdate?: (data: PersonCardData) => void;
   isEditMode?: boolean;
   room?: string;
   onRoomChange?: (room: string) => void;
   openSettingsRequestKey?: number;
 }
 
-export const ChoresCard = memo(function ChoresCard({
+function homeworkDate(entry: HomeworkBoardEntry) {
+  return entry.definition.schedule.frequency === 'once' ? entry.definition.schedule.date : '';
+}
+
+/**
+ * One household member's day on a single card: their own chores, the shared chores they are
+ * eligible for, and their homework, split into labelled sections. One card per kid on a wall
+ * display beats two cards each.
+ */
+export const PersonCard = memo(function PersonCard({
   size = 'medium',
   data,
   onUpdate,
   room,
   onRoomChange,
   openSettingsRequestKey = 0,
-}: ChoresCardProps) {
+}: PersonCardProps) {
   const { theme } = useTheme();
   const { t } = useI18n();
   const rooms = useAreaRooms();
@@ -56,6 +68,8 @@ export const ChoresCard = memo(function ChoresCard({
   const showPoints = experience ? experience.gamificationMode !== 'off' : false;
   const childMode = experience?.gamificationMode === 'adventure';
 
+  // A shared "anyone" occurrence carries every eligible person in `assigneeIds`, so the common
+  // chores this person can pick up arrive through the same selector as their own.
   const occurrences = useMemo(
     () =>
       workspace
@@ -63,16 +77,8 @@ export const ChoresCard = memo(function ChoresCard({
         : [],
     [now, participantId, workspace]
   );
-  const pending = useMemo(
-    () => occurrences.filter((occurrence) => occurrence.status !== 'done'),
-    [occurrences]
-  );
-  const overdue = useMemo(
-    () => pending.filter((occurrence) => getChoreTiming(occurrence, now) === 'overdue').length,
-    [now, pending]
-  );
 
-  const rows = useMemo<ChoresCardRow[]>(() => {
+  const choreRows = useMemo<ChoresCardRow[]>(() => {
     if (!workspace || !experience) return [];
     return occurrences.flatMap((occurrence) => {
       const definition = getDefinition(workspace, occurrence);
@@ -93,47 +99,81 @@ export const ChoresCard = memo(function ChoresCard({
     });
   }, [execute, experience, occurrences, participantId, t, workspace]);
 
+  const homeworkRows = useMemo<HomeworkCardRow[]>(() => {
+    if (!workspace) return [];
+    // getHomeworkBoard filters on a real participant id; it has no "everyone" sentinel.
+    const board = getHomeworkBoard(workspace, {
+      participantId: participantId === CHORE_CARD_EVERYONE ? undefined : participantId,
+      now,
+      days: 1,
+    });
+    const activeIds = new Set(participants.map((participant) => participant.id));
+    const keep = (entry: HomeworkBoardEntry) =>
+      entry.definition.assignment.participantIds.some((id) => activeIds.has(id));
+    // The board orders overdue by creation time; on a card the oldest due date reads better.
+    const overdueEntries = [...board.overdue]
+      .filter(keep)
+      .sort((left, right) => homeworkDate(left).localeCompare(homeworkDate(right)));
+    const todayEntries = (board.days[0]?.entries ?? []).filter(keep);
+
+    return [...overdueEntries, ...todayEntries].map((entry) => {
+      const assignee = entry.definition.assignment.participantIds[0] ?? '';
+      return {
+        definition: entry.definition,
+        occurrence: entry.occurrence,
+        overdue: overdueEntries.includes(entry),
+        action:
+          entry.occurrence && assignee
+            ? getChoreCardAction(entry.occurrence, entry.definition, assignee, execute, t)
+            : undefined,
+      };
+    });
+  }, [execute, now, participantId, participants, t, workspace]);
+
+  const remaining =
+    choreRows.filter((row) => row.occurrence.status !== 'done').length +
+    homeworkRows.filter((row) => row.occurrence?.status !== 'done').length;
+  const overdue =
+    choreRows.filter(
+      (row) => row.occurrence.status !== 'done' && getChoreTiming(row.occurrence, now) === 'overdue'
+    ).length +
+    homeworkRows.filter((row) => row.overdue && row.occurrence?.status !== 'done').length;
+  const total = choreRows.length + homeworkRows.length;
+
+  const selectedParticipant =
+    participantId === CHORE_CARD_EVERYONE ? undefined : workspace?.participantsById[participantId];
+
   const tintColor = useMemo(() => {
     if (typeof data?.tintColor === 'string') return data.tintColor;
     if (!workspace) return undefined;
     if (overdue > 0) return themeColorValues.red;
-    if (pending.length === 0 && occurrences.length > 0) return themeColorValues.green;
-    const selected =
-      participantId === CHORE_CARD_EVERYONE ? undefined : workspace.participantsById[participantId];
-    if (selected) return resolveChoreColorPalette(`person:${selected.id}`, selected.color).primary;
-    const first = rows[0];
-    return first
-      ? resolveChoreColorPalette(getChorePaletteKey(first.definition), first.presentation?.color)
+    if (remaining === 0 && total > 0) return themeColorValues.green;
+    return selectedParticipant
+      ? resolveChoreColorPalette(`person:${selectedParticipant.id}`, selectedParticipant.color)
           .primary
       : undefined;
-  }, [
-    data?.tintColor,
-    occurrences.length,
-    overdue,
-    participantId,
-    pending.length,
-    rows,
-    workspace,
-  ]);
+  }, [data?.tintColor, overdue, remaining, selectedParticipant, total, workspace]);
 
+  const defaultTitle = selectedParticipant?.displayName ?? t('household.personPicker.all');
   const state = resolveChoreWidgetState({
     choresEnabled,
     status,
     hasWorkspace: Boolean(workspace),
-    hasRows: rows.length > 0,
+    hasRows: total > 0,
   });
 
   return (
     <>
-      <ChoresCardView
+      <PersonCardView
         size={size}
         theme={theme}
         state={state}
-        title={data?.title?.trim() || t('chores.card.title')}
-        rows={rows}
+        title={data?.title?.trim() || defaultTitle}
+        choreRows={choreRows}
+        homeworkRows={homeworkRows}
         participantsById={workspace?.participantsById ?? {}}
         now={now}
-        remaining={pending.length}
+        remaining={remaining}
         overdue={overdue}
         tintColor={tintColor}
         childMode={childMode}
@@ -144,12 +184,12 @@ export const ChoresCard = memo(function ChoresCard({
         <ChoreCardPersonDialog
           isOpen={isSettingsOpen}
           onOpenChange={setIsSettingsOpen}
-          title={t('chores.card.title')}
-          description={t('chores.card.settingsDescription')}
+          title={defaultTitle}
+          description={t('household.personCard.settingsDescription')}
           participants={participants}
           selectedParticipantId={participantId}
           cardTitle={data?.title}
-          cardTitlePlaceholder={t('chores.card.title')}
+          cardTitlePlaceholder={defaultTitle}
           onCardTitleChange={
             onUpdate ? (nextTitle) => onUpdate({ ...data, title: nextTitle }) : undefined
           }

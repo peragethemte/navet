@@ -651,6 +651,8 @@ export const nlMessages = {
   'chores.card.openSettings': 'Instellingen van de klusjeskaart',
   'chores.card.settingsDescription': 'Kies wiens klusjes deze kaart toont.',
   'chores.card.person': 'Tonen voor',
+  'chores.card.name': 'Kaarttitel',
+  'chores.card.namePlaceholder': 'Standaardtitel',
   'chores.card.noPeople': 'Voeg eerst mensen toe in Huishouden.',
   'chores.card.more': 'Nog {count}',
   'homework.card.title': 'Huiswerk',
@@ -662,6 +664,14 @@ export const nlMessages = {
   'homework.card.notReady': 'Nog niet klaar',
   'homework.card.openSettings': 'Instellingen van de huiswerkkaart',
   'homework.card.settingsDescription': 'Kies wiens huiswerk deze kaart toont.',
+  'household.personCard.emptyTitle': 'Vandaag niets meer',
+  'household.personCard.emptyDescription':
+    'Klusjes en huiswerk verschijnen hier op de dag dat ze aan de beurt zijn.',
+  'household.personCard.openSettings': 'Instellingen van de persoonskaart',
+  'household.personCard.settingsDescription': 'Kies wiens klusjes en huiswerk deze kaart toont.',
+  'dashboard.addCard.templates.householdPerson.name': 'Klusjes en huiswerk',
+  'dashboard.addCard.templates.householdPerson.description':
+    'De klusjes en het huiswerk van één persoon op één kaart',
   'dashboard.addCard.templates.chores.name': 'Klusjes',
   'dashboard.addCard.templates.chores.description':
     'De klusjes van vandaag, afgevinkt vanaf het dashboard',

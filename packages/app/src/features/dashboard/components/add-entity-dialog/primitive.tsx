@@ -70,7 +70,10 @@ export function AddEntityDialogPrimitive({
     const featureEligibleTemplates = choresEnabled
       ? providerEligibleTemplates
       : providerEligibleTemplates.filter(
-          (template) => template.id !== 'chores' && template.id !== 'homework'
+          (template) =>
+            template.id !== 'chores' &&
+            template.id !== 'homework' &&
+            template.id !== 'household-person'
         );
     const visibleTemplates = allowedIds
       ? featureEligibleTemplates.filter((template) => allowedIds.has(template.id))

@@ -649,6 +649,8 @@ export const plMessages = {
   'chores.card.openSettings': 'Ustawienia karty obowiązków',
   'chores.card.settingsDescription': 'Wybierz, czyje obowiązki pokazuje ta karta.',
   'chores.card.person': 'Pokaż dla',
+  'chores.card.name': 'Tytuł karty',
+  'chores.card.namePlaceholder': 'Tytuł domyślny',
   'chores.card.noPeople': 'Najpierw dodaj osoby w sekcji Dom.',
   'chores.card.more': 'Jeszcze {count}',
   'homework.card.title': 'Zadania domowe',
@@ -660,6 +662,15 @@ export const plMessages = {
   'homework.card.notReady': 'Jeszcze nie gotowe',
   'homework.card.openSettings': 'Ustawienia karty zadań domowych',
   'homework.card.settingsDescription': 'Wybierz, czyje zadania domowe pokazuje ta karta.',
+  'household.personCard.emptyTitle': 'Nic już na dziś',
+  'household.personCard.emptyDescription':
+    'Obowiązki i zadania domowe pojawiają się tutaj w dniu, w którym trzeba je wykonać.',
+  'household.personCard.openSettings': 'Ustawienia karty osoby',
+  'household.personCard.settingsDescription':
+    'Wybierz, czyje obowiązki i zadania domowe pokazuje ta karta.',
+  'dashboard.addCard.templates.householdPerson.name': 'Obowiązki i zadania domowe',
+  'dashboard.addCard.templates.householdPerson.description':
+    'Obowiązki i zadania domowe jednej osoby na jednej karcie',
   'dashboard.addCard.templates.chores.name': 'Obowiązki',
   'dashboard.addCard.templates.chores.description':
     'Dzisiejsze obowiązki domowe, odhaczane prosto z pulpitu',

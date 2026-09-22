@@ -73,6 +73,7 @@ export type CardType =
   | 'countdown'
   | 'chores'
   | 'homework'
+  | 'household-person'
   | 'entity';
 
 export interface CustomCard {

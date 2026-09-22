@@ -656,6 +656,8 @@ export const deMessages = {
   'chores.card.openSettings': 'Einstellungen der Aufgabenkarte',
   'chores.card.settingsDescription': 'Wähle, wessen Aufgaben diese Karte zeigt.',
   'chores.card.person': 'Anzeigen für',
+  'chores.card.name': 'Kartentitel',
+  'chores.card.namePlaceholder': 'Standardtitel',
   'chores.card.noPeople': 'Füge zuerst Personen im Haushalt hinzu.',
   'chores.card.more': '{count} weitere',
   'homework.card.title': 'Hausaufgaben',
@@ -667,6 +669,15 @@ export const deMessages = {
   'homework.card.notReady': 'Noch nicht bereit',
   'homework.card.openSettings': 'Einstellungen der Hausaufgabenkarte',
   'homework.card.settingsDescription': 'Wähle, wessen Hausaufgaben diese Karte zeigt.',
+  'household.personCard.emptyTitle': 'Heute nichts mehr offen',
+  'household.personCard.emptyDescription':
+    'Aufgaben und Hausaufgaben erscheinen hier an dem Tag, an dem sie fällig sind.',
+  'household.personCard.openSettings': 'Einstellungen der Personenkarte',
+  'household.personCard.settingsDescription':
+    'Wähle, wessen Aufgaben und Hausaufgaben diese Karte zeigt.',
+  'dashboard.addCard.templates.householdPerson.name': 'Aufgaben und Hausaufgaben',
+  'dashboard.addCard.templates.householdPerson.description':
+    'Aufgaben und Hausaufgaben einer Person auf einer Karte',
   'dashboard.addCard.templates.chores.name': 'Aufgaben',
   'dashboard.addCard.templates.chores.description':
     'Die Haushaltsaufgaben von heute, direkt vom Dashboard abhaken',

@@ -159,6 +159,8 @@ export const enMessages = {
   'chores.card.openSettings': 'Chores card settings',
   'chores.card.settingsDescription': 'Choose whose chores this card shows.',
   'chores.card.person': 'Show for',
+  'chores.card.name': 'Card title',
+  'chores.card.namePlaceholder': 'Default title',
   'chores.card.noPeople': 'Add people in Household first.',
   'chores.card.more': '{count} more',
   'homework.card.title': 'Homework',
@@ -169,6 +171,14 @@ export const enMessages = {
   'homework.card.notReady': 'Not ready',
   'homework.card.openSettings': 'Homework card settings',
   'homework.card.settingsDescription': 'Choose whose homework this card shows.',
+  'household.personCard.emptyTitle': 'Nothing left today',
+  'household.personCard.emptyDescription':
+    'Chores and homework appear here on the day they are due.',
+  'household.personCard.openSettings': 'Person card settings',
+  'household.personCard.settingsDescription': 'Choose whose chores and homework this card shows.',
+  'dashboard.addCard.templates.householdPerson.name': 'Chores and homework',
+  'dashboard.addCard.templates.householdPerson.description':
+    "One person's chores and homework on a single card",
   'dashboard.addCard.templates.chores.name': 'Chores',
   'dashboard.addCard.templates.chores.description':
     "Today's household chores, ticked off from the dashboard",

@@ -122,6 +122,7 @@ function ChoresStory({
         size={size}
         theme={theme}
         state={state}
+        title="Chores"
         rows={cardRows}
         participantsById={PARTICIPANTS}
         now={NOW}

@@ -289,6 +289,7 @@ const cardTypes = new Set<CardType>([
   'countdown',
   'chores',
   'homework',
+  'household-person',
   'entity',
 ]);
 const cardSizes = new Set([
@@ -632,9 +633,10 @@ function sanitizeCustomCardData(
     });
   }
 
-  if (type === 'chores' || type === 'homework') {
+  if (type === 'chores' || type === 'homework' || type === 'household-person') {
     return omitUndefinedEntries({
       participantId: stringValue(data.participantId, 120),
+      title: stringValue(data.title, 80),
       tintColor: stringValue(data.tintColor, 40),
     });
   }

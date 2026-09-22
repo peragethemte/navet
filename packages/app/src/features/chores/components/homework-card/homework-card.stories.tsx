@@ -107,6 +107,7 @@ function HomeworkStory({
         size={size}
         theme={theme}
         state={state}
+        title="Homework"
         rows={cardRows}
         participantsById={PARTICIPANTS}
         now={NOW}

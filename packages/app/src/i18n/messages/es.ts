@@ -652,6 +652,8 @@ export const esMessages = {
   'chores.card.openSettings': 'Ajustes de la tarjeta de tareas',
   'chores.card.settingsDescription': 'Elige de quién muestra las tareas esta tarjeta.',
   'chores.card.person': 'Mostrar para',
+  'chores.card.name': 'Título de la tarjeta',
+  'chores.card.namePlaceholder': 'Título predeterminado',
   'chores.card.noPeople': 'Añade personas en Hogar primero.',
   'chores.card.more': '{count} más',
   'homework.card.title': 'Deberes',
@@ -663,6 +665,15 @@ export const esMessages = {
   'homework.card.notReady': 'Aún no está listo',
   'homework.card.openSettings': 'Ajustes de la tarjeta de deberes',
   'homework.card.settingsDescription': 'Elige de quién muestra los deberes esta tarjeta.',
+  'household.personCard.emptyTitle': 'Nada pendiente hoy',
+  'household.personCard.emptyDescription':
+    'Las tareas y los deberes aparecen aquí el día en que toca hacerlos.',
+  'household.personCard.openSettings': 'Ajustes de la tarjeta de persona',
+  'household.personCard.settingsDescription':
+    'Elige de quién muestra las tareas y los deberes esta tarjeta.',
+  'dashboard.addCard.templates.householdPerson.name': 'Tareas y deberes',
+  'dashboard.addCard.templates.householdPerson.description':
+    'Las tareas y los deberes de una persona en una sola tarjeta',
   'dashboard.addCard.templates.chores.name': 'Tareas',
   'dashboard.addCard.templates.chores.description':
     'Las tareas del hogar de hoy, marcadas desde el panel',

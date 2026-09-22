@@ -647,6 +647,8 @@ export const noMessages = {
   'chores.card.openSettings': 'Innstillinger for husarbeidskort',
   'chores.card.settingsDescription': 'Velg hvem dette kortet viser husarbeid for.',
   'chores.card.person': 'Vis for',
+  'chores.card.name': 'Korttittel',
+  'chores.card.namePlaceholder': 'Standardtittel',
   'chores.card.noPeople': 'Legg til personer i Husholdning først.',
   'chores.card.more': '{count} til',
   'homework.card.title': 'Lekser',
@@ -657,6 +659,15 @@ export const noMessages = {
   'homework.card.notReady': 'Ikke klar',
   'homework.card.openSettings': 'Innstillinger for leksekort',
   'homework.card.settingsDescription': 'Velg hvem dette kortet viser lekser for.',
+  'household.personCard.emptyTitle': 'Ingenting igjen i dag',
+  'household.personCard.emptyDescription':
+    'Husarbeid og lekser dukker opp her den dagen de skal gjøres.',
+  'household.personCard.openSettings': 'Innstillinger for personkort',
+  'household.personCard.settingsDescription':
+    'Velg hvem dette kortet viser husarbeid og lekser for.',
+  'dashboard.addCard.templates.householdPerson.name': 'Husarbeid og lekser',
+  'dashboard.addCard.templates.householdPerson.description':
+    'Husarbeid og lekser for én person på ett kort',
   'dashboard.addCard.templates.chores.name': 'Husarbeid',
   'dashboard.addCard.templates.chores.description':
     'Dagens husarbeid, huket av rett fra dashbordet',

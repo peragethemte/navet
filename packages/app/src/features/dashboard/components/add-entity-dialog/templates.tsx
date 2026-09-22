@@ -8,6 +8,7 @@ import {
   ListChecks,
   MessageCircle,
   Sparkles,
+  UserRound,
 } from 'lucide-react';
 import type { SVGProps } from 'react';
 import type { ButtonWidgetData } from '../widgets/button-widget';
@@ -187,6 +188,15 @@ export function createCardTemplates(t: TranslateFn): CardTemplate[] {
       nameKey: 'dashboard.addCard.templates.homework.name',
       descriptionKey: 'dashboard.addCard.templates.homework.description',
       icon: <GraduationCap className="w-5 h-5" />,
+      defaultSize: 'medium',
+      supportedSizes: ['small', 'medium', 'large'],
+    },
+    {
+      id: 'household-person',
+      cardType: 'household-person',
+      nameKey: 'dashboard.addCard.templates.householdPerson.name',
+      descriptionKey: 'dashboard.addCard.templates.householdPerson.description',
+      icon: <UserRound className="w-5 h-5" />,
       defaultSize: 'medium',
       supportedSizes: ['small', 'medium', 'large'],
     },

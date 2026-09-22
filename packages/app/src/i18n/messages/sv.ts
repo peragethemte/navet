@@ -649,6 +649,8 @@ export const svMessages = {
   'chores.card.openSettings': 'Inställningar för sysslokortet',
   'chores.card.settingsDescription': 'Välj vems sysslor kortet visar.',
   'chores.card.person': 'Visa för',
+  'chores.card.name': 'Kortrubrik',
+  'chores.card.namePlaceholder': 'Standardrubrik',
   'chores.card.noPeople': 'Lägg till personer i Hushåll först.',
   'chores.card.more': '{count} till',
   'homework.card.title': 'Läxor',
@@ -659,6 +661,13 @@ export const svMessages = {
   'homework.card.notReady': 'Inte redo',
   'homework.card.openSettings': 'Inställningar för läxkortet',
   'homework.card.settingsDescription': 'Välj vems läxor kortet visar.',
+  'household.personCard.emptyTitle': 'Inget kvar i dag',
+  'household.personCard.emptyDescription': 'Sysslor och läxor dyker upp här den dag de ska göras.',
+  'household.personCard.openSettings': 'Inställningar för personkortet',
+  'household.personCard.settingsDescription': 'Välj vems sysslor och läxor kortet visar.',
+  'dashboard.addCard.templates.householdPerson.name': 'Sysslor och läxor',
+  'dashboard.addCard.templates.householdPerson.description':
+    'En persons sysslor och läxor på ett och samma kort',
   'dashboard.addCard.templates.chores.name': 'Sysslor',
   'dashboard.addCard.templates.chores.description':
     'Dagens sysslor, avbockade direkt från instrumentpanelen',

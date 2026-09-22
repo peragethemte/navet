@@ -656,6 +656,8 @@ export const frMessages = {
   'chores.card.openSettings': 'Réglages de la carte Tâches',
   'chores.card.settingsDescription': 'Choisissez les tâches de qui cette carte affiche.',
   'chores.card.person': 'Afficher pour',
+  'chores.card.name': 'Titre de la carte',
+  'chores.card.namePlaceholder': 'Titre par défaut',
   'chores.card.noPeople': 'Ajoutez d’abord des personnes dans Foyer.',
   'chores.card.more': '{count} de plus',
   'homework.card.title': 'Devoirs',
@@ -666,6 +668,15 @@ export const frMessages = {
   'homework.card.notReady': 'Pas encore prêt',
   'homework.card.openSettings': 'Réglages de la carte Devoirs',
   'homework.card.settingsDescription': 'Choisissez les devoirs de qui cette carte affiche.',
+  'household.personCard.emptyTitle': 'Plus rien aujourd’hui',
+  'household.personCard.emptyDescription':
+    'Les tâches et les devoirs apparaissent ici le jour où ils sont à faire.',
+  'household.personCard.openSettings': 'Réglages de la carte Personne',
+  'household.personCard.settingsDescription':
+    'Choisissez les tâches et les devoirs de qui cette carte affiche.',
+  'dashboard.addCard.templates.householdPerson.name': 'Tâches et devoirs',
+  'dashboard.addCard.templates.householdPerson.description':
+    'Les tâches et les devoirs d’une personne sur une seule carte',
   'dashboard.addCard.templates.chores.name': 'Tâches',
   'dashboard.addCard.templates.chores.description':
     'Les tâches ménagères du jour, cochées depuis le tableau de bord',

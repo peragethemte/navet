@@ -649,6 +649,8 @@ export const fiMessages = {
   'chores.card.openSettings': 'Kotityökortin asetukset',
   'chores.card.settingsDescription': 'Valitse, kenen kotityöt kortti näyttää.',
   'chores.card.person': 'Näytä henkilölle',
+  'chores.card.name': 'Kortin otsikko',
+  'chores.card.namePlaceholder': 'Oletusotsikko',
   'chores.card.noPeople': 'Lisää ensin henkilöt Kotitalous-osiossa.',
   'chores.card.more': '{count} lisää',
   'homework.card.title': 'Läksyt',
@@ -660,6 +662,14 @@ export const fiMessages = {
   'homework.card.notReady': 'Ei valmis',
   'homework.card.openSettings': 'Läksykortin asetukset',
   'homework.card.settingsDescription': 'Valitse, kenen läksyt kortti näyttää.',
+  'household.personCard.emptyTitle': 'Ei enää tehtävää tänään',
+  'household.personCard.emptyDescription':
+    'Kotityöt ja läksyt näkyvät tässä sinä päivänä, jona ne on tehtävä.',
+  'household.personCard.openSettings': 'Henkilökortin asetukset',
+  'household.personCard.settingsDescription': 'Valitse, kenen kotityöt ja läksyt kortti näyttää.',
+  'dashboard.addCard.templates.householdPerson.name': 'Kotityöt ja läksyt',
+  'dashboard.addCard.templates.householdPerson.description':
+    'Yhden henkilön kotityöt ja läksyt samalla kortilla',
   'dashboard.addCard.templates.chores.name': 'Kotityöt',
   'dashboard.addCard.templates.chores.description':
     'Päivän kotityöt, kuitattavissa suoraan koontinäytöltä',

@@ -31,6 +31,7 @@ export type CardType =
   | 'countdown'
   | 'chores'
   | 'homework'
+  | 'household-person'
   | 'entity';
 
 export interface CustomCard {
@@ -159,7 +160,9 @@ export function normalizeCustomCard(card: NormalizableCustomCard): CustomCard {
   }
 
   if (
-    (normalizedCard.type === 'chores' || normalizedCard.type === 'homework') &&
+    (normalizedCard.type === 'chores' ||
+      normalizedCard.type === 'homework' ||
+      normalizedCard.type === 'household-person') &&
     normalizedCard.size !== 'small' &&
     normalizedCard.size !== 'medium' &&
     normalizedCard.size !== 'large'

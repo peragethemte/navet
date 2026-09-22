@@ -648,6 +648,8 @@ export const daMessages = {
   'chores.card.openSettings': 'Indstillinger for pligtkort',
   'chores.card.settingsDescription': 'Vælg hvis pligter kortet viser.',
   'chores.card.person': 'Vis for',
+  'chores.card.name': 'Korttitel',
+  'chores.card.namePlaceholder': 'Standardtitel',
   'chores.card.noPeople': 'Tilføj personer i Husstand først.',
   'chores.card.more': '{count} mere',
   'homework.card.title': 'Lektier',
@@ -658,6 +660,14 @@ export const daMessages = {
   'homework.card.notReady': 'Ikke klar',
   'homework.card.openSettings': 'Indstillinger for lektiekort',
   'homework.card.settingsDescription': 'Vælg hvis lektier kortet viser.',
+  'household.personCard.emptyTitle': 'Intet tilbage i dag',
+  'household.personCard.emptyDescription':
+    'Pligter og lektier dukker op her på den dag, de skal laves.',
+  'household.personCard.openSettings': 'Indstillinger for personkort',
+  'household.personCard.settingsDescription': 'Vælg hvis pligter og lektier kortet viser.',
+  'dashboard.addCard.templates.householdPerson.name': 'Pligter og lektier',
+  'dashboard.addCard.templates.householdPerson.description':
+    'Én persons pligter og lektier på ét kort',
   'dashboard.addCard.templates.chores.name': 'Pligter',
   'dashboard.addCard.templates.chores.description':
     'Dagens pligter, sat flueben ved direkte fra dashboardet',

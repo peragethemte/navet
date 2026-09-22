@@ -3,6 +3,7 @@ import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { useEditModeSettingsRequest } from '@navet/app/components/shared/edit-mode-settings-request';
 import type { ChoresCardData } from '@navet/app/features/chores/components/chores-card';
 import type { HomeworkCardData } from '@navet/app/features/chores/components/homework-card';
+import type { PersonCardData } from '@navet/app/features/chores/components/person-card';
 import type { RSSCardData } from '@navet/app/features/rss';
 import type { TransitCardData } from '@navet/app/features/transit';
 import { useI18n } from '@navet/app/i18n';
@@ -124,6 +125,11 @@ const ChoresCard = lazy(async () => {
 const HomeworkCard = lazy(async () => {
   const module = await import('@navet/app/features/chores/components/homework-card');
   return { default: module.HomeworkCard };
+});
+
+const PersonCard = lazy(async () => {
+  const module = await import('@navet/app/features/chores/components/person-card');
+  return { default: module.PersonCard };
 });
 
 function isMapMarker(value: unknown): value is MapMarker {
@@ -397,6 +403,21 @@ export function WidgetCard({
           size={card.size}
           room={card.room}
           data={card.data as HomeworkCardData | undefined}
+          onRoomChange={(nextRoom) => handleCardUpdate(card.id, { room: nextRoom })}
+          onUpdate={(nextData) =>
+            handleCardUpdate(card.id, { data: { ...card.data, ...nextData } })
+          }
+          isEditMode={isEditMode}
+          openSettingsRequestKey={resolvedOpenSettingsRequestKey}
+        />
+      );
+      break;
+    case 'household-person':
+      widgetContent = (
+        <PersonCard
+          size={card.size}
+          room={card.room}
+          data={card.data as PersonCardData | undefined}
           onRoomChange={(nextRoom) => handleCardUpdate(card.id, { room: nextRoom })}
           onUpdate={(nextData) =>
             handleCardUpdate(card.id, { data: { ...card.data, ...nextData } })
