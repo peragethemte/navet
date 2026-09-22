@@ -60,13 +60,14 @@ describe('integration-registry.service', () => {
     homeyCallServiceMock.mockReset();
   });
 
-  it('lists all available providers and marks Home Assistant, Homey, openHAB, and Yr.no as implemented', () => {
+  it('lists all available providers and marks Home Assistant, Homey, openHAB, Yr.no, and iCloud as implemented', () => {
     const providers = listAvailableIntegrationProviders();
     expect(providers.map((provider) => provider.id)).toEqual([
       'home_assistant',
       'homey',
       'openhab',
       'yr',
+      'icloud',
       'hubitat',
       'smartthings',
     ]);
@@ -80,6 +81,7 @@ describe('integration-registry.service', () => {
       'homey',
       'openhab',
       'yr',
+      'icloud',
     ]);
   });
 

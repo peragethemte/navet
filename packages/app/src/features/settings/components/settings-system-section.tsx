@@ -75,6 +75,8 @@ const PROVIDER_ACCENTS: Record<IntegrationProviderId, string> = {
   openhab:
     'from-emerald-500/18 via-lime-500/10 to-transparent ring-emerald-400/20 shadow-[0_18px_42px_-34px_rgba(16,185,129,0.55)]',
   yr: 'from-cyan-500/18 via-blue-500/10 to-transparent ring-cyan-400/20 shadow-[0_18px_42px_-34px_rgba(6,182,212,0.55)]',
+  icloud:
+    'from-slate-400/18 via-slate-500/10 to-transparent ring-slate-300/20 shadow-[0_18px_42px_-34px_rgba(148,163,184,0.55)]',
   hubitat:
     'from-fuchsia-500/14 via-pink-500/8 to-transparent ring-fuchsia-400/15 shadow-[0_18px_42px_-34px_rgba(217,70,239,0.45)]',
   smartthings:

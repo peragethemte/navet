@@ -37,6 +37,8 @@
       "@navet/provider-homeassistant/*": ["./packages/provider-homeassistant/src/*"],
       "@navet/provider-homey": ["./packages/provider-homey/src/index.ts"],
       "@navet/provider-homey/*": ["./packages/provider-homey/src/*"],
+      "@navet/provider-icloud": ["./packages/provider-icloud/src/index.ts"],
+      "@navet/provider-icloud/*": ["./packages/provider-icloud/src/*"],
       "@navet/provider-openhab": ["./packages/provider-openhab/src/index.ts"],
       "@navet/provider-openhab/*": ["./packages/provider-openhab/src/*"],
       "@navet/provider-yr": ["./packages/provider-yr/src/index.ts"],

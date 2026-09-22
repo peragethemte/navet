@@ -331,6 +331,11 @@ function useSelectedProviderFeatureCollections({
   const openhabCalendars = useProviderCalendarDevicesCollection('openhab', {
     enabled: enabled && includeCalendars && selectedProviderIdSet.has('openhab'),
   });
+  // icloud has no interactive connect/select step either (see loginMode: 'automatic'): it
+  // renders whenever the sidecar has an Apple ID configured, not based on provider selection.
+  const icloudCalendars = useProviderCalendarDevicesCollection('icloud', {
+    enabled: enabled && includeCalendars,
+  });
   const homeAssistantWeather = useProviderWeatherDevicesCollection('home_assistant', {
     enabled: enabled && includeWeather && selectedProviderIdSet.has('home_assistant'),
   });
@@ -346,8 +351,8 @@ function useSelectedProviderFeatureCollections({
     enabled: enabled && includeWeather,
   });
   const calendars = useMemo(
-    () => [...homeAssistantCalendars, ...homeyCalendars, ...openhabCalendars],
-    [homeAssistantCalendars, homeyCalendars, openhabCalendars]
+    () => [...homeAssistantCalendars, ...homeyCalendars, ...openhabCalendars, ...icloudCalendars],
+    [homeAssistantCalendars, homeyCalendars, openhabCalendars, icloudCalendars]
   );
   const weather = useMemo(
     () => [...homeAssistantWeather, ...homeyWeather, ...openhabWeather, ...yrWeather],

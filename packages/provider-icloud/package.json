@@ -1,0 +1,9 @@
+{
+  "name": "@navet/provider-icloud",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./icloud-runtime-registration": "./src/icloud-runtime-registration.ts"
+  }
+}

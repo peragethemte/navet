@@ -63,6 +63,7 @@ export default defineConfig({
         './packages/provider-homeassistant/src'
       ),
       '@navet/provider-homey': path.resolve(configDir, './packages/provider-homey/src'),
+      '@navet/provider-icloud': path.resolve(configDir, './packages/provider-icloud/src'),
       '@navet/provider-openhab': path.resolve(configDir, './packages/provider-openhab/src'),
       '@navet/provider-yr': path.resolve(configDir, './packages/provider-yr/src'),
       '@docker': path.resolve(configDir, './docker'),

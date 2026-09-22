@@ -32,6 +32,8 @@ function getProviderLabel(providerId: IntegrationProviderId): string {
       return 'openHAB';
     case 'yr':
       return 'Yr.no Weather';
+    case 'icloud':
+      return 'iCloud Calendar';
     case 'hubitat':
       return 'Hubitat';
     case 'smartthings':

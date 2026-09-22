@@ -231,6 +231,8 @@ importers:
 
   packages/provider-homey: {}
 
+  packages/provider-icloud: {}
+
   packages/provider-openhab: {}
 
   packages/provider-yr: {}

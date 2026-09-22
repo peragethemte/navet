@@ -1,5 +1,6 @@
 import { STORAGE_KEYS } from '@navet/app/constants/storage-keys';
 import { useI18n, usePersistedState, useProviderCalendarDevicesCollection } from '@navet/app/hooks';
+import { parseProviderScopedId } from '@navet/app/utils/provider-ids';
 import { subscribeVisibilityAwareTask } from '@navet/app/utils/visibility-aware-scheduler';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -24,7 +25,11 @@ const CALENDAR_TIME_WINDOW_REFRESH_MS = 60 * 1000;
 
 export function useCalendarCardSources(cardId?: string, fallbackEvents: CalendarEvent[] = []) {
   const { t } = useI18n();
-  const calendars = useProviderCalendarDevicesCollection();
+  // The card's own id names the provider that owns it. Resolving from that rather than from the
+  // current provider is what lets a calendar-only provider - one that is never the current
+  // session, such as iCloud next to a Homey hub - still populate the source picker.
+  const cardProviderId = cardId ? parseProviderScopedId(cardId)?.providerId : undefined;
+  const calendars = useProviderCalendarDevicesCollection(cardProviderId);
   const [timeWindowTick, setTimeWindowTick] = useState(() => Date.now());
   const [calendarSources, setCalendarSources] = usePersistedState<PersistedCalendarSources>(
     STORAGE_KEYS.calendarCardSources,

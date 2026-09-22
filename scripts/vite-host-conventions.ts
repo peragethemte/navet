@@ -62,6 +62,7 @@ export function createNavetPackageAliases(repoRoot: string) {
       'app',
       'provider-homeassistant',
       'provider-homey',
+      'provider-icloud',
       'provider-openhab',
       'provider-yr',
     ].map(

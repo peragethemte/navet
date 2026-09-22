@@ -131,6 +131,10 @@ const PROVIDER_OPTION_CONTENT: Record<
     detailKey: 'login.providers.automatic.detail',
     logoSrc: '',
   },
+  icloud: {
+    detailKey: 'login.providers.automatic.detail',
+    logoSrc: '',
+  },
   hubitat: {
     detailKey: 'login.providers.unavailable.detail',
     logoSrc: '',

@@ -3,6 +3,7 @@ export const INTEGRATION_PROVIDER_IDS = [
   'homey',
   'openhab',
   'yr',
+  'icloud',
   'hubitat',
   'smartthings',
 ] as const;
@@ -14,6 +15,7 @@ export const IMPLEMENTED_INTEGRATION_PROVIDER_IDS = [
   'homey',
   'openhab',
   'yr',
+  'icloud',
 ] as const satisfies readonly IntegrationProviderId[];
 
 export type ImplementedIntegrationProviderId =
@@ -79,6 +81,16 @@ export const INTEGRATION_PROVIDERS: Record<IntegrationProviderId, IntegrationPro
   yr: {
     id: 'yr',
     label: 'Yr.no Weather',
+    implementationStatus: 'implemented',
+    loginMode: 'automatic',
+    supportsDiscovery: false,
+    supportsAggregation: false,
+    supportsRooms: false,
+    supportsRealtimeUpdates: false,
+  },
+  icloud: {
+    id: 'icloud',
+    label: 'iCloud Calendar',
     implementationStatus: 'implemented',
     loginMode: 'automatic',
     supportsDiscovery: false,

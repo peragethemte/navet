@@ -4,6 +4,7 @@ import type {
   ProviderPackageRegistration,
 } from '@navet/core/provider-runtime-types';
 import { createHomeyProviderPackageRegistration } from '@navet/provider-homey';
+import { createICloudProviderPackageRegistration } from '@navet/provider-icloud';
 import { createOpenHABProviderPackageRegistration } from '@navet/provider-openhab';
 import { createYrProviderPackageRegistration } from '@navet/provider-yr';
 import { createHomeAssistantAppProviderPackageRegistration } from './provider-composition/home-assistant-package-registration';
@@ -44,6 +45,7 @@ const providerPackageRegistrationFactories: Record<
       getSession: () => getProviderSession('openhab'),
     }),
   yr: () => createYrProviderPackageRegistration({ locationSource: weatherLocationSource }),
+  icloud: () => createICloudProviderPackageRegistration(),
 };
 
 var providerPackageRegistrationOverrides:
