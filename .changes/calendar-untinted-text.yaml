@@ -1,0 +1,5 @@
+type: fixed
+audiences:
+  - standalone
+  - home-assistant
+summary: Calendar text without a custom tint now uses the same colours as other cards, instead of a dimmer blue-grey.

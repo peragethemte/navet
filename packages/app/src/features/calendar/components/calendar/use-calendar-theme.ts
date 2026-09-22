@@ -1,5 +1,13 @@
-import { getCardReadableTextTokens } from '@navet/app/components/shared/theme/card-readable-text-tokens';
 import type { ThemeType } from '@navet/app/hooks';
+
+// Mirrors textPrimary/textSecondary in theme-surface-tokens as colour values, since the calendar
+// passes text colours as inline styles. The contrast-derived neutral tokens land on slate grey.
+const UNTINTED_TEXT_COLORS: Record<ThemeType, { primary: string; secondary: string }> = {
+  light: { primary: '#020617', secondary: '#334155' },
+  dark: { primary: '#ffffff', secondary: '#d1d5db' },
+  black: { primary: '#ffffff', secondary: '#d1d5db' },
+  glass: { primary: '#ffffff', secondary: 'rgba(255, 255, 255, 0.86)' },
+};
 
 interface CalendarThemeColors {
   textPrimary: string;
@@ -23,13 +31,9 @@ export function useCalendarTheme(
   tintTextPrimary?: string,
   tintTextSecondary?: string
 ): CalendarThemeColors {
-  const textTokens = getCardReadableTextTokens({
-    theme,
-    tone: 'neutral',
-    backgroundColor,
-  });
-  const textPrimary = tintTextPrimary ?? textTokens.titleColor;
-  const textSecondary = tintTextSecondary ?? textTokens.subtitleColor;
+  const untintedText = UNTINTED_TEXT_COLORS[theme];
+  const textPrimary = tintTextPrimary ?? untintedText.primary;
+  const textSecondary = tintTextSecondary ?? untintedText.secondary;
   const overlayBg =
     theme === 'light' ? 'bg-white/60 backdrop-blur-sm' : 'bg-black/20 backdrop-blur-sm';
   const iconBg =
