@@ -29,8 +29,8 @@ interface CalendarSettingsDialogProps {
   calendars: CalendarSourceOption[];
   selectedCalendarIds: string[];
   onSelectedCalendarIdsChange: (ids: string[]) => void;
-  viewMode: 'week' | 'month';
-  onViewModeChange: (viewMode: 'week' | 'month') => void;
+  viewMode: 'day' | 'week' | 'month';
+  onViewModeChange: (viewMode: 'day' | 'week' | 'month') => void;
   tintColor?: string;
   onTintColorChange?: (color: string) => void;
 }
@@ -66,7 +66,7 @@ export function CalendarSettingsDialog({
     <div className="space-y-4">
       <CardDialogSection label={t('calendar.settings.view')} className="mb-4">
         <div className="inline-flex items-center gap-1">
-          {(['week', 'month'] as const).map((option) => (
+          {(['day', 'week', 'month'] as const).map((option) => (
             <CardDialogChoicePill
               key={option}
               active={viewMode === option}
@@ -74,9 +74,11 @@ export function CalendarSettingsDialog({
               className="min-w-0"
               onClick={() => onViewModeChange(option)}
             >
-              {option === 'week'
-                ? t('calendar.settings.thisWeek')
-                : t('calendar.settings.thisMonth')}
+              {option === 'day'
+                ? t('calendar.settings.today')
+                : option === 'week'
+                  ? t('calendar.settings.thisWeek')
+                  : t('calendar.settings.thisMonth')}
             </CardDialogChoicePill>
           ))}
         </div>

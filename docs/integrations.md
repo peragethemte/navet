@@ -15,6 +15,8 @@ connection, authentication, state mapping, and command translation.
   connect Homey as an additional provider when its Homey client options are configured.
 - [openHAB](/install/openhab/) uses the base-URL and credential flow. It can also be connected as an
   additional provider from Settings in a running multi-provider installation.
+- iCloud Calendar supplies calendar data only. It has no login step: it connects by itself once an
+  Apple ID is configured where Navet runs. See "Apple calendars" below.
 
 Hubitat and SmartThings are planned providers. Follow the [roadmap](/roadmap/) for current direction;
 do not treat planned integrations as supported installations.
@@ -77,6 +79,24 @@ Navet maps openHAB rooms and realtime items for lights, switches, fans, climate 
 playback and volume, locks, covers, security sensors, batteries, and utility measurements. It does
 not register history, energy-statistics, alarm-panel, media-browser, camera, calendar, weather,
 notification, Assist, task, or provider-administration services.
+
+### Apple calendars
+
+Navet reads iCloud calendars over CalDAV and shows them on the calendar card alongside any other
+provider's calendars. Nothing else about the account is used, and nothing is ever written back.
+
+Set `NAVET_ICLOUD_APPLE_ID` and `NAVET_ICLOUD_APP_PASSWORD` where Navet runs. The password must be
+an app-specific password, created at appleid.apple.com under Sign-In and Security; an Apple ID's
+own password is rejected. Both values also accept a `_FILE` twin pointing at a mounted secret.
+
+Every calendar in the account appears as a separate source, including calendars shared with you.
+Add a calendar card, open its settings in edit mode, and select the ones this dashboard should
+show. The same settings choose how far ahead the card looks: today, this week, or this month.
+Events refresh every few minutes; if iCloud becomes unreachable the card keeps showing the last
+events it received rather than emptying.
+
+Each calendar keeps the colour it has in iCloud, matched to the closest colour in Navet's own
+palette. Two calendars that look similar in Apple's app can therefore end up sharing a colour.
 
 ### Planned providers
 

@@ -1469,6 +1469,7 @@ export const daMessages = {
   'calendar.settings.room': 'Værelse',
   'calendar.settings.view': 'Visning',
   'calendar.settings.calendars': 'Kalendere',
+  'calendar.settings.today': 'I dag',
   'calendar.settings.thisWeek': 'Denne uge',
   'calendar.settings.thisMonth': 'Denne måned',
   'calendar.event.details': 'Detaljer',

@@ -48,7 +48,9 @@ def series_document() -> str:
 def stub_caldav(documents=None, collections=None):
     """Patch the whole CalDAV layer away; the poll loop under test is what matters."""
     collections = collections or [
-        CalendarCollection(entity_id="calendar.familie", name="Familie", url="https://c/1"),
+        CalendarCollection(
+            entity_id="calendar.familie", name="Familie", url="https://c/1", color="#FF2968"
+        ),
         CalendarCollection(entity_id="calendar.jobb", name="Jobb", url="https://c/2"),
     ]
     documents = series_document() if documents is None else documents
@@ -143,8 +145,8 @@ class EndpointTests(unittest.TestCase):
         self.assertEqual(
             payload["calendars"],
             [
-                {"entityId": "calendar.familie", "name": "Familie"},
-                {"entityId": "calendar.jobb", "name": "Jobb"},
+                {"entityId": "calendar.familie", "name": "Familie", "color": "#FF2968"},
+                {"entityId": "calendar.jobb", "name": "Jobb", "color": None},
             ],
         )
 
@@ -158,6 +160,16 @@ class EndpointTests(unittest.TestCase):
 
         # The stub holds a daily series of five; only the ones inside two days survive.
         self.assertEqual(len(payload["calendars"][0]["events"]), 2)
+
+    def test_events_carry_the_calendar_colour(self):
+        payload = main.list_events(days=None, calendar="calendar.familie")
+
+        self.assertEqual(payload["calendars"][0]["color"], "#FF2968")
+
+    def test_a_calendar_without_a_colour_reports_none(self):
+        payload = main.list_events(days=None, calendar="calendar.jobb")
+
+        self.assertIsNone(payload["calendars"][0]["color"])
 
     def test_unknown_calendar_returns_an_empty_list(self):
         payload = main.list_events(days=None, calendar="calendar.nope")

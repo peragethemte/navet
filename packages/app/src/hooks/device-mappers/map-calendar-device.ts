@@ -117,11 +117,17 @@ export function mapCalendarSources(
     .slice(0, 5)
     .map(({ startDate: _startDate, ...event }) => event);
 
+  const accentColor =
+    typeof entity.attributes?.calendar_color === 'string'
+      ? entity.attributes.calendar_color
+      : undefined;
+
   return [
     {
       id: entityId,
       name,
       room,
+      accentColor,
       events,
     },
   ];

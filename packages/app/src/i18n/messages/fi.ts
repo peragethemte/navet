@@ -1466,6 +1466,7 @@ export const fiMessages = {
   'calendar.settings.room': 'Huone',
   'calendar.settings.view': 'Näytä',
   'calendar.settings.calendars': 'Kalenterit',
+  'calendar.settings.today': 'Tänään',
   'calendar.settings.thisWeek': 'Tällä viikolla',
   'calendar.settings.thisMonth': 'Tässä kuussa',
   'calendar.event.details': 'Yksityiskohdat',

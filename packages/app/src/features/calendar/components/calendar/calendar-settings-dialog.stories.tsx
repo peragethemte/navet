@@ -9,7 +9,7 @@ import { CalendarSettingsDialog } from './calendar-settings-dialog';
 function CalendarSettingsDialogStory() {
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
+  const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('week');
   const [tintColor, setTintColor] = useState<string | undefined>('#6366f1');
   const [selectedCalendarIds, setSelectedCalendarIds] = useState([
     'calendar.family',

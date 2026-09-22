@@ -1040,6 +1040,7 @@ export const zhMessages = {
   'calendar.settings.room': '房间',
   'calendar.settings.view': '视图',
   'calendar.settings.calendars': '日历',
+  'calendar.settings.today': '今天',
   'calendar.settings.thisWeek': '本周',
   'calendar.settings.thisMonth': '本月',
   'calendar.event.details': '详情',

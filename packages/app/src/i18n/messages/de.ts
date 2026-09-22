@@ -1483,6 +1483,7 @@ export const deMessages = {
   'calendar.settings.room': 'Raum',
   'calendar.settings.view': 'Ansicht',
   'calendar.settings.calendars': 'Kalender',
+  'calendar.settings.today': 'Heute',
   'calendar.settings.thisWeek': 'Diese Woche',
   'calendar.settings.thisMonth': 'Diesen Monat',
   'calendar.event.details': 'Details',

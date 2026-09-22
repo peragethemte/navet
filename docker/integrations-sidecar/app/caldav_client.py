@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import caldav
+from caldav.elements import ical
 
 from .config import Account
 
@@ -26,6 +27,7 @@ class CalendarCollection:
     entity_id: str
     name: str
     url: str
+    color: str | None = None
 
 
 def connect(account: Account) -> caldav.Principal:
@@ -53,7 +55,12 @@ def list_event_calendars(principal: caldav.Principal) -> list[CalendarCollection
         url = str(calendar.url)
         name = _display_name(calendar) or url
         collections.append(
-            CalendarCollection(entity_id=_entity_id(name, url, used_ids), name=name, url=url)
+            CalendarCollection(
+                entity_id=_entity_id(name, url, used_ids),
+                name=name,
+                url=url,
+                color=_color(calendar),
+            )
         )
 
     return collections
@@ -86,6 +93,24 @@ def _display_name(calendar) -> str:
         return str(calendar.get_display_name() or "").strip()
     except Exception:
         return str(getattr(calendar, "name", "") or "").strip()
+
+
+def _color(calendar) -> str | None:
+    """Read the calendar's own colour, which Apple publishes as `#RRGGBBAA`.
+
+    Navet renders colours from its own palette, so this is a hint the app maps onto that palette
+    rather than a value it uses directly. The alpha byte is dropped: it is always opaque.
+    """
+    try:
+        properties = calendar.get_properties([ical.CalendarColor()])
+    except Exception:
+        return None
+
+    raw = str(properties.get(ical.CalendarColor.tag) or "").strip()
+    if not re.fullmatch(r"#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?", raw):
+        return None
+
+    return raw[:7].upper()
 
 
 def _entity_id(name: str, url: str, used_ids: set[str]) -> str:

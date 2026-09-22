@@ -1477,6 +1477,7 @@ export const nlMessages = {
   'calendar.settings.room': 'Kamer',
   'calendar.settings.view': 'Bekijk',
   'calendar.settings.calendars': 'Kalenders',
+  'calendar.settings.today': 'Vandaag',
   'calendar.settings.thisWeek': 'Deze week',
   'calendar.settings.thisMonth': 'Deze maand',
   'calendar.event.details': 'Details',

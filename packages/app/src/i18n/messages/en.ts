@@ -988,6 +988,7 @@ export const enMessages = {
   'calendar.settings.room': 'Room',
   'calendar.settings.view': 'View',
   'calendar.settings.calendars': 'Calendars',
+  'calendar.settings.today': 'Today',
   'calendar.settings.thisWeek': 'This Week',
   'calendar.settings.thisMonth': 'This Month',
   'calendar.event.details': 'Details',

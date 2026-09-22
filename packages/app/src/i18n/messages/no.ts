@@ -1464,6 +1464,7 @@ export const noMessages = {
   'calendar.settings.room': 'Rom',
   'calendar.settings.view': 'Visning',
   'calendar.settings.calendars': 'Kalendere',
+  'calendar.settings.today': 'I dag',
   'calendar.settings.thisWeek': 'Denne uken',
   'calendar.settings.thisMonth': 'Denne måneden',
   'calendar.event.details': 'Detaljer',

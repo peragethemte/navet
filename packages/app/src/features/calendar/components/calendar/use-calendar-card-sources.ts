@@ -7,21 +7,30 @@ import {
   getCalendarEventSortValue,
   isCalendarEventVisibleInWindow,
 } from './calendar-event-visibility';
+import { resolveCalendarSourceColor } from './calendar-source-colors';
 import type { CalendarEvent } from './types';
 
 type PersistedCalendarSources = Record<string, string[]>;
-type CalendarViewMode = 'week' | 'month';
+type CalendarViewMode = 'day' | 'week' | 'month';
 type PersistedCalendarViewModes = Record<string, CalendarViewMode>;
 type PersistedCalendarTintColors = Record<string, string>;
 
-const SOURCE_COLOR_CLASSES = [
-  'bg-blue-500',
-  'bg-purple-500',
-  'bg-green-500',
-  'bg-orange-500',
-  'bg-indigo-500',
-] as const;
 const CALENDAR_TIME_WINDOW_REFRESH_MS = 60 * 1000;
+const EVENT_LIMIT_BY_VIEW_MODE: Record<CalendarViewMode, number> = { day: 12, week: 7, month: 12 };
+
+// Day means the rest of today, so the card empties as the evening ends rather than rolling into
+// tomorrow. Week and month stay rolling windows, which is how they already behaved.
+function resolveWindowEnd(now: Date, viewMode: CalendarViewMode): Date {
+  if (viewMode === 'day') {
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+    return endOfDay;
+  }
+
+  const endDate = new Date(now);
+  endDate.setDate(now.getDate() + (viewMode === 'week' ? 7 : 31));
+  return endDate;
+}
 
 export function useCalendarCardSources(cardId?: string, fallbackEvents: CalendarEvent[] = []) {
   const { t } = useI18n();
@@ -60,7 +69,7 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
 
         return sources.map((source, index) => ({
           ...source,
-          color: SOURCE_COLOR_CLASSES[index % SOURCE_COLOR_CLASSES.length],
+          color: resolveCalendarSourceColor(source.accentColor, index),
         }));
       }),
     [calendars]
@@ -116,8 +125,7 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
     }
 
     const now = new Date(timeWindowTick);
-    const endDate = new Date(now);
-    endDate.setDate(now.getDate() + (viewMode === 'week' ? 7 : 31));
+    const endDate = resolveWindowEnd(now, viewMode);
 
     return matchedCalendars
       .flatMap((calendar) =>
@@ -132,7 +140,7 @@ export function useCalendarCardSources(cardId?: string, fallbackEvents: Calendar
         const rightKey = getCalendarEventSortValue(right);
         return leftKey.localeCompare(rightKey);
       })
-      .slice(0, viewMode === 'week' ? 7 : 12);
+      .slice(0, EVENT_LIMIT_BY_VIEW_MODE[viewMode]);
   }, [availableCalendars, cardId, fallbackEvents, selectedCalendarIds, timeWindowTick, viewMode]);
 
   useEffect(() => {

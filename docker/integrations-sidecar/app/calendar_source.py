@@ -75,6 +75,7 @@ class CalendarSource:
                     {
                         "entityId": collection.entity_id,
                         "name": collection.name,
+                        "color": collection.color,
                         "events": events,
                     }
                 )

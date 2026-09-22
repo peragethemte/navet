@@ -52,7 +52,11 @@ function setCurrentData(calendars: ICloudCalendar[], lastUpdated: string): void 
 
   for (const calendar of calendars) {
     const state = isBusy(calendar.events) ? 'on' : 'off';
-    const attributes = { friendly_name: calendar.name };
+    // The app maps this onto its own palette; it is a hint, not a value it renders directly.
+    const attributes: Record<string, unknown> = { friendly_name: calendar.name };
+    if (calendar.color) {
+      attributes.calendar_color = calendar.color;
+    }
     snapshots[calendar.entityId] = {
       entityId: calendar.entityId,
       state,

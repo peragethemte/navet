@@ -1484,6 +1484,7 @@ export const frMessages = {
   'calendar.settings.room': 'Pièce',
   'calendar.settings.view': 'Vue',
   'calendar.settings.calendars': 'Calendriers',
+  'calendar.settings.today': "Aujourd'hui",
   'calendar.settings.thisWeek': 'Cette semaine',
   'calendar.settings.thisMonth': 'Ce mois-ci',
   'calendar.event.details': 'Détails',

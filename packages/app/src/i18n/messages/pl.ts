@@ -1470,6 +1470,7 @@ export const plMessages = {
   'calendar.settings.room': 'Pomieszczenie',
   'calendar.settings.view': 'Widok',
   'calendar.settings.calendars': 'Kalendarze',
+  'calendar.settings.today': 'Dziś',
   'calendar.settings.thisWeek': 'W tym tygodniu',
   'calendar.settings.thisMonth': 'W tym miesiącu',
   'calendar.event.details': 'Szczegóły',

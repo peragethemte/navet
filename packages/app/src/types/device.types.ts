@@ -281,10 +281,14 @@ export interface VacuumDevice extends BaseDevice {
 export interface CalendarDevice extends BaseDevice {
   room: string;
   sourceIds?: string[];
+  /** Set when a single-source card stands in for its own source. */
+  accentColor?: string;
   sources?: Array<{
     id: string;
     name: string;
     room: string;
+    /** The source's own colour, if its provider publishes one. Mapped onto Navet's palette. */
+    accentColor?: string;
     events: Array<{
       id: string;
       title: string;

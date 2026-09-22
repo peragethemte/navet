@@ -1444,6 +1444,7 @@ export const itMessages = {
   'calendar.settings.room': 'Stanza',
   'calendar.settings.view': 'Vista',
   'calendar.settings.calendars': 'Calendari',
+  'calendar.settings.today': 'Oggi',
   'calendar.settings.thisWeek': 'Questa settimana',
   'calendar.settings.thisMonth': 'Questo mese',
   'calendar.event.details': 'Dettagli',

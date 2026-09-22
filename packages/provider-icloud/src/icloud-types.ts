@@ -22,6 +22,8 @@ export interface ICloudEvent {
 export interface ICloudCalendar {
   entityId: string;
   name: string;
+  /** The calendar's own colour in iCloud, as `#RRGGBB`. Null when the server publishes none. */
+  color?: string | null;
   events: ICloudEvent[];
 }
 

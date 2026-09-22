@@ -52,7 +52,11 @@ def list_calendars() -> dict:
         "stale": snapshot["stale"],
         "fetchedAt": snapshot["fetchedAt"],
         "calendars": [
-            {"entityId": calendar["entityId"], "name": calendar["name"]}
+            {
+                "entityId": calendar["entityId"],
+                "name": calendar["name"],
+                "color": calendar["color"],
+            }
             for calendar in snapshot["calendars"]
         ],
     }
@@ -71,6 +75,7 @@ def list_events(
         {
             "entityId": entry["entityId"],
             "name": entry["name"],
+            "color": entry["color"],
             "events": [event for event in entry["events"] if _within(event, cutoff)],
         }
         for entry in snapshot["calendars"]

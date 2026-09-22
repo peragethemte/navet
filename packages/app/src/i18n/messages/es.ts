@@ -1474,6 +1474,7 @@ export const esMessages = {
   'calendar.settings.room': 'Habitación',
   'calendar.settings.view': 'Vista',
   'calendar.settings.calendars': 'Calendarios',
+  'calendar.settings.today': 'Hoy',
   'calendar.settings.thisWeek': 'Esta semana',
   'calendar.settings.thisMonth': 'Este mes',
   'calendar.event.details': 'Detalles',

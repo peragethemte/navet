@@ -1464,6 +1464,7 @@ export const svMessages = {
   'calendar.settings.room': 'Rum',
   'calendar.settings.view': 'Vy',
   'calendar.settings.calendars': 'Kalendrar',
+  'calendar.settings.today': 'I dag',
   'calendar.settings.thisWeek': 'Denna vecka',
   'calendar.settings.thisMonth': 'Denna månad',
   'calendar.event.details': 'Detaljer',

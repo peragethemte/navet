@@ -1469,6 +1469,7 @@ export const ptMessages = {
   'calendar.settings.room': 'Cômodo',
   'calendar.settings.view': 'Visualização',
   'calendar.settings.calendars': 'Calendários',
+  'calendar.settings.today': 'Hoje',
   'calendar.settings.thisWeek': 'Esta semana',
   'calendar.settings.thisMonth': 'Este mês',
   'calendar.event.details': 'Detalhes',
