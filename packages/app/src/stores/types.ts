@@ -69,6 +69,7 @@ export type CardType =
   | 'button'
   | 'assist'
   | 'map'
+  | 'transit'
   | 'entity';
 
 export interface CustomCard {

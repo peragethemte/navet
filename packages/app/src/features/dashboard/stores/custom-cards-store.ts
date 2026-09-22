@@ -137,6 +137,15 @@ export function normalizeCustomCard(card: NormalizableCustomCard): CustomCard {
   }
 
   if (
+    normalizedCard.type === 'transit' &&
+    normalizedCard.size !== 'small' &&
+    normalizedCard.size !== 'medium' &&
+    normalizedCard.size !== 'large'
+  ) {
+    return { ...normalizedCard, size: 'medium' };
+  }
+
+  if (
     normalizedCard.type === 'entity' &&
     normalizedCard.size !== 'extra-small' &&
     normalizedCard.size !== 'small' &&
