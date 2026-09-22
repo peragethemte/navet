@@ -1,10 +1,11 @@
 import type { ProviderWeatherFeatureService } from '@navet/core/provider-feature-services';
 import { getYrForecast } from './yr-client';
 import { buildDailyForecastEntries, buildHourlyForecastEntries } from './yr-forecast-utils';
+import { getConfiguredYrLocation } from './yr-location-source';
 
 export const yrWeatherFeatureService: ProviderWeatherFeatureService = {
   async getForecast(_entityId, type) {
-    const forecast = await getYrForecast();
+    const forecast = await getYrForecast(getConfiguredYrLocation());
     const timeseries = forecast?.properties?.timeseries ?? [];
     if (timeseries.length === 0) {
       return [];

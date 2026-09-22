@@ -535,6 +535,7 @@ export const itMessages = {
   'settings.nav.appearance': 'Aspetto',
   'settings.nav.localization': 'Localizzazione',
   'settings.nav.interaction': 'Interazione',
+  'settings.nav.local': 'Servizi locali',
   'settings.nav.dashboard': 'Pannello di controllo',
   'settings.nav.system': 'Sistema',
   'settings.nav.project': 'Informazioni su Navet',
@@ -589,6 +590,30 @@ export const itMessages = {
   'settings.appearance.wallpaper.replace': 'Sostituisci sfondo',
   'settings.appearance.wallpaper.upload': 'Carica sfondo',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG fino a 5 MB',
+  'settings.local.sectionTitle': 'Servizi locali',
+  'settings.local.sectionDescription':
+    'Informazioni su meteo e trasporti per i luoghi che contano per la famiglia.',
+  'settings.local.weatherLocation.title': 'Località meteo',
+  'settings.local.weatherLocation.description':
+    'Coordinate per cui viene richiesta la previsione. Lascia entrambi i campi vuoti per usare la località configurata sul server.',
+  'settings.local.weatherLocation.latitude': 'Latitudine',
+  'settings.local.weatherLocation.longitude': 'Longitudine',
+  'settings.local.weatherLocation.name': 'Nome del luogo',
+  'settings.local.weatherLocation.namePlaceholder': 'Nome mostrato sulla scheda meteo',
+  'settings.local.weatherLocation.latitudeError':
+    'La latitudine deve essere un numero compreso tra -90 e 90.',
+  'settings.local.weatherLocation.longitudeError':
+    'La longitudine deve essere un numero compreso tra -180 e 180.',
+  'settings.local.weatherLocation.incompleteError':
+    'Inserisci sia la latitudine sia la longitudine.',
+  'settings.local.weatherLocation.hint':
+    'La scheda meteo si aggiorna pochi secondi dopo la modifica delle coordinate.',
+  'settings.local.weatherLocation.usingServerDefault':
+    'È in uso la località configurata sul server.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Usa questo dispositivo',
+  'settings.local.weatherLocation.deviceLocationError':
+    'Questo dispositivo non ha potuto condividere la sua posizione. Inserisci le coordinate manualmente.',
+  'settings.local.weatherLocation.useServerDefault': 'Usa la località del server',
   'settings.dashboard.sectionTitle': 'Pannello di controllo',
   'settings.dashboard.sectionDescription':
     'Gestisci cosa appare sulla bacheca e come viene salvata la configurazione locale.',

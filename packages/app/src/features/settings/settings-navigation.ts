@@ -6,6 +6,7 @@ export type SettingsTabId =
   | 'appearance'
   | 'localization'
   | 'interaction'
+  | 'local'
   | 'dashboard'
   | 'system'
   | 'project';

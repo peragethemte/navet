@@ -11,6 +11,7 @@ import type { IntegrationProviderRuntimeRegistration } from './provider-runtime-
 import { homeyService } from './services/homey.service';
 import { ensureHomeyApiClientConfigured } from './services/homey-api-client.service';
 import { homeyEntityRuntimeService } from './services/homey-entity-runtime.service';
+import { weatherLocationSource } from './services/weather-location.service';
 import {
   type ImplementedIntegrationProviderId,
   type IntegrationProviderId,
@@ -42,7 +43,7 @@ const providerPackageRegistrationFactories: Record<
     createOpenHABProviderPackageRegistration({
       getSession: () => getProviderSession('openhab'),
     }),
-  yr: () => createYrProviderPackageRegistration(),
+  yr: () => createYrProviderPackageRegistration({ locationSource: weatherLocationSource }),
 };
 
 var providerPackageRegistrationOverrides:

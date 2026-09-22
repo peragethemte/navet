@@ -211,6 +211,7 @@ const allowedIdenticalValuesByLanguage = {
     'Notifications', 'Important', 'Sections', 'Routines', 'Scripts', 'scripts', 'Total',
     'Sources', 'Radio', 'Conditions', 'Widget', 'Photos', 'pagination', 'Modes', 'charge',
     'Usage', 'source', 'Menu', 'Destination', 'Attention', 'Album', 'Orange', 'Type', 'Actions',
+    'Latitude', 'Longitude',
   ]),
   es: new Set([
     'Experimental', 'Auto', 'Manual', 'Celsius', 'Fahrenheit', 'Error', 'Total', 'Radio',
@@ -243,6 +244,7 @@ const allowedIdenticalValuesByLanguage = {
   pt: new Set([
     'Experimental', 'Auto', 'Manual', 'Celsius', 'Fahrenheit', 'Status', 'Widgets',
     'Volume', 'Sensor', 'Total', 'Radio', 'Widget', 'Link', 'Menu', 'Normal', 'Solar',
+    'Latitude', 'Longitude',
   ]),
   no: new Set([
     'System', 'Auto', 'Standard', 'Celsius', 'Fahrenheit', 'Type', 'Status', 'Analytics',

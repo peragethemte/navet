@@ -1,5 +1,5 @@
 import { useI18n, useMediaQuery, usePersistedState } from '@navet/app/hooks';
-import { Hand, Info, Languages, LayoutGrid, Palette, Server } from 'lucide-react';
+import { Hand, Info, Languages, LayoutGrid, MapPin, Palette, Server } from 'lucide-react';
 import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
 import { useSettingsSectionController } from '../hooks/use-settings-section-controller';
 import {
@@ -10,6 +10,7 @@ import {
 import { SettingsAppearanceSection } from './settings-appearance-section';
 import { SettingsDashboardSection } from './settings-dashboard-section';
 import { SettingsInteractionSection } from './settings-interaction-section';
+import { SettingsLocalSection } from './settings-local-section';
 import { SettingsLocalizationSection } from './settings-localization-section';
 import { type SettingsNavigationGroup, SettingsNavigationShell } from './settings-navigation-shell';
 import { SettingsProjectSection } from './settings-project-section';
@@ -43,6 +44,7 @@ export function SettingsSection({
         { id: 'appearance', label: t('settings.nav.appearance'), icon: Palette },
         { id: 'localization', label: t('settings.nav.localization'), icon: Languages },
         { id: 'interaction', label: t('settings.nav.interaction'), icon: Hand },
+        { id: 'local', label: t('settings.nav.local'), icon: MapPin },
         { id: 'dashboard', label: t('settings.nav.dashboard'), icon: LayoutGrid },
         { id: 'system', label: t('settings.nav.system'), icon: Server },
         { id: 'project', label: t('settings.project.sectionTitle'), icon: Info },
@@ -96,7 +98,7 @@ export function SettingsSection({
     });
 
     return [
-      createGroup('personal', ['appearance', 'localization', 'interaction']),
+      createGroup('personal', ['appearance', 'localization', 'interaction', 'local']),
       createGroup('dashboard', ['dashboard'], t('settings.nav.dashboard')),
       createGroup('navet', ['system', 'project'], 'Navet'),
     ].filter((group) => group.items.length > 0);
@@ -165,6 +167,8 @@ export function SettingsSection({
       <SettingsLocalizationSection controller={controller} />
     ) : activeTab === 'interaction' ? (
       <SettingsInteractionSection controller={controller} />
+    ) : activeTab === 'local' ? (
+      <SettingsLocalSection controller={controller} />
     ) : activeTab === 'dashboard' ? (
       <SettingsDashboardSection controller={controller} />
     ) : activeTab === 'system' && !hiddenTabSet.has('system') ? (

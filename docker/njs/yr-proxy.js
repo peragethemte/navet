@@ -27,6 +27,38 @@ function readLocationConfig() {
   };
 }
 
+function parseCoordinate(value, limit) {
+  if (typeof value !== 'string' || value.trim() === '') {
+    return null;
+  }
+
+  const parsed = Number(value);
+  if (!isFinite(parsed) || parsed < -limit || parsed > limit) {
+    return null;
+  }
+
+  return String(parsed);
+}
+
+/**
+ * Coordinates sent by the dashboard win over the environment defaults. The upstream host is
+ * fixed, so this is not an SSRF surface - the range check keeps malformed input from reaching
+ * met.no and burning request quota on guaranteed errors.
+ */
+function resolveRequestLocation(r, config) {
+  if (r.args.lat === undefined && r.args.lon === undefined) {
+    return config ? { latitude: config.latitude, longitude: config.longitude } : null;
+  }
+
+  const latitude = parseCoordinate(r.args.lat, 90);
+  const longitude = parseCoordinate(r.args.lon, 180);
+  if (latitude === null || longitude === null) {
+    return 'invalid';
+  }
+
+  return { latitude: latitude, longitude: longitude };
+}
+
 // Same-origin relay for met.no's public locationforecast/sunrise APIs. Unlike the RSS proxy,
 // the upstream target is fixed and trusted (never a user-supplied URL), so this only needs to
 // inject the required User-Agent header and the server-configured coordinates - no SSRF guard
@@ -52,19 +84,27 @@ async function handleRequest(r) {
     return;
   }
 
-  if (!config) {
+  const location = resolveRequestLocation(r, config);
+  if (location === 'invalid') {
+    sendJson(r, 400, {
+      error: 'lat must be between -90 and 90 and lon between -180 and 180',
+    });
+    return;
+  }
+  if (!location) {
     sendJson(r, 503, { error: 'Yr.no location is not configured' });
     return;
   }
 
+  const coordinates =
+    'lat=' +
+    encodeURIComponent(location.latitude) +
+    '&lon=' +
+    encodeURIComponent(location.longitude);
+
   let targetUrl;
   if (suffix === '/compact') {
-    targetUrl =
-      MET_NO_BASE_URL +
-      '/weatherapi/locationforecast/2.0/compact?lat=' +
-      encodeURIComponent(config.latitude) +
-      '&lon=' +
-      encodeURIComponent(config.longitude);
+    targetUrl = MET_NO_BASE_URL + '/weatherapi/locationforecast/2.0/compact?' + coordinates;
   } else if (suffix === '/sunrise') {
     const date = r.args.date || '';
     if (!DATE_QUERY_PATTERN.test(date)) {
@@ -73,10 +113,8 @@ async function handleRequest(r) {
     }
     targetUrl =
       MET_NO_BASE_URL +
-      '/weatherapi/sunrise/3.0/sun?lat=' +
-      encodeURIComponent(config.latitude) +
-      '&lon=' +
-      encodeURIComponent(config.longitude) +
+      '/weatherapi/sunrise/3.0/sun?' +
+      coordinates +
       '&date=' +
       encodeURIComponent(date);
   } else {

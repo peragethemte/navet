@@ -524,6 +524,7 @@ export const plMessages = {
   'settings.nav.appearance': 'Wygląd',
   'settings.nav.localization': 'Język i region',
   'settings.nav.interaction': 'Interakcja',
+  'settings.nav.local': 'Usługi lokalne',
   'settings.nav.dashboard': 'Panel',
   'settings.nav.system': 'System',
   'settings.nav.project': 'O Navet',
@@ -578,6 +579,30 @@ export const plMessages = {
   'settings.appearance.wallpaper.replace': 'Zmień tapetę',
   'settings.appearance.wallpaper.upload': 'Prześlij tapetę',
   'settings.appearance.wallpaper.fileHint': 'PNG lub JPG, maks. 5MB',
+  'settings.local.sectionTitle': 'Usługi lokalne',
+  'settings.local.sectionDescription':
+    'Informacje o pogodzie i transporcie dla miejsc ważnych dla domowników.',
+  'settings.local.weatherLocation.title': 'Lokalizacja pogody',
+  'settings.local.weatherLocation.description':
+    'Współrzędne, dla których pobierana jest prognoza. Zostaw oba pola puste, aby użyć lokalizacji ustawionej na serwerze.',
+  'settings.local.weatherLocation.latitude': 'Szerokość geograficzna',
+  'settings.local.weatherLocation.longitude': 'Długość geograficzna',
+  'settings.local.weatherLocation.name': 'Nazwa miejsca',
+  'settings.local.weatherLocation.namePlaceholder': 'Nazwa widoczna na karcie pogody',
+  'settings.local.weatherLocation.latitudeError':
+    'Szerokość geograficzna musi być liczbą od -90 do 90.',
+  'settings.local.weatherLocation.longitudeError':
+    'Długość geograficzna musi być liczbą od -180 do 180.',
+  'settings.local.weatherLocation.incompleteError':
+    'Podaj zarówno szerokość, jak i długość geograficzną.',
+  'settings.local.weatherLocation.hint':
+    'Karta pogody odświeży się kilka sekund po zmianie współrzędnych.',
+  'settings.local.weatherLocation.usingServerDefault':
+    'Używana jest lokalizacja ustawiona na serwerze.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Użyj tego urządzenia',
+  'settings.local.weatherLocation.deviceLocationError':
+    'To urządzenie nie mogło udostępnić swojej lokalizacji. Wpisz współrzędne ręcznie.',
+  'settings.local.weatherLocation.useServerDefault': 'Użyj lokalizacji z serwera',
   'settings.dashboard.sectionTitle': 'Panel',
   'settings.dashboard.sectionDescription':
     'Zarządzaj zawartością panelu i kopią zapasową lokalnej konfiguracji.',

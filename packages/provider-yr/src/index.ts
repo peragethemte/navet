@@ -2,6 +2,7 @@ export * from './yr-client';
 export * from './yr-condition-mapping';
 export * from './yr-contract';
 export * from './yr-forecast-utils';
+export * from './yr-location-source';
 export * from './yr-provider-registration';
 export * from './yr-runtime-registration';
 export * from './yr-snapshot';

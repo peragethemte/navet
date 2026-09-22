@@ -58,6 +58,7 @@ something you expect is absent.
 
 - [Appearance](/guide/settings/appearance/) — choose a theme, accent, and wallpaper.
 - [Language and formats](/guide/settings/localization/) — set language, time, and temperature preferences.
+- [Weather location](/guide/settings/local-services/) - choose the place the forecast is fetched for.
 - [Low-power displays](/guide/wall-displays/low-power/) — adjust visual quality for your wall panel.
 - [Sidebar extensions](/guide/settings/sidebar-extensions/) — add links and quick actions.
 - [Phone and tablet](/guide/quick-start/phone-and-tablet/) — use Navet on a smaller screen.

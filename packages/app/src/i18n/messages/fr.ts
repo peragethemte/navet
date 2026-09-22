@@ -530,6 +530,7 @@ export const frMessages = {
   'settings.nav.appearance': 'Apparence',
   'settings.nav.localization': 'Localisation',
   'settings.nav.interaction': 'Interaction',
+  'settings.nav.local': 'Services locaux',
   'settings.nav.dashboard': 'Tableau de bord',
   'settings.nav.system': 'Système',
   'settings.nav.project': 'À propos de Navet',
@@ -584,6 +585,29 @@ export const frMessages = {
   'settings.appearance.wallpaper.replace': 'Remplacer le fond',
   'settings.appearance.wallpaper.upload': 'Téléverser un fond',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG jusqu’à 5 Mo',
+  'settings.local.sectionTitle': 'Services locaux',
+  'settings.local.sectionDescription':
+    'Informations météo et transports pour les lieux qui comptent pour le foyer.',
+  'settings.local.weatherLocation.title': 'Lieu de la météo',
+  'settings.local.weatherLocation.description':
+    'Coordonnées utilisées pour la prévision. Laisse les deux champs vides pour utiliser le lieu configuré sur le serveur.',
+  'settings.local.weatherLocation.latitude': 'Latitude',
+  'settings.local.weatherLocation.longitude': 'Longitude',
+  'settings.local.weatherLocation.name': 'Nom du lieu',
+  'settings.local.weatherLocation.namePlaceholder': 'Nom affiché sur la carte météo',
+  'settings.local.weatherLocation.latitudeError':
+    'La latitude doit être un nombre compris entre -90 et 90.',
+  'settings.local.weatherLocation.longitudeError':
+    'La longitude doit être un nombre compris entre -180 et 180.',
+  'settings.local.weatherLocation.incompleteError': 'Saisis la latitude et la longitude.',
+  'settings.local.weatherLocation.hint':
+    'La carte météo se met à jour quelques secondes après la modification des coordonnées.',
+  'settings.local.weatherLocation.usingServerDefault':
+    'Le lieu configuré sur le serveur est utilisé.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Utiliser cet appareil',
+  'settings.local.weatherLocation.deviceLocationError':
+    "Cet appareil n'a pas pu partager sa position. Saisis les coordonnées à la place.",
+  'settings.local.weatherLocation.useServerDefault': 'Utiliser le lieu du serveur',
   'settings.dashboard.sectionTitle': 'Tableau de bord',
   'settings.dashboard.sectionDescription':
     'Gérez ce qui apparaît sur le tableau et la manière dont cette configuration locale est sauvegardée.',

@@ -8,6 +8,7 @@ import type { NavetEntity, NavetProviderRoom, NavetProviderState } from '@navet/
 import { getYrForecast, getYrStatus, getYrSunTimes } from './yr-client';
 import { mapYrSymbolCodeToCondition } from './yr-condition-mapping';
 import { pickEntryPrecipitation, pickEntrySymbolCode } from './yr-forecast-utils';
+import { getConfiguredYrLocation, subscribeYrLocation } from './yr-location-source';
 
 export const YR_NATIVE_ENTITY_ID = 'weather.forecast';
 // Matches the forecast cache TTL: no point polling the client-side snapshot more often
@@ -16,6 +17,9 @@ const STEADY_STATE_INTERVAL_MS = 30 * 60 * 1000;
 // The very first refresh can race the app's own authentication handshake (the proxy requires
 // an authenticated caller): back off and retry quickly instead of waiting a full interval.
 const ERROR_RETRY_DELAYS_MS = [5_000, 15_000, 30_000, 60_000];
+// Coordinates are edited digit by digit in Settings, and every intermediate value is a valid
+// place somewhere. Let typing settle before asking met.no for a forecast.
+const LOCATION_CHANGE_DEBOUNCE_MS = 700;
 const EMPTY_REGISTRY: PlatformEntityRegistryEntry[] = [];
 
 interface YrWeatherData {
@@ -41,6 +45,10 @@ const listeners = new Set<() => void>();
 let pollingStarted = false;
 let refreshTimerId: ReturnType<typeof setTimeout> | null = null;
 let retryAttempt = 0;
+// Bumped whenever the configured location changes so an in-flight refresh for the previous
+// place cannot overwrite the new one's data or reschedule its own polling cycle.
+let locationGeneration = 0;
+let unsubscribeLocation: (() => void) | null = null;
 
 function notifyListeners(): void {
   for (const listener of listeners) {
@@ -67,26 +75,42 @@ function setCurrentData(data: YrWeatherData): void {
   };
 }
 
-async function refresh(): Promise<RefreshOutcome> {
+async function refresh(generation: number): Promise<RefreshOutcome> {
+  const isStale = () => generation !== locationGeneration;
+
   try {
-    const status = await getYrStatus();
-    if (!status) {
-      // Could not determine status right now (e.g. this raced app authentication) - retry
-      // soon rather than treating it as a confirmed "not configured" answer.
-      connected = false;
-      lastError = 'Unable to reach the Yr.no proxy';
-      notifyListeners();
-      return 'error';
-    }
-    if (!status.configured) {
-      connected = false;
-      lastError = null;
-      clearCurrentData();
-      notifyListeners();
-      return 'not_configured';
+    // A location configured in Settings wins over the server's environment defaults; falling
+    // back to `/status` keeps `NAVET_YR_*` deployments working with nothing configured in the UI.
+    const location = getConfiguredYrLocation();
+    let resolvedName = location?.name?.trim() ?? '';
+
+    if (!location) {
+      const status = await getYrStatus();
+      if (isStale()) {
+        return 'success';
+      }
+      if (!status) {
+        // Could not determine status right now (e.g. this raced app authentication) - retry
+        // soon rather than treating it as a confirmed "not configured" answer.
+        connected = false;
+        lastError = 'Unable to reach the Yr.no proxy';
+        notifyListeners();
+        return 'error';
+      }
+      if (!status.configured) {
+        connected = false;
+        lastError = null;
+        clearCurrentData();
+        notifyListeners();
+        return 'not_configured';
+      }
+      resolvedName = status.locationName?.trim() ?? '';
     }
 
-    const forecast = await getYrForecast();
+    const forecast = await getYrForecast(location);
+    if (isStale()) {
+      return 'success';
+    }
     const latest = forecast?.properties?.timeseries?.[0];
     if (!latest) {
       connected = false;
@@ -95,8 +119,11 @@ async function refresh(): Promise<RefreshOutcome> {
       return 'error';
     }
 
-    const sunTimes = await getYrSunTimes(new Date());
-    const locationName = status.locationName?.trim() || 'Yr.no';
+    const sunTimes = await getYrSunTimes(new Date(), location);
+    if (isStale()) {
+      return 'success';
+    }
+    const locationName = resolvedName || 'Yr.no';
     const details = latest.data.instant?.details ?? {};
 
     setCurrentData({
@@ -139,7 +166,13 @@ function scheduleNextRefresh(delayMs: number): void {
 }
 
 async function runRefreshCycle(): Promise<void> {
-  const outcome = await refresh();
+  const generation = locationGeneration;
+  const outcome = await refresh(generation);
+  if (generation !== locationGeneration) {
+    // The location changed while this cycle was in flight; its successor owns the schedule.
+    return;
+  }
+
   if (outcome === 'error') {
     const delay = ERROR_RETRY_DELAYS_MS[Math.min(retryAttempt, ERROR_RETRY_DELAYS_MS.length - 1)];
     retryAttempt += 1;
@@ -151,12 +184,19 @@ async function runRefreshCycle(): Promise<void> {
   scheduleNextRefresh(STEADY_STATE_INTERVAL_MS);
 }
 
+function handleLocationChange(): void {
+  locationGeneration += 1;
+  retryAttempt = 0;
+  scheduleNextRefresh(LOCATION_CHANGE_DEBOUNCE_MS);
+}
+
 export function ensureYrPolling(): void {
   if (pollingStarted) {
     return;
   }
 
   pollingStarted = true;
+  unsubscribeLocation = subscribeYrLocation(handleLocationChange);
   void runRefreshCycle();
 }
 
@@ -165,8 +205,11 @@ export function stopYrPolling(): void {
     clearTimeout(refreshTimerId);
     refreshTimerId = null;
   }
+  unsubscribeLocation?.();
+  unsubscribeLocation = null;
   pollingStarted = false;
   retryAttempt = 0;
+  locationGeneration += 1;
 }
 
 function buildNavetEntity(data: YrWeatherData): NavetEntity {

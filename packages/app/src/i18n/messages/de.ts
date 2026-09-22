@@ -528,6 +528,7 @@ export const deMessages = {
   'settings.nav.appearance': 'Darstellung',
   'settings.nav.localization': 'Lokalisierung',
   'settings.nav.interaction': 'Interaktion',
+  'settings.nav.local': 'Lokale Dienste',
   'settings.nav.dashboard': 'Übersicht',
   'settings.nav.system': 'System',
   'settings.nav.project': 'Über Navet',
@@ -582,6 +583,29 @@ export const deMessages = {
   'settings.appearance.wallpaper.replace': 'Hintergrund ersetzen',
   'settings.appearance.wallpaper.upload': 'Hintergrund hochladen',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG bis 5 MB',
+  'settings.local.sectionTitle': 'Lokale Dienste',
+  'settings.local.sectionDescription':
+    'Wetter- und Verkehrsinformationen für die Orte, die für den Haushalt wichtig sind.',
+  'settings.local.weatherLocation.title': 'Wetterstandort',
+  'settings.local.weatherLocation.description':
+    'Koordinaten, für die die Vorhersage abgerufen wird. Lass beide Felder leer, um den auf dem Server eingerichteten Ort zu verwenden.',
+  'settings.local.weatherLocation.latitude': 'Breitengrad',
+  'settings.local.weatherLocation.longitude': 'Längengrad',
+  'settings.local.weatherLocation.name': 'Ortsname',
+  'settings.local.weatherLocation.namePlaceholder': 'Name auf der Wetterkarte',
+  'settings.local.weatherLocation.latitudeError':
+    'Der Breitengrad muss eine Zahl zwischen -90 und 90 sein.',
+  'settings.local.weatherLocation.longitudeError':
+    'Der Längengrad muss eine Zahl zwischen -180 und 180 sein.',
+  'settings.local.weatherLocation.incompleteError': 'Gib Breiten- und Längengrad an.',
+  'settings.local.weatherLocation.hint':
+    'Die Wetterkarte aktualisiert sich einige Sekunden nachdem du die Koordinaten geändert hast.',
+  'settings.local.weatherLocation.usingServerDefault':
+    'Es wird der auf dem Server eingerichtete Ort verwendet.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Dieses Gerät verwenden',
+  'settings.local.weatherLocation.deviceLocationError':
+    'Dieses Gerät konnte seinen Standort nicht teilen. Gib die Koordinaten stattdessen ein.',
+  'settings.local.weatherLocation.useServerDefault': 'Serverstandort verwenden',
   'settings.dashboard.sectionTitle': 'Übersicht',
   'settings.dashboard.sectionDescription':
     'Lege fest, was auf der Fläche erscheint und wie dieses lokale Setup gesichert wird.',

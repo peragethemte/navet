@@ -525,6 +525,7 @@ export const svMessages = {
   'settings.nav.appearance': 'Utseende',
   'settings.nav.localization': 'Lokalisering',
   'settings.nav.interaction': 'Interaktion',
+  'settings.nav.local': 'Lokala tjänster',
   'settings.nav.dashboard': 'Instrumentpanel',
   'settings.nav.system': 'System',
   'settings.nav.project': 'Om Navet',
@@ -578,6 +579,28 @@ export const svMessages = {
   'settings.appearance.wallpaper.replace': 'Byt bakgrund',
   'settings.appearance.wallpaper.upload': 'Ladda upp bakgrund',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG upp till 5 MB',
+  'settings.local.sectionTitle': 'Lokala tjänster',
+  'settings.local.sectionDescription':
+    'Väder- och reseinformation för de platser hushållet bryr sig om.',
+  'settings.local.weatherLocation.title': 'Väderplats',
+  'settings.local.weatherLocation.description':
+    'Koordinaterna som prognosen hämtas för. Lämna båda fälten tomma för att använda platsen som är inställd på servern.',
+  'settings.local.weatherLocation.latitude': 'Latitud',
+  'settings.local.weatherLocation.longitude': 'Longitud',
+  'settings.local.weatherLocation.name': 'Platsnamn',
+  'settings.local.weatherLocation.namePlaceholder': 'Namnet som visas på väderkortet',
+  'settings.local.weatherLocation.latitudeError': 'Latitud måste vara ett tal mellan -90 och 90.',
+  'settings.local.weatherLocation.longitudeError':
+    'Longitud måste vara ett tal mellan -180 och 180.',
+  'settings.local.weatherLocation.incompleteError': 'Fyll i både latitud och longitud.',
+  'settings.local.weatherLocation.hint':
+    'Väderkortet uppdateras några sekunder efter att du ändrat koordinaterna.',
+  'settings.local.weatherLocation.usingServerDefault':
+    'Använder platsen som är inställd på servern.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Använd den här enheten',
+  'settings.local.weatherLocation.deviceLocationError':
+    'Den här enheten kunde inte dela sin plats. Skriv in koordinaterna i stället.',
+  'settings.local.weatherLocation.useServerDefault': 'Använd serverns plats',
   'settings.dashboard.sectionTitle': 'Instrumentpanel',
   'settings.dashboard.sectionDescription':
     'Hantera vad som visas på ytan och hur den lokala konfigurationen säkerhetskopieras.',

@@ -17,6 +17,7 @@ import {
   ensureCanonicalEntityId,
   normalizePersistedEntityRecord,
 } from '@navet/app/utils/provider-entity-id';
+import { type GeoLocation, normalizeGeoLocation } from '@navet/core/geo-location';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -32,6 +33,7 @@ export type CameraStreamPreference = 'auto' | PlatformCameraTransport;
 export type CameraWebRtcStreamSource = 'provider' | 'direct';
 export type CameraFitMode = 'cover' | 'contain';
 export type WeatherForecastMode = 'weekly' | 'hourly';
+export type WeatherLocation = GeoLocation;
 export type WeatherMetricId =
   | 'precipitation'
   | 'humidity'
@@ -81,6 +83,8 @@ export interface UserSettings {
   ambientLightBleed: boolean;
   weatherForecastMode: WeatherForecastMode;
   weatherMetricIds: WeatherMetricId[];
+  /** Household forecast location. Null falls back to the server's `NAVET_YR_*` defaults. */
+  weatherLocation: WeatherLocation | null;
   advancedCustomizationEnabled: boolean;
   customSidebarActions: CustomSidebarAction[];
   customSummaryPills: CustomSummaryPill[];
@@ -141,6 +145,7 @@ export const defaultSettings: UserSettings = {
   ambientLightBleed: true,
   weatherForecastMode: 'weekly',
   weatherMetricIds: ['precipitation', 'humidity', 'wind'],
+  weatherLocation: null,
   advancedCustomizationEnabled: false,
   customSidebarActions: [],
   customSummaryPills: [],
@@ -377,6 +382,10 @@ export const useSettingsStore = create<SettingsState>()(
             newSettings.headerCustomText !== undefined
               ? normalizeHeaderCustomText(newSettings.headerCustomText)
               : state.headerCustomText,
+          weatherLocation:
+            newSettings.weatherLocation !== undefined
+              ? normalizeGeoLocation(newSettings.weatherLocation)
+              : state.weatherLocation,
           dashboardSpaceMode:
             newSettings.dashboardSpaceMode !== undefined &&
             isDashboardSpaceMode(newSettings.dashboardSpaceMode)
@@ -517,6 +526,7 @@ export const useSettingsStore = create<SettingsState>()(
             ? supportedSettings.headerTitleMode
             : defaultSettings.headerTitleMode,
           headerCustomText: normalizeHeaderCustomText(supportedSettings.headerCustomText),
+          weatherLocation: normalizeGeoLocation(supportedSettings.weatherLocation),
           dashboardSpaceMode: isDashboardSpaceMode(supportedSettings.dashboardSpaceMode)
             ? supportedSettings.dashboardSpaceMode
             : defaultSettings.dashboardSpaceMode,
@@ -594,6 +604,7 @@ export const useSettingsStore = create<SettingsState>()(
             ? next.headerTitleMode
             : current.headerTitleMode,
           headerCustomText: normalizeHeaderCustomText(next.headerCustomText),
+          weatherLocation: normalizeGeoLocation(next.weatherLocation),
           dashboardSpaceMode: isDashboardSpaceMode(next.dashboardSpaceMode)
             ? next.dashboardSpaceMode
             : current.dashboardSpaceMode,

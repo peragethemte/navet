@@ -524,6 +524,7 @@ export const fiMessages = {
   'settings.nav.appearance': 'Ulkonäkö',
   'settings.nav.localization': 'Lokalisointi',
   'settings.nav.interaction': 'Vuorovaikutus',
+  'settings.nav.local': 'Paikalliset palvelut',
   'settings.nav.dashboard': 'Kojelauta',
   'settings.nav.system': 'Järjestelmä',
   'settings.nav.project': 'Tietoja Navetista',
@@ -578,6 +579,27 @@ export const fiMessages = {
   'settings.appearance.wallpaper.replace': 'Vaihda tapetti',
   'settings.appearance.wallpaper.upload': 'Lataa taustakuva',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG jopa 5 Mt',
+  'settings.local.sectionTitle': 'Paikalliset palvelut',
+  'settings.local.sectionDescription': 'Sää- ja liikennetiedot kotitaloudelle tärkeistä paikoista.',
+  'settings.local.weatherLocation.title': 'Sääpaikka',
+  'settings.local.weatherLocation.description':
+    'Koordinaatit, joille ennuste haetaan. Jätä molemmat kentät tyhjiksi, niin käytetään palvelimelle määritettyä sijaintia.',
+  'settings.local.weatherLocation.latitude': 'Leveysaste',
+  'settings.local.weatherLocation.longitude': 'Pituusaste',
+  'settings.local.weatherLocation.name': 'Paikan nimi',
+  'settings.local.weatherLocation.namePlaceholder': 'Sääkortissa näkyvä nimi',
+  'settings.local.weatherLocation.latitudeError': 'Leveysasteen on oltava luku välillä -90 ja 90.',
+  'settings.local.weatherLocation.longitudeError':
+    'Pituusasteen on oltava luku välillä -180 ja 180.',
+  'settings.local.weatherLocation.incompleteError': 'Anna sekä leveys- että pituusaste.',
+  'settings.local.weatherLocation.hint':
+    'Sääkortti päivittyy muutaman sekunnin kuluttua koordinaattien muuttamisesta.',
+  'settings.local.weatherLocation.usingServerDefault':
+    'Käytetään palvelimelle määritettyä sijaintia.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Käytä tätä laitetta',
+  'settings.local.weatherLocation.deviceLocationError':
+    'Tämä laite ei voinut jakaa sijaintiaan. Syötä koordinaatit käsin.',
+  'settings.local.weatherLocation.useServerDefault': 'Käytä palvelimen sijaintia',
   'settings.dashboard.sectionTitle': 'Kojelauta',
   'settings.dashboard.sectionDescription':
     'Hallinnoi, mitä taululla näkyy ja kuinka tämä paikallinen asennus varmuuskopioidaan.',

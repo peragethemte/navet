@@ -525,6 +525,7 @@ export const nlMessages = {
   'settings.nav.appearance': 'Uiterlijk',
   'settings.nav.localization': 'Lokalisatie',
   'settings.nav.interaction': 'Interactie',
+  'settings.nav.local': 'Lokale diensten',
   'settings.nav.dashboard': 'Dashboard',
   'settings.nav.system': 'Systeem',
   'settings.nav.project': 'Over Navet',
@@ -579,6 +580,29 @@ export const nlMessages = {
   'settings.appearance.wallpaper.replace': 'Achtergrond vervangen',
   'settings.appearance.wallpaper.upload': 'Achtergrond uploaden',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG tot 5 MB',
+  'settings.local.sectionTitle': 'Lokale diensten',
+  'settings.local.sectionDescription':
+    'Weer- en vervoersinformatie voor de plekken die er thuis toe doen.',
+  'settings.local.weatherLocation.title': 'Weerlocatie',
+  'settings.local.weatherLocation.description':
+    'Coördinaten waarvoor de verwachting wordt opgehaald. Laat beide velden leeg om de locatie van de server te gebruiken.',
+  'settings.local.weatherLocation.latitude': 'Breedtegraad',
+  'settings.local.weatherLocation.longitude': 'Lengtegraad',
+  'settings.local.weatherLocation.name': 'Plaatsnaam',
+  'settings.local.weatherLocation.namePlaceholder': 'Naam op de weerkaart',
+  'settings.local.weatherLocation.latitudeError':
+    'De breedtegraad moet een getal tussen -90 en 90 zijn.',
+  'settings.local.weatherLocation.longitudeError':
+    'De lengtegraad moet een getal tussen -180 en 180 zijn.',
+  'settings.local.weatherLocation.incompleteError':
+    'Vul zowel de breedtegraad als de lengtegraad in.',
+  'settings.local.weatherLocation.hint':
+    'De weerkaart wordt enkele seconden na het wijzigen van de coördinaten bijgewerkt.',
+  'settings.local.weatherLocation.usingServerDefault': 'De locatie van de server wordt gebruikt.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Dit apparaat gebruiken',
+  'settings.local.weatherLocation.deviceLocationError':
+    'Dit apparaat kon zijn locatie niet delen. Voer de coördinaten zelf in.',
+  'settings.local.weatherLocation.useServerDefault': 'Serverlocatie gebruiken',
   'settings.dashboard.sectionTitle': 'Dashboard',
   'settings.dashboard.sectionDescription':
     'Beheer wat er op het bord verschijnt en hoe er een back-up wordt gemaakt van deze lokale configuratie.',

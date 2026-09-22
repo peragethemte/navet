@@ -45,6 +45,7 @@ export const enMessages = {
   'settings.nav.appearance': 'Appearance',
   'settings.nav.localization': 'Localization',
   'settings.nav.interaction': 'Interaction',
+  'settings.nav.local': 'Local services',
   'settings.nav.dashboard': 'Dashboard',
   'settings.nav.system': 'System',
   'settings.nav.project': 'About Navet',
@@ -99,6 +100,28 @@ export const enMessages = {
   'settings.appearance.wallpaper.replace': 'Replace wallpaper',
   'settings.appearance.wallpaper.upload': 'Upload wallpaper',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG up to 5MB',
+  'settings.local.sectionTitle': 'Local services',
+  'settings.local.sectionDescription':
+    'Weather and transport information for the places your household cares about.',
+  'settings.local.weatherLocation.title': 'Weather location',
+  'settings.local.weatherLocation.description':
+    'Coordinates the forecast is fetched for. Leave both fields empty to use the location configured on the server.',
+  'settings.local.weatherLocation.latitude': 'Latitude',
+  'settings.local.weatherLocation.longitude': 'Longitude',
+  'settings.local.weatherLocation.name': 'Place name',
+  'settings.local.weatherLocation.namePlaceholder': 'Name shown on the weather card',
+  'settings.local.weatherLocation.latitudeError': 'Latitude must be a number between -90 and 90.',
+  'settings.local.weatherLocation.longitudeError':
+    'Longitude must be a number between -180 and 180.',
+  'settings.local.weatherLocation.incompleteError': 'Enter both latitude and longitude.',
+  'settings.local.weatherLocation.hint':
+    'The weather card updates a few seconds after you change the coordinates.',
+  'settings.local.weatherLocation.usingServerDefault':
+    'Using the location configured on the server.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Use this device',
+  'settings.local.weatherLocation.deviceLocationError':
+    'This device could not share its location. Enter the coordinates instead.',
+  'settings.local.weatherLocation.useServerDefault': 'Use server location',
   'settings.dashboard.sectionTitle': 'Dashboard',
   'settings.dashboard.sectionDescription':
     'Manage what appears on the board and how this local setup is backed up.',

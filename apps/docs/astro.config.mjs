@@ -160,6 +160,7 @@ export default defineConfig({
             { label: "Manage providers", link: "/guide/settings/manage-providers/" },
             { label: "Sidebar extensions", link: "/guide/settings/sidebar-extensions/" },
             { label: "Language and formats", link: "/guide/settings/localization/" },
+            { label: "Weather location", link: "/guide/settings/local-services/" },
           ],
         },
         {

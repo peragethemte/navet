@@ -5,7 +5,13 @@ import type {
 } from '@navet/core/provider-runtime-types';
 import { createSnapshotBackedProviderAdapter } from '@navet/core/snapshot-backed-adapter';
 import { createYrProviderContract } from './yr-contract';
+import { setYrLocationSource, type YrLocationSource } from './yr-location-source';
 import { createYrRuntimeRegistration } from './yr-runtime-registration';
+
+export interface YrProviderRegistrationOptions {
+  /** Supplies the user-configured weather location. Omit to use only the server-side defaults. */
+  locationSource?: YrLocationSource;
+}
 
 export function createYrProviderContractRegistration(): ProviderContractRegistration {
   const contract = createYrProviderContract();
@@ -24,7 +30,10 @@ export function createYrProviderContractRegistration(): ProviderContractRegistra
   };
 }
 
-export function createYrProviderPackageRegistration(): ProviderPackageRegistration {
+export function createYrProviderPackageRegistration(
+  options: YrProviderRegistrationOptions = {}
+): ProviderPackageRegistration {
+  setYrLocationSource(options.locationSource ?? null);
   const contractRegistration = createYrProviderContractRegistration();
 
   return {

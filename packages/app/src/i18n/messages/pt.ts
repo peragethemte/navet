@@ -525,6 +525,7 @@ export const ptMessages = {
   'settings.nav.appearance': 'Aparência',
   'settings.nav.localization': 'Localização',
   'settings.nav.interaction': 'Interação',
+  'settings.nav.local': 'Serviços locais',
   'settings.nav.dashboard': 'Painel',
   'settings.nav.system': 'Sistema',
   'settings.nav.project': 'Sobre o Navet',
@@ -579,6 +580,28 @@ export const ptMessages = {
   'settings.appearance.wallpaper.replace': 'Substituir papel de parede',
   'settings.appearance.wallpaper.upload': 'Enviar papel de parede',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG até 5MB',
+  'settings.local.sectionTitle': 'Serviços locais',
+  'settings.local.sectionDescription':
+    'Informações de clima e transporte dos lugares que importam para a casa.',
+  'settings.local.weatherLocation.title': 'Local do clima',
+  'settings.local.weatherLocation.description':
+    'Coordenadas usadas para buscar a previsão. Deixe os dois campos vazios para usar o local configurado no servidor.',
+  'settings.local.weatherLocation.latitude': 'Latitude',
+  'settings.local.weatherLocation.longitude': 'Longitude',
+  'settings.local.weatherLocation.name': 'Nome do lugar',
+  'settings.local.weatherLocation.namePlaceholder': 'Nome exibido no cartão do clima',
+  'settings.local.weatherLocation.latitudeError':
+    'A latitude precisa ser um número entre -90 e 90.',
+  'settings.local.weatherLocation.longitudeError':
+    'A longitude precisa ser um número entre -180 e 180.',
+  'settings.local.weatherLocation.incompleteError': 'Informe a latitude e a longitude.',
+  'settings.local.weatherLocation.hint':
+    'O cartão do clima é atualizado alguns segundos depois de você mudar as coordenadas.',
+  'settings.local.weatherLocation.usingServerDefault': 'Usando o local configurado no servidor.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Usar este dispositivo',
+  'settings.local.weatherLocation.deviceLocationError':
+    'Este dispositivo não conseguiu compartilhar a localização. Informe as coordenadas manualmente.',
+  'settings.local.weatherLocation.useServerDefault': 'Usar o local do servidor',
   'settings.dashboard.sectionTitle': 'Painel',
   'settings.dashboard.sectionDescription':
     'Gerencie o que aparece no painel e como esta configuração local é salva como backup.',

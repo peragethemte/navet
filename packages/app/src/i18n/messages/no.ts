@@ -524,6 +524,7 @@ export const noMessages = {
   'settings.nav.appearance': 'Utseende',
   'settings.nav.localization': 'Lokalisering',
   'settings.nav.interaction': 'Interaksjon',
+  'settings.nav.local': 'Lokale tjenester',
   'settings.nav.dashboard': 'Dashbord',
   'settings.nav.system': 'System',
   'settings.nav.project': 'Om Navet',
@@ -577,6 +578,26 @@ export const noMessages = {
   'settings.appearance.wallpaper.replace': 'Bytt tapet',
   'settings.appearance.wallpaper.upload': 'Last opp bakgrunnsbilde',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG opptil 5 MB',
+  'settings.local.sectionTitle': 'Lokale tjenester',
+  'settings.local.sectionDescription':
+    'Vær- og transportinformasjon for stedene husstanden bryr seg om.',
+  'settings.local.weatherLocation.title': 'Værsted',
+  'settings.local.weatherLocation.description':
+    'Koordinatene værvarselet hentes for. La begge feltene stå tomme for å bruke stedet som er satt opp på serveren.',
+  'settings.local.weatherLocation.latitude': 'Breddegrad',
+  'settings.local.weatherLocation.longitude': 'Lengdegrad',
+  'settings.local.weatherLocation.name': 'Stedsnavn',
+  'settings.local.weatherLocation.namePlaceholder': 'Navnet som vises på værkortet',
+  'settings.local.weatherLocation.latitudeError': 'Breddegrad må være et tall mellom -90 og 90.',
+  'settings.local.weatherLocation.longitudeError': 'Lengdegrad må være et tall mellom -180 og 180.',
+  'settings.local.weatherLocation.incompleteError': 'Fyll inn både breddegrad og lengdegrad.',
+  'settings.local.weatherLocation.hint':
+    'Værkortet oppdateres noen sekunder etter at du endrer koordinatene.',
+  'settings.local.weatherLocation.usingServerDefault': 'Bruker stedet som er satt opp på serveren.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Bruk denne enheten',
+  'settings.local.weatherLocation.deviceLocationError':
+    'Denne enheten kunne ikke dele posisjonen sin. Skriv inn koordinatene i stedet.',
+  'settings.local.weatherLocation.useServerDefault': 'Bruk stedet fra serveren',
   'settings.dashboard.sectionTitle': 'Dashbord',
   'settings.dashboard.sectionDescription':
     'Administrer hva som vises på tavlen og hvordan dette lokale oppsettet sikkerhetskopieres.',

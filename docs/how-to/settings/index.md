@@ -18,4 +18,5 @@ from **System → Device settings**.
 - [Connect and manage providers](/guide/settings/manage-providers/)
 - [Add custom sidebar shortcuts](/guide/settings/sidebar-extensions/)
 - [Change language, time, and temperature units](/guide/settings/localization/)
+- [Set the weather location](/guide/settings/local-services/)
 - [Understand provider limitations](/guide/troubleshooting/unavailable-features/)

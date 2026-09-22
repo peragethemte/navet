@@ -28,6 +28,41 @@ function readYrLocationConfig(): YrLocationConfig | null {
   };
 }
 
+function parseCoordinate(value: string | null, limit: number): string | null {
+  if (value === null || value.trim() === '') {
+    return null;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < -limit || parsed > limit) {
+    return null;
+  }
+
+  return String(parsed);
+}
+
+/**
+ * Coordinates sent by the dashboard win over the environment defaults. The upstream host is
+ * fixed, so this is not an SSRF surface - the range check keeps malformed input from reaching
+ * met.no and burning request quota on guaranteed errors.
+ */
+function resolveRequestLocation(
+  query: URLSearchParams,
+  config: YrLocationConfig | null
+): { latitude: string; longitude: string } | 'invalid' | null {
+  if (!query.has('lat') && !query.has('lon')) {
+    return config ? { latitude: config.latitude, longitude: config.longitude } : null;
+  }
+
+  const latitude = parseCoordinate(query.get('lat'), 90);
+  const longitude = parseCoordinate(query.get('lon'), 180);
+  if (latitude === null || longitude === null) {
+    return 'invalid';
+  }
+
+  return { latitude, longitude };
+}
+
 /**
  * Same-origin relay for met.no's public locationforecast/sunrise APIs. Unlike the RSS proxy,
  * the upstream target is fixed and trusted (never a user-supplied URL), so this only needs to
@@ -66,7 +101,14 @@ export function yrProxyPlugin(
       return;
     }
 
-    if (!config) {
+    const location = resolveRequestLocation(query, config);
+    if (location === 'invalid') {
+      sendJson(res, 400, {
+        error: 'lat must be between -90 and 90 and lon between -180 and 180',
+      });
+      return;
+    }
+    if (!location) {
       sendJson(res, 503, { error: 'Yr.no location is not configured' });
       return;
     }
@@ -74,8 +116,6 @@ export function yrProxyPlugin(
     let upstreamUrl: URL;
     if (pathname === '/compact') {
       upstreamUrl = new URL('/weatherapi/locationforecast/2.0/compact', MET_NO_BASE_URL);
-      upstreamUrl.searchParams.set('lat', config.latitude);
-      upstreamUrl.searchParams.set('lon', config.longitude);
     } else if (pathname === '/sunrise') {
       const date = query.get('date') ?? '';
       if (!DATE_QUERY_PATTERN.test(date)) {
@@ -83,13 +123,14 @@ export function yrProxyPlugin(
         return;
       }
       upstreamUrl = new URL('/weatherapi/sunrise/3.0/sun', MET_NO_BASE_URL);
-      upstreamUrl.searchParams.set('lat', config.latitude);
-      upstreamUrl.searchParams.set('lon', config.longitude);
       upstreamUrl.searchParams.set('date', date);
     } else {
       sendJson(res, 404, { error: 'Unknown Yr.no proxy path' });
       return;
     }
+
+    upstreamUrl.searchParams.set('lat', location.latitude);
+    upstreamUrl.searchParams.set('lon', location.longitude);
 
     try {
       const upstreamResponse = await fetch(upstreamUrl, {

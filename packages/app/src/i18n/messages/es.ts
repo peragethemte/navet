@@ -526,6 +526,7 @@ export const esMessages = {
   'settings.nav.appearance': 'Apariencia',
   'settings.nav.localization': 'Localización',
   'settings.nav.interaction': 'Interacción',
+  'settings.nav.local': 'Servicios locales',
   'settings.nav.dashboard': 'Panel',
   'settings.nav.system': 'Sistema',
   'settings.nav.project': 'Acerca de Navet',
@@ -580,6 +581,29 @@ export const esMessages = {
   'settings.appearance.wallpaper.replace': 'Reemplazar fondo',
   'settings.appearance.wallpaper.upload': 'Subir fondo',
   'settings.appearance.wallpaper.fileHint': 'PNG, JPG hasta 5 MB',
+  'settings.local.sectionTitle': 'Servicios locales',
+  'settings.local.sectionDescription':
+    'Información meteorológica y de transporte de los lugares que importan en casa.',
+  'settings.local.weatherLocation.title': 'Ubicación del tiempo',
+  'settings.local.weatherLocation.description':
+    'Coordenadas para las que se obtiene la previsión. Deja ambos campos vacíos para usar la ubicación configurada en el servidor.',
+  'settings.local.weatherLocation.latitude': 'Latitud',
+  'settings.local.weatherLocation.longitude': 'Longitud',
+  'settings.local.weatherLocation.name': 'Nombre del lugar',
+  'settings.local.weatherLocation.namePlaceholder':
+    'Nombre que se muestra en la tarjeta del tiempo',
+  'settings.local.weatherLocation.latitudeError': 'La latitud debe ser un número entre -90 y 90.',
+  'settings.local.weatherLocation.longitudeError':
+    'La longitud debe ser un número entre -180 y 180.',
+  'settings.local.weatherLocation.incompleteError': 'Introduce la latitud y la longitud.',
+  'settings.local.weatherLocation.hint':
+    'La tarjeta del tiempo se actualiza unos segundos después de cambiar las coordenadas.',
+  'settings.local.weatherLocation.usingServerDefault':
+    'Se está usando la ubicación configurada en el servidor.',
+  'settings.local.weatherLocation.useDeviceLocation': 'Usar este dispositivo',
+  'settings.local.weatherLocation.deviceLocationError':
+    'Este dispositivo no ha podido compartir su ubicación. Introduce las coordenadas manualmente.',
+  'settings.local.weatherLocation.useServerDefault': 'Usar la ubicación del servidor',
   'settings.dashboard.sectionTitle': 'Panel',
   'settings.dashboard.sectionDescription':
     'Gestiona qué aparece en el panel y cómo se respalda esta configuración local.',

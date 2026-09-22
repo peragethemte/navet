@@ -5,6 +5,7 @@ type SearchSectionId =
   | 'appearance'
   | 'localization'
   | 'interaction'
+  | 'local'
   | 'dashboard'
   | 'system'
   | 'project';
@@ -37,6 +38,11 @@ const SECTIONS: SearchSectionDefinition[] = [
     id: 'interaction',
     labelKey: 'settings.interaction.sectionTitle',
     descriptionKey: 'settings.interaction.sectionDescription',
+  },
+  {
+    id: 'local',
+    labelKey: 'settings.local.sectionTitle',
+    descriptionKey: 'settings.local.sectionDescription',
   },
   {
     id: 'dashboard',
@@ -115,6 +121,12 @@ const SETTINGS: SearchSettingDefinition[] = [
     sectionId: 'interaction',
     labelKey: 'settings.interaction.browserZoom.title',
     descriptionKey: 'settings.interaction.browserZoom.description',
+  },
+  {
+    id: 'local-weather-location',
+    sectionId: 'local',
+    labelKey: 'settings.local.weatherLocation.title',
+    descriptionKey: 'settings.local.weatherLocation.description',
   },
   {
     id: 'dashboard-multiple-dashboards',

@@ -1,3 +1,4 @@
+import { type GeoLocation, geoCoordinatesKey } from '@navet/core/geo-location';
 import type { YrLocationforecastResponse, YrProxyStatus, YrSunriseResponse } from './yr-types';
 
 const PROXY_BASE_PATH = '/__navet_yr_proxy__';
@@ -13,11 +14,25 @@ interface CacheEntry<T> {
   fetchedAt: number;
 }
 
+interface KeyedCacheEntry<T> extends CacheEntry<T> {
+  key: string;
+}
+
 let statusCache: CacheEntry<YrProxyStatus> | null = null;
-let forecastCache: CacheEntry<YrLocationforecastResponse> | null = null;
-let sunTimesCache:
-  | (CacheEntry<{ sunrise: string | null; sunset: string | null }> & { key: string })
-  | null = null;
+let forecastCache: KeyedCacheEntry<YrLocationforecastResponse> | null = null;
+let sunTimesCache: KeyedCacheEntry<{ sunrise: string | null; sunset: string | null }> | null = null;
+
+/**
+ * Coordinates travel to the proxy as query parameters; omitting them asks the server to use its
+ * `NAVET_YR_*` environment defaults, which keeps existing deployments working untouched.
+ */
+function locationParams(location: GeoLocation | null): string {
+  if (!location) {
+    return '';
+  }
+
+  return `lat=${encodeURIComponent(location.latitude)}&lon=${encodeURIComponent(location.longitude)}`;
+}
 
 async function fetchJson<T>(path: string): Promise<T | null> {
   try {
@@ -56,18 +71,26 @@ export async function getYrStatus(): Promise<YrProxyStatus | null> {
   return status;
 }
 
-export async function getYrForecast(): Promise<YrLocationforecastResponse | null> {
-  if (forecastCache && isFresh(forecastCache.fetchedAt, FORECAST_CACHE_TTL_MS)) {
-    return forecastCache.value;
+export async function getYrForecast(
+  location: GeoLocation | null
+): Promise<YrLocationforecastResponse | null> {
+  const key = geoCoordinatesKey(location);
+  const cached = forecastCache?.key === key ? forecastCache : null;
+  if (cached && isFresh(cached.fetchedAt, FORECAST_CACHE_TTL_MS)) {
+    return cached.value;
   }
 
-  const forecast = await fetchJson<YrLocationforecastResponse>('/compact');
+  const params = locationParams(location);
+  const forecast = await fetchJson<YrLocationforecastResponse>(
+    params ? `/compact?${params}` : '/compact'
+  );
   if (!forecast) {
-    // Serve the last known-good forecast through a transient proxy/network failure.
-    return forecastCache?.value ?? null;
+    // Serve the last known-good forecast through a transient proxy/network failure, but only
+    // when it belongs to the location being asked for.
+    return cached?.value ?? null;
   }
 
-  forecastCache = { value: forecast, fetchedAt: Date.now() };
+  forecastCache = { key, value: forecast, fetchedAt: Date.now() };
   return forecast;
 }
 
@@ -78,18 +101,24 @@ function localDateKey(date: Date): string {
 }
 
 export async function getYrSunTimes(
-  date: Date
+  date: Date,
+  location: GeoLocation | null
 ): Promise<{ sunrise: string | null; sunset: string | null }> {
-  const key = localDateKey(date);
-  if (sunTimesCache?.key === key && isFresh(sunTimesCache.fetchedAt, SUN_TIMES_CACHE_TTL_MS)) {
-    return sunTimesCache.value;
+  const dateKey = localDateKey(date);
+  const key = `${dateKey}|${geoCoordinatesKey(location)}`;
+  const cached = sunTimesCache?.key === key ? sunTimesCache : null;
+  if (cached && isFresh(cached.fetchedAt, SUN_TIMES_CACHE_TTL_MS)) {
+    return cached.value;
   }
 
-  const response = await fetchJson<YrSunriseResponse>(`/sunrise?date=${key}`);
+  const params = locationParams(location);
+  const response = await fetchJson<YrSunriseResponse>(
+    `/sunrise?date=${dateKey}${params ? `&${params}` : ''}`
+  );
   if (!response) {
-    // Do not cache a transient failure; keep serving the previous day's value (if any) so a
-    // single failed request does not blank out sunrise/sunset for hours.
-    return sunTimesCache?.value ?? { sunrise: null, sunset: null };
+    // Do not cache a transient failure; keep serving the previous value for this location (if
+    // any) so a single failed request does not blank out sunrise/sunset for hours.
+    return cached?.value ?? { sunrise: null, sunset: null };
   }
 
   const value = {
@@ -98,4 +127,11 @@ export async function getYrSunTimes(
   };
   sunTimesCache = { key, value, fetchedAt: Date.now() };
   return value;
+}
+
+/** Test seam: drops every cached response so a suite can start from a known state. */
+export function resetYrClientCaches(): void {
+  statusCache = null;
+  forecastCache = null;
+  sunTimesCache = null;
 }
