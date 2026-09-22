@@ -827,6 +827,7 @@ export const plMessages = {
   'settings.system.providers.disconnectDescription':
     'Spowoduje to rozłączenie {provider} na wszystkich połączonych urządzeniach. Możesz połączyć go ponownie później.',
   'settings.system.providers.notConnected': 'Brak połączenia na tym urządzeniu',
+  'settings.system.providers.automaticSubtitle': 'Skonfigurowane na serwerze.',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater': 'openHAB łączy się przez osobny formularz adresu URL.',
   'settings.system.providers.status.connected': 'Połączono',
@@ -1626,6 +1627,7 @@ export const plMessages = {
     'Połącz się bezpośrednio z openHAB za pomocą jego adresu URL i danych uwierzytelniających.',
   'login.providers.unavailable.detail':
     'Integracja jest przygotowywana, ale logowanie nie jest jeszcze dostępne.',
+  'login.providers.automatic.detail': 'Łączy się automatycznie po skonfigurowaniu na serwerze.',
   'login.actions.continue': 'Kontynuuj',
   'login.actions.back': 'Powrót',
   'login.hint.cloudOauth':

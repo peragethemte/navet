@@ -39,6 +39,8 @@
       "@navet/provider-homey/*": ["./packages/provider-homey/src/*"],
       "@navet/provider-openhab": ["./packages/provider-openhab/src/index.ts"],
       "@navet/provider-openhab/*": ["./packages/provider-openhab/src/*"],
+      "@navet/provider-yr": ["./packages/provider-yr/src/index.ts"],
+      "@navet/provider-yr/*": ["./packages/provider-yr/src/*"],
       "@docker/*": ["./docker/*"],
       "@scripts/*": ["./scripts/*"]
     },

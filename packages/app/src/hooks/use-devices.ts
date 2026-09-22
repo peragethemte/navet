@@ -340,13 +340,18 @@ function useSelectedProviderFeatureCollections({
   const openhabWeather = useProviderWeatherDevicesCollection('openhab', {
     enabled: enabled && includeWeather && selectedProviderIdSet.has('openhab'),
   });
+  // yr has no interactive connect/select step (see loginMode: 'automatic'): it renders
+  // whenever its own env-configured location makes it available, not based on provider selection.
+  const yrWeather = useProviderWeatherDevicesCollection('yr', {
+    enabled: enabled && includeWeather,
+  });
   const calendars = useMemo(
     () => [...homeAssistantCalendars, ...homeyCalendars, ...openhabCalendars],
     [homeAssistantCalendars, homeyCalendars, openhabCalendars]
   );
   const weather = useMemo(
-    () => [...homeAssistantWeather, ...homeyWeather, ...openhabWeather],
-    [homeAssistantWeather, homeyWeather, openhabWeather]
+    () => [...homeAssistantWeather, ...homeyWeather, ...openhabWeather, ...yrWeather],
+    [homeAssistantWeather, homeyWeather, openhabWeather, yrWeather]
   );
 
   return { calendars, weather };

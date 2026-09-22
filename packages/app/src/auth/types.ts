@@ -51,6 +51,20 @@ export interface OpenHABAuthSession extends BaseAuthSession {
 
 export type AuthSession = HomeAssistantAuthSession | HomeyAuthSession | OpenHABAuthSession;
 
+/**
+ * Providers with an interactive login step, i.e. the ones the shared auth session manager
+ * can ever hold a session for. Automatic providers (e.g. yr) never appear here.
+ */
+export const AUTH_SESSION_PROVIDER_IDS = [
+  'home_assistant',
+  'homey',
+  'openhab',
+] as const satisfies readonly AuthSession['providerId'][];
+
+export function isAuthSessionProviderId(value: string): value is AuthSession['providerId'] {
+  return (AUTH_SESSION_PROVIDER_IDS as readonly string[]).includes(value);
+}
+
 export interface AuthAdapter {
   readonly providerId: IntegrationProviderId;
   readonly kind: AuthRuntime;

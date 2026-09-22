@@ -832,6 +832,7 @@ export const frMessages = {
   'settings.system.providers.disconnectDescription':
     'Cela déconnecte {provider} sur tous les appareils connectés. Vous pourrez le reconnecter plus tard.',
   'settings.system.providers.notConnected': 'Non connecté sur cet appareil',
+  'settings.system.providers.automaticSubtitle': 'Configuré sur le serveur.',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater': 'openHAB se connecte via le flux autonome par URL.',
   'settings.system.providers.status.connected': 'Connecté',
@@ -1644,6 +1645,8 @@ export const frMessages = {
   'login.providers.openhab.detail': 'Connectez-vous directement à openHAB avec son URL.',
   'login.providers.unavailable.detail':
     'Le squelette du provider existe, mais la connexion n’est pas encore disponible.',
+  'login.providers.automatic.detail':
+    'Se connecte automatiquement une fois configuré sur le serveur.',
   'login.actions.continue': 'Continuer',
   'login.actions.back': 'Retour',
   'login.hint.cloudOauth':

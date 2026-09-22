@@ -822,6 +822,7 @@ export const noMessages = {
   'settings.system.providers.disconnectDescription':
     'Dette kobler fra {provider} på alle tilkoblede enheter. Du kan koble til igjen senere.',
   'settings.system.providers.notConnected': 'Ikke tilkoblet denne enheten',
+  'settings.system.providers.automaticSubtitle': 'Konfigurert på serveren.',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater':
     'openHAB kobler til gjennom den frittstående URL-flyten.',
@@ -1622,6 +1623,7 @@ export const noMessages = {
   'login.providers.openhab.detail': 'Koble direkte til openHAB med URL og legitimasjon.',
   'login.providers.unavailable.detail':
     'Leverandørstillas finnes, men pålogging er ikke tilgjengelig ennå.',
+  'login.providers.automatic.detail': 'Kobler til automatisk når det er satt opp på serveren.',
   'login.actions.continue': 'Fortsett',
   'login.actions.back': 'Tilbake',
   'login.hint.cloudOauth':

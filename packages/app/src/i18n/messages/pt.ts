@@ -824,6 +824,7 @@ export const ptMessages = {
   'settings.system.providers.disconnectDescription':
     'Isso desconecta {provider} em todos os dispositivos conectados. Você pode conectá-lo novamente mais tarde.',
   'settings.system.providers.notConnected': 'Não conectado neste dispositivo',
+  'settings.system.providers.automaticSubtitle': 'Configurado no servidor.',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater': 'O openHAB se conecta pelo fluxo autônomo com URL.',
   'settings.system.providers.status.connected': 'Conectado',
@@ -1625,6 +1626,8 @@ export const ptMessages = {
   'login.providers.openhab.detail': 'Conecte-se diretamente ao openHAB com a URL.',
   'login.providers.unavailable.detail':
     'A estrutura do provedor existe, mas o login ainda não está disponível.',
+  'login.providers.automatic.detail':
+    'Conecta-se automaticamente assim que estiver configurado no servidor.',
   'login.actions.continue': 'Continuar',
   'login.actions.back': 'Voltar',
   'login.hint.cloudOauth':

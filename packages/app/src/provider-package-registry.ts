@@ -5,6 +5,7 @@ import type {
 } from '@navet/core/provider-runtime-types';
 import { createHomeyProviderPackageRegistration } from '@navet/provider-homey';
 import { createOpenHABProviderPackageRegistration } from '@navet/provider-openhab';
+import { createYrProviderPackageRegistration } from '@navet/provider-yr';
 import { createHomeAssistantAppProviderPackageRegistration } from './provider-composition/home-assistant-package-registration';
 import type { IntegrationProviderRuntimeRegistration } from './provider-runtime-types';
 import { homeyService } from './services/homey.service';
@@ -41,6 +42,7 @@ const providerPackageRegistrationFactories: Record<
     createOpenHABProviderPackageRegistration({
       getSession: () => getProviderSession('openhab'),
     }),
+  yr: () => createYrProviderPackageRegistration(),
 };
 
 var providerPackageRegistrationOverrides:

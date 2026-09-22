@@ -831,6 +831,7 @@ export const deMessages = {
   'settings.system.providers.disconnectDescription':
     'Dadurch wird die Verbindung zu {provider} auf allen verbundenen Geräten getrennt. Du kannst sie später wiederherstellen.',
   'settings.system.providers.notConnected': 'Auf diesem Gerät nicht verbunden',
+  'settings.system.providers.automaticSubtitle': 'Auf dem Server konfiguriert.',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater':
     'openHAB verbindet sich über den eigenständigen URL-Anmeldefluss.',
@@ -1639,6 +1640,8 @@ export const deMessages = {
   'login.providers.openhab.detail': 'Verbinde dich direkt mit openHAB per URL.',
   'login.providers.unavailable.detail':
     'Das Provider-Grundgerüst ist vorhanden, aber die Anmeldung ist noch nicht verfügbar.',
+  'login.providers.automatic.detail':
+    'Verbindet sich automatisch, sobald es auf dem Server konfiguriert ist.',
   'login.actions.continue': 'Weiter',
   'login.actions.back': 'Zurück',
   'login.hint.cloudOauth':

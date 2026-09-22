@@ -823,6 +823,7 @@ export const svMessages = {
   'settings.system.providers.disconnectDescription':
     'Detta kopplar från {provider} på alla anslutna enheter. Du kan ansluta igen senare.',
   'settings.system.providers.notConnected': 'Inte ansluten på den här enheten',
+  'settings.system.providers.automaticSubtitle': 'Konfigurerad på servern.',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater': 'openHAB ansluter via det fristående URL-flödet.',
   'settings.system.providers.status.connected': 'Ansluten',
@@ -1621,6 +1622,7 @@ export const svMessages = {
   'login.providers.openhab.detail': 'Anslut direkt till openHAB med dess URL.',
   'login.providers.unavailable.detail':
     'Provider-stöd finns påbörjat, men inloggning är inte tillgänglig ännu.',
+  'login.providers.automatic.detail': 'Ansluter automatiskt när det har konfigurerats på servern.',
   'login.actions.continue': 'Fortsätt',
   'login.actions.back': 'Tillbaka',
   'login.hint.cloudOauth':

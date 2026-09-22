@@ -233,6 +233,8 @@ importers:
 
   packages/provider-openhab: {}
 
+  packages/provider-yr: {}
+
   packages/ui: {}
 
 packages:

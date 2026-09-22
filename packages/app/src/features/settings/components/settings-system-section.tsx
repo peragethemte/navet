@@ -74,6 +74,7 @@ const PROVIDER_ACCENTS: Record<IntegrationProviderId, string> = {
     'from-orange-500/18 via-amber-500/10 to-transparent ring-orange-400/20 shadow-[0_18px_42px_-34px_rgba(249,115,22,0.55)]',
   openhab:
     'from-emerald-500/18 via-lime-500/10 to-transparent ring-emerald-400/20 shadow-[0_18px_42px_-34px_rgba(16,185,129,0.55)]',
+  yr: 'from-cyan-500/18 via-blue-500/10 to-transparent ring-cyan-400/20 shadow-[0_18px_42px_-34px_rgba(6,182,212,0.55)]',
   hubitat:
     'from-fuchsia-500/14 via-pink-500/8 to-transparent ring-fuchsia-400/15 shadow-[0_18px_42px_-34px_rgba(217,70,239,0.45)]',
   smartthings:
@@ -201,6 +202,10 @@ function ProviderCardView({
   const hasNonDestructiveMenuAction = Boolean(openUrl || canEditUrl);
   const canConnectHomey = provider.id === 'homey' && !provider.isConnected;
   const canConnectWithUrl = usesUrlConnect && !provider.isConnected;
+  const subtitleText =
+    provider.loginMode === 'automatic'
+      ? t('settings.system.providers.automaticSubtitle')
+      : (displayUrl ?? t('settings.system.providers.notConnected'));
 
   return (
     <div
@@ -223,11 +228,8 @@ function ProviderCardView({
                   <ProviderStatusBadge label={getProviderStatusLabel(t, provider.status)} />
                 ) : null}
               </div>
-              <p
-                className={`mt-1 truncate text-xs ${styles.subtleColor}`}
-                title={displayUrl ?? t('settings.system.providers.notConnected')}
-              >
-                {displayUrl ?? t('settings.system.providers.notConnected')}
+              <p className={`mt-1 truncate text-xs ${styles.subtleColor}`} title={subtitleText}>
+                {subtitleText}
               </p>
               {provider.status === 'offline' ? (
                 <p className="mt-2 text-sm leading-relaxed text-amber-300">

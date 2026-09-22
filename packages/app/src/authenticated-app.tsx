@@ -2,12 +2,12 @@ import { useAuthSession } from '@navet/app/auth/AuthProvider';
 import {
   type AuthSession,
   type HomeAssistantAuthSession,
+  isAuthSessionProviderId,
   isHomeyAuthSession,
   toAuthCompatibleSessionMap,
 } from '@navet/app/auth/types';
 import { getRegisteredProviderContract } from '@navet/app/provider-contract-registry';
 import type { IntegrationProviderId } from '@navet/app/types/provider';
-import { isImplementedIntegrationProviderId } from '@navet/core/integration-providers';
 import type { NavetProviderSession } from '@navet/core/provider-contract';
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { PwaUpdatePrompt } from './components/shared/pwa-update-prompt';
@@ -221,7 +221,7 @@ function AppContent() {
   useEffect(() => {
     const nextSessions = Object.fromEntries(
       Object.keys(sessions)
-        .filter(isImplementedIntegrationProviderId)
+        .filter(isAuthSessionProviderId)
         .map((providerId) => [
           providerId,
           getRegisteredProviderContract(providerId).bootstrapSession?.(
@@ -237,7 +237,7 @@ function AppContent() {
   }, [sessions, setProviderSessions]);
 
   useEffect(() => {
-    const currentProviderIds = Object.keys(sessions).filter(isImplementedIntegrationProviderId);
+    const currentProviderIds = Object.keys(sessions).filter(isAuthSessionProviderId);
     const removedProviderIds = previousSessionProviderIds.current.filter(
       (previousProviderId) => !currentProviderIds.includes(previousProviderId)
     );

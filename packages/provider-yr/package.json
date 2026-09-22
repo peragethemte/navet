@@ -1,0 +1,10 @@
+{
+  "name": "@navet/provider-yr",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./yr-condition-mapping": "./src/yr-condition-mapping.ts",
+    "./yr-runtime-registration": "./src/yr-runtime-registration.ts"
+  }
+}

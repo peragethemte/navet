@@ -131,6 +131,8 @@ function providerLabel(providerId: IntegrationProviderId): string {
       return 'Homey';
     case 'openhab':
       return 'openHAB';
+    case 'yr':
+      return 'Yr.no Weather';
     case 'hubitat':
       return 'Hubitat';
     case 'smartthings':

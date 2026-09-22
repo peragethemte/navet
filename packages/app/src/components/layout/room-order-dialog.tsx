@@ -41,6 +41,8 @@ function getProviderLabel(providerId: PlatformManageableRoomReference['providerI
       return 'Homey';
     case 'openhab':
       return 'openHAB';
+    case 'yr':
+      return 'Yr.no Weather';
     case 'hubitat':
       return 'Hubitat';
     case 'smartthings':

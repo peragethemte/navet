@@ -823,6 +823,7 @@ export const daMessages = {
   'settings.system.providers.disconnectDescription':
     'Dette afbryder forbindelsen til {provider} på alle tilsluttede enheder. Du kan oprette forbindelse igen senere.',
   'settings.system.providers.notConnected': 'Ikke forbundet på denne enhed',
+  'settings.system.providers.automaticSubtitle': 'Konfigureret på serveren.',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater':
     'openHAB opretter forbindelse gennem det selvstændige URL-flow.',
@@ -1625,6 +1626,7 @@ export const daMessages = {
     'Opret forbindelse direkte til openHAB med dens URL og legitimationsoplysninger.',
   'login.providers.unavailable.detail':
     'Udbyderstilladser findes, men login er ikke tilgængeligt endnu.',
+  'login.providers.automatic.detail': 'Forbinder automatisk, når det er konfigureret på serveren.',
   'login.actions.continue': 'Fortsæt',
   'login.actions.back': 'Tilbage',
   'login.hint.cloudOauth':

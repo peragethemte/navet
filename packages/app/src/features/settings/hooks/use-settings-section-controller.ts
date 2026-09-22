@@ -204,7 +204,7 @@ export function useSettingsSectionController() {
           status,
           isActive: activeProviderId === provider.id,
           isConnected: Boolean(session),
-          canConnect: provider.loginMode !== 'unavailable',
+          canConnect: provider.loginMode !== 'unavailable' && provider.loginMode !== 'automatic',
           canDisconnect: Boolean(session),
           baseUrl: resolveProviderDisplayBaseUrl(session),
           error: session && status !== 'offline' ? (health?.lastError ?? null) : null,

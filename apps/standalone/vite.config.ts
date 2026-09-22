@@ -31,6 +31,7 @@ import {
   homeyProxyPlugin,
   openhabProxyPlugin,
 } from '../../scripts/vite-provider-proxy-plugins.ts';
+import { yrProxyPlugin } from '../../scripts/vite-yr-proxy-plugin.ts';
 import {
   authSessionStorePlugin,
   choreStorePlugin,
@@ -105,6 +106,15 @@ export default defineConfig(({ command, mode }) => {
   }
   if (env.NAVET_HOMEY_REDIRECT_URI) {
     process.env.NAVET_HOMEY_REDIRECT_URI = env.NAVET_HOMEY_REDIRECT_URI;
+  }
+  if (env.NAVET_YR_LATITUDE) {
+    process.env.NAVET_YR_LATITUDE = env.NAVET_YR_LATITUDE;
+  }
+  if (env.NAVET_YR_LONGITUDE) {
+    process.env.NAVET_YR_LONGITUDE = env.NAVET_YR_LONGITUDE;
+  }
+  if (env.NAVET_YR_LOCATION_NAME) {
+    process.env.NAVET_YR_LOCATION_NAME = env.NAVET_YR_LOCATION_NAME;
   }
   const hassUrl = env.NAVET_HASS_URL?.trim().replace(/\/$/, '');
   const enableDemo = (env.NAVET_ENABLE_DEMO ?? process.env.NAVET_ENABLE_DEMO ?? 'true') !== 'false';
@@ -233,6 +243,13 @@ export default defineConfig(({ command, mode }) => {
       homeyProxyPlugin((req, res) => homeySessionPlugin.api.getHomeySession?.(req, res) ?? null),
       openhabProxyPlugin(
         (req, res) => openhabSessionPlugin.api.getOpenHABSession?.(req, res) ?? null
+      ),
+      yrProxyPlugin((req, res) =>
+        Boolean(
+          resolveAuthenticatedPrincipal(req) ||
+            homeySessionPlugin.api.getHomeySession(req, res) ||
+            openhabSessionPlugin.api.getOpenHABSession(req, res)
+        )
       ),
     ];
 

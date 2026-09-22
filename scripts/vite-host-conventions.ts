@@ -56,7 +56,15 @@ export function createBuildMetadata(
 
 export function createNavetPackageAliases(repoRoot: string) {
   return Object.fromEntries(
-    ['core', 'ui', 'app', 'provider-homeassistant', 'provider-homey', 'provider-openhab'].map(
+    [
+      'core',
+      'ui',
+      'app',
+      'provider-homeassistant',
+      'provider-homey',
+      'provider-openhab',
+      'provider-yr',
+    ].map(
       (name) => [`@navet/${name}`, path.resolve(repoRoot, `packages/${name}/src`)]
     )
   );

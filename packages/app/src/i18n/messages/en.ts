@@ -349,6 +349,7 @@ export const enMessages = {
   'settings.system.providers.disconnectDescription':
     'This disconnects {provider} on all connected devices. You can connect it again later.',
   'settings.system.providers.notConnected': 'Not connected on this device',
+  'settings.system.providers.automaticSubtitle': 'Configured on the server.',
   'settings.system.providers.supportedEntities': 'View supported entities',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater': 'openHAB connects through the standalone URL flow.',
@@ -1142,6 +1143,7 @@ export const enMessages = {
   'login.providers.openhab.detail': 'Connect directly to openHAB with its URL and credentials.',
   'login.providers.unavailable.detail':
     'Provider scaffolding exists, but login is not available yet.',
+  'login.providers.automatic.detail': 'Connects automatically once it is configured on the server.',
   'login.actions.continue': 'Continue',
   'login.actions.back': 'Back',
   'login.hint.cloudOauth':

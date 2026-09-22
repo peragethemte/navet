@@ -1109,6 +1109,7 @@ export const zhMessages = {
   'login.providers.homey.detail': '使用 Homey Cloud 登录，然后选择 Navet 应使用的 Homey。',
   'login.providers.openhab.detail': '使用 URL 直接连接到 openHAB。',
   'login.providers.unavailable.detail': '提供商框架已存在，但登录功能暂不可用。',
+  'login.providers.automatic.detail': '在服务器上配置完成后将自动连接。',
   'login.actions.continue': '继续',
   'login.actions.back': '返回',
   'login.hint.cloudOauth':
@@ -1425,6 +1426,7 @@ export const zhMessages = {
   'settings.system.providers.disconnectDescription':
     '这会在所有已连接的设备上断开与 {provider} 的连接。你可以稍后重新连接。',
   'settings.system.providers.notConnected': '此设备上未连接',
+  'settings.system.providers.automaticSubtitle': '已在服务器上配置。',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater': 'openHAB 通过独立的 URL 流程连接。',
   'settings.system.providers.status.connected': '已连接',

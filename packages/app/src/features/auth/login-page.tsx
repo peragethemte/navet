@@ -127,6 +127,10 @@ const PROVIDER_OPTION_CONTENT: Record<
     detailKey: 'login.providers.openhab.detail',
     logoSrc: openhabLogo,
   },
+  yr: {
+    detailKey: 'login.providers.automatic.detail',
+    logoSrc: '',
+  },
   hubitat: {
     detailKey: 'login.providers.unavailable.detail',
     logoSrc: '',
@@ -138,9 +142,11 @@ const PROVIDER_OPTION_CONTENT: Record<
 };
 
 export function LoginPage({ initialError = '' }: { initialError?: string }) {
-  const selectableProviders = INTEGRATION_PROVIDER_IDS.filter(
-    (candidateId) => INTEGRATION_PROVIDERS[candidateId].loginMode !== 'unavailable'
-  );
+  const selectableProviders = INTEGRATION_PROVIDER_IDS.filter((candidateId) => {
+    const loginMode = INTEGRATION_PROVIDERS[candidateId].loginMode;
+    // 'automatic' providers (e.g. yr) have no interactive login step to offer here.
+    return loginMode !== 'unavailable' && loginMode !== 'automatic';
+  });
   const initialUrl = useRef(getRuntimeConfig().hassUrl ?? '');
   const urlInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState(initialError);

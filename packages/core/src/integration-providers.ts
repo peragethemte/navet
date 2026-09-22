@@ -2,6 +2,7 @@ export const INTEGRATION_PROVIDER_IDS = [
   'home_assistant',
   'homey',
   'openhab',
+  'yr',
   'hubitat',
   'smartthings',
 ] as const;
@@ -12,6 +13,7 @@ export const IMPLEMENTED_INTEGRATION_PROVIDER_IDS = [
   'home_assistant',
   'homey',
   'openhab',
+  'yr',
 ] as const satisfies readonly IntegrationProviderId[];
 
 export type ImplementedIntegrationProviderId =
@@ -21,7 +23,11 @@ export interface IntegrationProviderDefinition {
   id: IntegrationProviderId;
   label: string;
   implementationStatus: 'implemented' | 'planned';
-  loginMode: 'url_oauth' | 'url_session' | 'cloud_oauth' | 'unavailable';
+  /**
+   * 'automatic' providers have no interactive login step: they are always on once their
+   * environment configuration is present, so login/connect UI must not offer them a flow.
+   */
+  loginMode: 'url_oauth' | 'url_session' | 'cloud_oauth' | 'automatic' | 'unavailable';
   supportsDiscovery: boolean;
   supportsAggregation: boolean;
   supportsRooms: boolean;
@@ -69,6 +75,16 @@ export const INTEGRATION_PROVIDERS: Record<IntegrationProviderId, IntegrationPro
     supportsAggregation: true,
     supportsRooms: true,
     supportsRealtimeUpdates: true,
+  },
+  yr: {
+    id: 'yr',
+    label: 'Yr.no Weather',
+    implementationStatus: 'implemented',
+    loginMode: 'automatic',
+    supportsDiscovery: false,
+    supportsAggregation: false,
+    supportsRooms: false,
+    supportsRealtimeUpdates: false,
   },
   hubitat: {
     id: 'hubitat',

@@ -828,6 +828,7 @@ export const nlMessages = {
   'settings.system.providers.disconnectDescription':
     'Dit verbreekt de verbinding met {provider} op alle verbonden apparaten. Je kunt later opnieuw verbinding maken.',
   'settings.system.providers.notConnected': 'Niet verbonden op dit apparaat',
+  'settings.system.providers.automaticSubtitle': 'Geconfigureerd op de server.',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater':
     'openHAB maakt verbinding via de zelfstandige URL-stroom.',
@@ -1635,6 +1636,8 @@ export const nlMessages = {
     'Maak rechtstreeks verbinding met openHAB met de URL en inloggegevens.',
   'login.providers.unavailable.detail':
     'Providersteigers bestaan, maar inloggen is nog niet beschikbaar.',
+  'login.providers.automatic.detail':
+    'Maakt automatisch verbinding zodra het op de server is geconfigureerd.',
   'login.actions.continue': 'Ga door',
   'login.actions.back': 'Terug',
   'login.hint.cloudOauth':

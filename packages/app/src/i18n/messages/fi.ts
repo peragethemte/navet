@@ -824,6 +824,7 @@ export const fiMessages = {
   'settings.system.providers.disconnectDescription':
     'Tämä katkaisee yhteyden palveluun {provider} kaikilla yhdistetyillä laitteilla. Voit muodostaa yhteyden uudelleen myöhemmin.',
   'settings.system.providers.notConnected': 'Ei yhdistetty tähän laitteeseen',
+  'settings.system.providers.automaticSubtitle': 'Määritetty palvelimella.',
   'settings.system.providers.homeAssistantUrlPlaceholder': 'https://homeassistant.local:8123',
   'settings.system.providers.openhabLater':
     'openHAB muodostaa yhteyden erillisen URL-kulun kautta.',
@@ -1624,6 +1625,8 @@ export const fiMessages = {
     'Yhdistä suoraan openHABiin sen URL-osoitteen ja tunnistetietojen avulla.',
   'login.providers.unavailable.detail':
     'Palveluntarjoajatelineet ovat olemassa, mutta kirjautuminen ei ole vielä mahdollista.',
+  'login.providers.automatic.detail':
+    'Yhdistää automaattisesti, kun se on määritetty palvelimella.',
   'login.actions.continue': 'Jatka',
   'login.actions.back': 'Takaisin',
   'login.hint.cloudOauth':
