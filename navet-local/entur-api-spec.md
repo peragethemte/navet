@@ -160,7 +160,63 @@ Live evidence: aimed `11:25:00` vs expected `11:34:55` (a 9m55s delay).
 `realtimeState: "scheduled"`. Do not show a live indicator on the evening roll-forward to
 tomorrow's departures.
 
-## 5. Remaining gotchas
+## 5. Vehicle positions - live bus tracking
+
+A **separate API** from JourneyPlanner, verified live 2026-09-22 12:54 local. Same open data, same
+`ET-Client-Name` header, no auth.
+
+- Poll: `POST https://api.entur.io/realtime/v1/vehicles/graphql`
+- Push: `wss://api.entur.io/realtime/v1/vehicles/subscriptions`, subprotocol
+  `graphql-transport-ws` (verified: HTTP 101 on upgrade; the plain `/graphql` path returns 400 and
+  does not upgrade). The `subscription { vehicles }` field takes the same filters plus `bufferSize`
+  and `bufferTime`.
+
+Root queries: `vehicles`, `lines(codespaceId)`, `codespaces`, `serviceJourney(id)`,
+`serviceJourneys(lineRef)`, `operators(codespaceId)`.
+
+`vehicles` filters: `serviceJourneyId`, `lineRef`, `lineName`, `vehicleId`, `operatorRef`,
+`codespaceId`, `mode`, `monitored`, `boundingBox`.
+
+`VehicleUpdate` fields: `location{latitude longitude}`, `bearing`, `speed`, `delay` (seconds, Float),
+`monitored`, `vehicleStatus`, `inCongestion`, `occupancyStatus`, `direction`, `mode`, `vehicleId`,
+`line`, `serviceJourney`, `operator`, `codespace`, `originRef`, `originName`, `destinationRef`,
+`destinationName`, `lastUpdated` / `lastUpdatedEpochSecond`, `expiration` / `expirationEpochSecond`.
+
+Live sample - `vehicles(codespaceId: "OST")` returned **145 vehicles**, e.g. line 1 "Glomma vest",
+`delay: 316`, `occupancyStatus: "manySeatsAvailable"`, `vehicleStatus: "IN_PROGRESS"`,
+`monitored: true`.
+
+### Joining to the trip query
+
+`serviceJourney.id` has the **identical format in both APIs**
+(`OST:ServiceJourney:1_260325121473514_76`), so `vehicles(serviceJourneyId: <leg id>)` is the join.
+Filtering by a single ID was verified and returns exactly that bus.
+
+**But a vehicle only appears once its journey is under way.** At 12:54 the planner returned
+departures at 13:00 and 13:10 (`..._77`, `..._79`); neither existed in the live feed, which was
+carrying `..._76` and `..._73` on the same line. A "where is my bus right now" marker therefore
+stays empty for exactly the departure the user is about to catch, and only lights up once it has
+left its origin. Plan the UI for the empty case as the normal state, not the exception.
+
+### What it does and does not add
+
+`delay` is **already available from the trip query** via
+`legs[].fromEstimatedCall.expectedDepartureTime` minus `aimedDepartureTime` (section 4). Do not add
+a second API call just to show lateness. Vehicle positions are only worth it for map position,
+`occupancyStatus`, `inCongestion`, or a "two stops away" progress indicator.
+
+### Gotchas
+
+- **17 of 145 vehicles had `line: null`.** Null-guard it.
+- `speed` and `inCongestion` are frequently null; `bearing` was populated.
+- `lineRef` is `OST:Line:1_1` for public code "1" but `OST:Line:155_805` for public code "805".
+  The number after `Line:` is not the public code - read `line.publicCode`, never parse `lineRef`.
+- `destinationName` came back null on a `serviceJourneyId`-filtered query even though the field
+  exists. Do not depend on it for labelling.
+- **No rate-limit headers at all** on this API, unlike JourneyPlanner and Geocoder. The budget is
+  unknown, so prefer the subscription over tight polling for anything continuous.
+
+## 6. Remaining gotchas
 
 - Multiple `__type` aliases in one query returns `BadFaithIntrospection`. Codegen against the live
   endpoint will trip this — use the SDL file instead.

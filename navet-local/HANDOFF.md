@@ -60,12 +60,9 @@ capability is wanted later (charging state), it's a one-line addition to that pr
 - **Weather location persists to the shared synced profile**, not per-device, matching the sibling
   `weatherForecastMode`/`weatherMetricIds` settings. Env vars remain as fallback defaults so
   existing Docker deploys keep working.
-
-## Open decision
-
-**Transit: "arrive by 08:00" vs "depart after 06:30".** Entur's trip query supports both
-(`arriveBy: true|false`). The real question for a school run is whether he gets there on time, which
-argues for arrive-by. Not yet decided — raise it before building the journey config UI.
+- **Transit journeys are modelled as "arrive by", not "depart after"** (decided 2026-09-22).
+  Entur's trip query takes `arriveBy: true`. "Be at school by 08:00" is the question actually
+  being asked; the departure times fall out of the answer, while the reverse does not hold.
 
 ## Transit design (agreed, not built)
 
@@ -76,6 +73,19 @@ Journeys are configured centrally in the Local services settings section, not pe
 - The card shows currently-active journeys ordered by next departure; when nothing is active
   (evening), it rolls forward to the next upcoming one.
 - Show 2–3 alternatives per journey.
+
+### Live vehicle tracking is available, but deliberately out of scope for v1
+
+Entur has a second API for live bus positions (`realtime/v1/vehicles`, section 5 of
+`entur-api-spec.md`) - verified working for Østfold, 145 tracked vehicles, with position,
+bearing, delay, occupancy and congestion, joinable to a trip leg on `serviceJourney.id`, and
+available as a websocket subscription.
+
+It is not needed for the school-run card: **the trip query already carries the realtime delay**
+via `fromEstimatedCall`, so lateness is covered without it. What vehicle positions would add is
+a map marker or a "two stops away" indicator. The catch is that a vehicle only enters the feed
+once its journey is under way, so for the departure the user is waiting for the marker is empty
+exactly when they would look at it. Revisit only if a map view is wanted later.
 
 Read `entur-api-spec.md` before implementing. Two findings there would otherwise ship broken:
 the geocoder endpoints most people would reach for are **deprecated**, and passing a partial `modes`
