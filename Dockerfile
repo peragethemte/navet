@@ -42,7 +42,14 @@ RUN GO111MODULE=off go test ./docker/rss-transport \
 
 FROM nginx:1.27-alpine
 
-RUN apk add --no-cache su-exec
+RUN apk add --no-cache su-exec python3
+
+# The iCloud sidecar's dependencies. Every one of them publishes a musl wheel, so this needs no
+# compiler; --only-binary keeps it that way rather than silently falling back to a source build.
+COPY docker/integrations-sidecar/requirements.txt /etc/navet/integrations-sidecar/requirements.txt
+RUN python3 -m venv /opt/navet-sidecar \
+  && /opt/navet-sidecar/bin/pip install --no-cache-dir --only-binary=:all: \
+    -r /etc/navet/integrations-sidecar/requirements.txt
 
 ARG NAVET_VERSION=0.0.0
 ARG NAVET_GIT_SHA=local
@@ -62,6 +69,7 @@ COPY docker/nginx.main.conf /etc/nginx/nginx.conf
 COPY docker/resolver.conf /etc/nginx/resolver.conf
 COPY docker/njs/rss-proxy.js /etc/nginx/njs/rss-proxy.js
 COPY docker/njs/yr-proxy.js /etc/nginx/njs/yr-proxy.js
+COPY docker/njs/icloud-proxy.js /etc/nginx/njs/icloud-proxy.js
 COPY docker/njs/resource-host-policy.js /etc/nginx/njs/resource-host-policy.js
 COPY docker/njs/profile-store.js /etc/nginx/njs/profile-store.js
 COPY docker/shared /etc/nginx/shared
@@ -80,6 +88,8 @@ COPY docker/njs/homey-proxy.js /etc/nginx/njs/homey-proxy.js
 COPY docker/njs/ha-proxy.template.js /etc/navet-nginx/ha-proxy.template.js
 COPY docker/snippets/navet-rss-proxy.conf /etc/nginx/snippets/navet-rss-proxy.conf
 COPY docker/snippets/navet-yr-proxy.conf /etc/nginx/snippets/navet-yr-proxy.conf
+COPY docker/snippets/navet-icloud-proxy.conf /etc/nginx/snippets/navet-icloud-proxy.conf
+COPY docker/snippets/navet-icloud-backend.conf /etc/nginx/snippets/navet-icloud-backend.conf
 COPY docker/snippets/navet-rss-transport.conf /etc/nginx/snippets/navet-rss-transport.conf
 COPY docker/snippets/navet-profile-store.conf /etc/nginx/snippets/navet-profile-store.conf
 COPY docker/snippets/navet-chore-store.conf /etc/nginx/snippets/navet-chore-store.conf
@@ -96,12 +106,14 @@ COPY docker/30-navet-config.sh /docker-entrypoint.d/30-navet-config.sh
 COPY docker/navet-runtime.sh /usr/local/bin/navet-runtime
 COPY docker/navet-entrypoint.sh /usr/local/bin/navet-entrypoint
 COPY docker/navet-setup-code.sh /usr/local/bin/navet-setup-code
+COPY docker/integrations-sidecar/app /etc/navet/integrations-sidecar/app
+COPY docker/integrations-sidecar/run-container.sh /etc/navet/integrations-sidecar/run-container.sh
 COPY --from=rss-transport-build /out/rss-transport /etc/navet/rss-transport
 COPY --from=build /app/apps/standalone/dist /usr/share/nginx/html
 
 RUN mkdir -p /data \
   && chown -R nginx:nginx /data \
-  && chmod +x /docker-entrypoint.d/30-navet-config.sh /usr/local/bin/navet-runtime /usr/local/bin/navet-entrypoint /usr/local/bin/navet-setup-code
+  && chmod +x /docker-entrypoint.d/30-navet-config.sh /usr/local/bin/navet-runtime /usr/local/bin/navet-entrypoint /usr/local/bin/navet-setup-code /etc/navet/integrations-sidecar/run-container.sh
 
 ENTRYPOINT ["/usr/local/bin/navet-entrypoint"]
 CMD ["nginx", "-g", "daemon off;"]

@@ -70,6 +70,7 @@ server {
 
   include /etc/nginx/snippets/navet-rss-proxy.conf;
   include /etc/nginx/snippets/navet-yr-proxy.conf;
+  include /etc/nginx/snippets/navet-icloud-proxy.conf;
 
   location = /config.js {
     add_header Cache-Control "no-store" always;

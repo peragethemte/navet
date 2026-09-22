@@ -351,6 +351,11 @@ awk '
     print "  listen 8080;"
     next
   }
+  # The Yr and iCloud proxies are standalone-only: their njs modules, snippets and the iCloud
+  # sidecar are not part of this image, and nginx refuses to start on an include it cannot open.
+  /^  include \/etc\/nginx\/snippets\/navet-(yr|icloud)-proxy\.conf;$/ {
+    next
+  }
   /^  location = \/config\.js \{$/ {
     in_runtime_config = 1
   }
