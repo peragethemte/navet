@@ -5,7 +5,9 @@ editUrl: https://github.com/awesomestvi/navet/edit/main/docs/how-to/everyday-con
 ---
 
 Open **Household** to keep ordinary home work beside the routines that already run your smart
-home. **Today** leads with overdue and due work, then remaining work and completed chores.
+home. **Today** leads with overdue and due work, then remaining work and completed chores. School
+homework set on the **Homework** board appears in the same list and is completed the same way; see
+[Set homework for the next 10 days](/guide/everyday-control/manage-household-chores/#set-homework-for-the-next-10-days).
 
 ![The current Household Today dashboard with Chores today, needs-attention chores, remaining work, and completed chores.](/docs/how-to/everyday-control/household-today.webp)
 

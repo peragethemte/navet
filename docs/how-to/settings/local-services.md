@@ -1,16 +1,16 @@
 ---
-title: Set the weather location
-description: Choose the coordinates Navet fetches its weather forecast for.
+title: Set up local services
+description: Choose the weather location and the public-transport journeys Navet shows.
 editUrl: https://github.com/awesomestvi/navet/edit/main/docs/how-to/settings/local-services.md
 ---
 
-Local services holds the places your household cares about. Today that is the weather location the
-Yr.no forecast is fetched for.
+Local services holds the places your household cares about: the location the weather forecast is
+fetched for, and the public-transport journeys the departures card plans.
 
-The weather location is part of the shared dashboard profile, so a wall panel, a phone, and a
-laptop signed in to the same Navet installation all show the same place.
+Both are part of the shared dashboard profile, so a wall panel, a phone, and a laptop signed in to
+the same Navet installation all show the same places.
 
-## Set the location
+## Set the weather location
 
 1. Open **Settings → Local services**.
 2. Enter **Latitude** and **Longitude** in decimal degrees, for example `59.2839` and `11.1094`.
@@ -39,3 +39,37 @@ is set, the weather card has no forecast to show.
 
 Open the place on any map service and read the decimal coordinates from it. Yr.no shows them in the
 address of a forecast page.
+
+## Add a transit journey
+
+A journey describes a trip your household takes regularly, such as the morning run to school. Navet
+plans it backwards from the time you need to arrive, so the card answers whether you get there on
+time rather than only listing what leaves next.
+
+1. Open **Settings → Local services** and select **Add journey**.
+2. Enter a **Name**, for example `School run`. It labels the journey on the card.
+3. Type into **From** and **To** to search for stops, then select one from the results.
+4. Set **Arrive by** to the time you need to be at the destination.
+5. Set **Show from** to how long before that time the journey should appear on the card.
+6. Select the **Days** the journey runs. A journey with no days selected is never shown, and days
+   matter more than they look: without them a Friday evening dashboard would offer Saturday's
+   school bus.
+
+The journey is saved as soon as both stops and at least one day are set. Remove a journey with the
+bin button next to its name. You can save up to eight journeys.
+
+### How stop search works
+
+Stop search covers every stop in Norway. When a weather location is set, results are limited to
+roughly 50 km around it, which is what makes searching for a common name such as `skole` useful.
+Without a weather location the search runs nationwide, so include the place name in what you type.
+
+### Add the departures card
+
+Journeys only appear once the card is on a dashboard. Enter edit mode, select **Add card**, and
+choose **Departures**. The card shows every journey currently inside its **Show from** window,
+earliest deadline first, with two or three alternatives each depending on the card size. When no
+journey is active, it rolls forward to the next one so an evening dashboard shows tomorrow morning.
+
+Live delays, platform numbers, walking distance, and cancellations come from the transport
+operator. Departures further ahead than the operator publishes live data for show timetable times.

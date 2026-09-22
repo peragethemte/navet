@@ -46,10 +46,12 @@
       "expected": [
         {
           "scheduledAt": "2026-10-19T16:00:00.000Z",
+          "dueAt": "2026-10-19T18:00:00.000Z",
           "assigneeIds": ["alice"]
         },
         {
           "scheduledAt": "2026-10-26T17:00:00.000Z",
+          "dueAt": "2026-10-26T19:00:00.000Z",
           "assigneeIds": ["bob"]
         }
       ]
@@ -99,10 +101,12 @@
       "expected": [
         {
           "scheduledAt": "2026-08-28T08:00:00.000Z",
+          "dueAt": "2026-08-28T08:30:00.000Z",
           "assigneeIds": ["alice"]
         },
         {
           "scheduledAt": "2026-08-28T08:00:00.000Z",
+          "dueAt": "2026-08-28T08:30:00.000Z",
           "assigneeIds": ["bob"]
         }
       ]
@@ -154,18 +158,22 @@
       "expected": [
         {
           "scheduledAt": "2026-08-24T08:00:00.000Z",
+          "dueAt": "2026-08-24T08:30:00.000Z",
           "assigneeIds": ["alice"]
         },
         {
           "scheduledAt": "2026-08-25T08:00:00.000Z",
+          "dueAt": "2026-08-25T08:30:00.000Z",
           "assigneeIds": ["bob"]
         },
         {
           "scheduledAt": "2026-08-31T08:00:00.000Z",
+          "dueAt": "2026-08-31T08:30:00.000Z",
           "assigneeIds": ["alice"]
         },
         {
           "scheduledAt": "2026-09-01T08:00:00.000Z",
+          "dueAt": "2026-09-01T08:30:00.000Z",
           "assigneeIds": ["bob"]
         }
       ]
@@ -216,6 +224,7 @@
       "expected": [
         {
           "scheduledAt": "2028-02-29T10:00:00.000Z",
+          "dueAt": "2028-02-29T12:00:00.000Z",
           "assigneeIds": ["alice"]
         }
       ]
@@ -270,7 +279,53 @@
       "expected": [
         {
           "scheduledAt": "2028-01-31T10:00:00.000Z",
+          "dueAt": "2028-01-31T12:00:00.000Z",
           "assigneeIds": ["alice"]
+        }
+      ]
+    },
+    {
+      "name": "one-off homework is due at the end of its local day",
+      "participants": [
+        {
+          "id": "sam",
+          "displayName": "Sam",
+          "capabilities": ["complete"],
+          "createdAt": "2026-09-01T08:00:00.000Z",
+          "updatedAt": "2026-09-01T08:00:00.000Z"
+        }
+      ],
+      "definition": {
+        "id": "homework:2026-09-22:maths",
+        "kind": "homework",
+        "title": "Maths page 42",
+        "icon": "GraduationCap",
+        "enabled": true,
+        "assignment": {
+          "mode": "person",
+          "participantIds": ["sam"]
+        },
+        "schedule": {
+          "frequency": "once",
+          "date": "2026-09-22",
+          "time": "00:00",
+          "timeZone": "Europe/Oslo"
+        },
+        "dueWindowMinutes": 1439,
+        "approval": {
+          "required": false,
+          "approverIds": []
+        },
+        "createdAt": "2026-09-21T18:00:00.000Z",
+        "updatedAt": "2026-09-21T18:00:00.000Z"
+      },
+      "rangeStart": "2026-09-01T00:00:00.000Z",
+      "rangeEnd": "2026-10-01T00:00:00.000Z",
+      "expected": [
+        {
+          "scheduledAt": "2026-09-21T22:00:00.000Z",
+          "dueAt": "2026-09-22T21:59:00.000Z",
+          "assigneeIds": ["sam"]
         }
       ]
     }

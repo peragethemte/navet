@@ -75,6 +75,30 @@ describe('normalizeCustomCard', () => {
     ).toBe('small');
   });
 
+  it('clamps oversized transit cards to medium', () => {
+    expect(
+      normalizeCustomCard(
+        buildCard({
+          id: 'custom-transit',
+          type: 'transit',
+          size: 'extra-large',
+        })
+      ).size
+    ).toBe('medium');
+  });
+
+  it('keeps a supported transit card size', () => {
+    expect(
+      normalizeCustomCard(
+        buildCard({
+          id: 'custom-transit',
+          type: 'transit',
+          size: 'large',
+        })
+      ).size
+    ).toBe('large');
+  });
+
   it('normalizes persisted media stack card data', () => {
     expect(
       normalizeCustomCard(

@@ -18,6 +18,7 @@ import {
   normalizePersistedEntityRecord,
 } from '@navet/app/utils/provider-entity-id';
 import { type GeoLocation, normalizeGeoLocation } from '@navet/core/geo-location';
+import { normalizeTransitJourneys, type TransitJourney } from '@navet/core/transit-journey';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -85,6 +86,8 @@ export interface UserSettings {
   weatherMetricIds: WeatherMetricId[];
   /** Household forecast location. Null falls back to the server's `NAVET_YR_*` defaults. */
   weatherLocation: WeatherLocation | null;
+  /** Recurring public-transport journeys rendered by the departures card. */
+  transitJourneys: TransitJourney[];
   advancedCustomizationEnabled: boolean;
   customSidebarActions: CustomSidebarAction[];
   customSummaryPills: CustomSummaryPill[];
@@ -146,6 +149,7 @@ export const defaultSettings: UserSettings = {
   weatherForecastMode: 'weekly',
   weatherMetricIds: ['precipitation', 'humidity', 'wind'],
   weatherLocation: null,
+  transitJourneys: [],
   advancedCustomizationEnabled: false,
   customSidebarActions: [],
   customSummaryPills: [],
@@ -386,6 +390,10 @@ export const useSettingsStore = create<SettingsState>()(
             newSettings.weatherLocation !== undefined
               ? normalizeGeoLocation(newSettings.weatherLocation)
               : state.weatherLocation,
+          transitJourneys:
+            newSettings.transitJourneys !== undefined
+              ? normalizeTransitJourneys(newSettings.transitJourneys)
+              : state.transitJourneys,
           dashboardSpaceMode:
             newSettings.dashboardSpaceMode !== undefined &&
             isDashboardSpaceMode(newSettings.dashboardSpaceMode)
@@ -527,6 +535,7 @@ export const useSettingsStore = create<SettingsState>()(
             : defaultSettings.headerTitleMode,
           headerCustomText: normalizeHeaderCustomText(supportedSettings.headerCustomText),
           weatherLocation: normalizeGeoLocation(supportedSettings.weatherLocation),
+          transitJourneys: normalizeTransitJourneys(supportedSettings.transitJourneys),
           dashboardSpaceMode: isDashboardSpaceMode(supportedSettings.dashboardSpaceMode)
             ? supportedSettings.dashboardSpaceMode
             : defaultSettings.dashboardSpaceMode,
@@ -605,6 +614,7 @@ export const useSettingsStore = create<SettingsState>()(
             : current.headerTitleMode,
           headerCustomText: normalizeHeaderCustomText(next.headerCustomText),
           weatherLocation: normalizeGeoLocation(next.weatherLocation),
+          transitJourneys: normalizeTransitJourneys(next.transitJourneys),
           dashboardSpaceMode: isDashboardSpaceMode(next.dashboardSpaceMode)
             ? next.dashboardSpaceMode
             : current.dashboardSpaceMode,

@@ -129,6 +129,12 @@ const SETTINGS: SearchSettingDefinition[] = [
     descriptionKey: 'settings.local.weatherLocation.description',
   },
   {
+    id: 'local-transit-journeys',
+    sectionId: 'local',
+    labelKey: 'settings.local.transit.title',
+    descriptionKey: 'settings.local.transit.description',
+  },
+  {
     id: 'dashboard-multiple-dashboards',
     sectionId: 'dashboard',
     labelKey: 'dashboard.multiple.manager.title',

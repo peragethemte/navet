@@ -220,13 +220,14 @@ four-calendars case at one HTTP call per refresh cycle instead of four.
   `docker/nginx.main.conf`, `apps/standalone/vite.config.ts` and new `entur-proxy` files are dirty
   with transit work that was not there at the start of this session. Those are exactly the files the
   calendar transport touches. Land transit first, or do calendar on its own worktree.
-- **The add-on image is currently broken by the Yr branch, and the calendar work compounds it.**
-  `docker/nginx.conf` includes `navet-yr-proxy.conf` and now `navet-icloud-proxy.conf`, and neither
-  file is copied into the add-on image (`platform/home-assistant/addons/navet/Dockerfile:81-93`);
-  `run.sh:349-367` awk-transforms the same template without dropping the includes, so nginx fails to
-  load there. The entur include is a third. Deliberately not fixed here: the add-on has no way to
-  supply an Apple ID at all (`config.yaml:23-26` is a single boolean), so supporting iCloud there is
-  its own change. Fixing the include breakage is not, and should land on its own.
+- **The add-on ships the iCloud proxy but never the sidecar.** Every snippet included by
+  `docker/nginx.conf` has to be copied into the add-on image with a matching `js_import`, or nginx
+  refuses to start on an include it cannot open; the transit branch established that rule when it
+  fixed the same breakage for Yr. The iCloud proxy follows it, so the add-on's nginx loads, but the
+  Python sidecar is not in that image and the add-on has no way to supply an Apple ID
+  (`config.yaml:23-26` is a single boolean). A request there returns 502, which the provider treats
+  as unreachable and retries on its backoff ladder. Supporting iCloud on the add-on is its own
+  change: it needs the sidecar in that image and a credentials input in the add-on options.
 - **Day grouping uses the UTC date** (`use-calendar-data.ts:25`, `toISOString().slice(0,10)`) while
   headers render from local date parts. In UTC+2 an event between 00:00 and 02:00 local is bucketed
   under the previous day. Pre-existing, affects Norway, small fix in `groupEventsByDay`, out of scope

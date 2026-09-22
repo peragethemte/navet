@@ -1,6 +1,7 @@
 export * from './alarm-types';
 export * from './capabilities';
 export * from './chore-experience';
+export * from './chore-homework';
 export * from './chore-insights';
 export * from './chore-interchange';
 export * from './chore-motivation';

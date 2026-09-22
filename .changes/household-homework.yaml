@@ -1,0 +1,6 @@
+type: new
+audiences:
+  - standalone
+  - home-assistant
+  - docs
+summary: Household has a Homework board where a manager sets one line of homework per person for the next 10 days, ticked off in Today like any other chore.

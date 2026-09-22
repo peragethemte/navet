@@ -74,6 +74,9 @@ COPY docker/njs/device-session-authority.js /etc/nginx/njs/device-session-author
 COPY docker/njs/installation-cookie-scope.js /etc/nginx/njs/installation-cookie-scope.js
 COPY docker/njs/openhab-store.js /etc/nginx/njs/openhab-store.js
 COPY docker/njs/openhab-proxy.js /etc/nginx/njs/openhab-proxy.js
+COPY docker/njs/yr-proxy.js /etc/nginx/njs/yr-proxy.js
+COPY docker/njs/entur-proxy.js /etc/nginx/njs/entur-proxy.js
+COPY docker/njs/icloud-proxy.js /etc/nginx/njs/icloud-proxy.js
 COPY docker/njs/homey-store.js /etc/nginx/njs/homey-store.js
 COPY docker/njs/homey-proxy.js /etc/nginx/njs/homey-proxy.js
 COPY docker/njs/ha-proxy.template.js /etc/navet-nginx/ha-proxy.template.js
@@ -90,6 +93,10 @@ COPY docker/snippets/navet-device-session-store.conf /etc/nginx/snippets/navet-d
 COPY docker/snippets/navet-openhab-store.conf /etc/nginx/snippets/navet-openhab-store.conf
 COPY docker/snippets/navet-homey-store.conf /etc/nginx/snippets/navet-homey-store.conf
 COPY docker/snippets/navet-discovery.conf /etc/nginx/snippets/navet-discovery.conf
+COPY docker/snippets/navet-yr-proxy.conf /etc/nginx/snippets/navet-yr-proxy.conf
+COPY docker/snippets/navet-entur-proxy.conf /etc/nginx/snippets/navet-entur-proxy.conf
+COPY docker/snippets/navet-icloud-proxy.conf /etc/nginx/snippets/navet-icloud-proxy.conf
+COPY docker/snippets/navet-icloud-backend.conf /etc/nginx/snippets/navet-icloud-backend.conf
 COPY docker/snippets/navet-security-headers.conf /etc/nginx/snippets/navet-security-headers.conf
 COPY --from=build /app/apps/standalone/dist /usr/share/nginx/html
 

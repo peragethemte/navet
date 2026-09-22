@@ -11,6 +11,7 @@ import {
   createEmptyChoreWorkspace,
   getChoreTiming,
   isChoreWorkspaceData,
+  isHomeworkDefinition,
   materializeChoreOccurrences,
   migrateChoreWorkspaceData,
   runChoreWorkspaceScheduler,
@@ -294,6 +295,54 @@ describe('chores domain', () => {
         },
       })
     ).toBe(false);
+  });
+
+  it('keeps the workspace loadable for any definition kind it does not recognise', () => {
+    const base = {
+      ...createEmptyChoreWorkspace(),
+      participantsById: { alice, bob },
+    };
+
+    for (const kind of ['homework', 'something-new'] as const) {
+      const definition = makeDefinition({ kind } as Partial<ChoreDefinition>);
+      expect(
+        isChoreWorkspaceData({ ...base, definitionsById: { [definition.id]: definition } })
+      ).toBe(true);
+    }
+
+    const malformed = { ...makeDefinition(), kind: 42 };
+    expect(isChoreWorkspaceData({ ...base, definitionsById: { [malformed.id]: malformed } })).toBe(
+      false
+    );
+  });
+
+  it('stores a homework definition kind verbatim through the workspace boundary', () => {
+    const definition = makeDefinition({
+      id: 'homework:2026-08-10:one',
+      kind: 'homework',
+      title: 'Maths page 42',
+      assignment: { mode: 'person', participantIds: ['bob'] },
+      schedule: {
+        frequency: 'once',
+        date: '2026-08-10',
+        time: '00:00',
+        timeZone: 'Europe/Stockholm',
+      },
+      dueWindowMinutes: 1439,
+    });
+
+    const created = applyChoreWorkspaceAction({
+      commandId: 'create-homework',
+      action: { type: 'definition_create', actorParticipantId: 'alice', definition },
+      timestamp: '2026-08-09T08:00:00.000Z',
+      workspace: {
+        ...createEmptyChoreWorkspace(),
+        participantsById: { alice, bob },
+      },
+    });
+
+    expect(created.data.definitionsById[definition.id]).toEqual(definition);
+    expect(isHomeworkDefinition(created.data.definitionsById[definition.id])).toBe(true);
   });
 
   it('accepts provider-neutral and legacy reminder destinations', () => {

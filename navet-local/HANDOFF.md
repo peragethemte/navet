@@ -24,12 +24,22 @@ built on top of `feature/yr-weather-provider`.
 | Tesla battery | No code needed — see below |
 | Yr.no weather | Done, `feature/yr-weather-provider` |
 | Settings section + weather location | Done, `feature/settings-location-section` |
-| Østfold transit | Not started — next |
-| Apple Calendar + Reminders | Not started — last, and the heaviest |
+| Østfold transit | Done, on `feature/settings-location-section` |
+| Apple Calendar + Reminders | Not started - next, and the heaviest |
 
 Verified on both branches: `pnpm typecheck`, `pnpm lint`, `check:provider-boundaries`,
 `check:i18n`, `check:stories`, plus the full unit suite. Weather was additionally verified
 end to end in a real built Docker container, not just `pnpm dev`.
+
+**Run `pnpm check:docker` too.** It was not in the list above, and it was failing at the tip of
+`feature/settings-location-section`: `docker/nginx.conf` is copied into the Home Assistant add-on
+image as `direct.conf.template`, so the Yr include reached an add-on that never copied
+`navet-yr-proxy.conf` or its njs module, and the add-on nginx refused to start. Fixed for both
+proxies in `platform/home-assistant/addons/navet/Dockerfile` and its `rootfs` `nginx.conf`. Any
+future snippet added to `docker/nginx.conf` needs the same three lines there.
+
+Note `pnpm check:docker | tail` hides the failure: the pipeline exit status is `tail`'s. Run it
+unpiped, or redirect to a file.
 
 ### Tesla needs no code
 
@@ -64,15 +74,31 @@ capability is wanted later (charging state), it's a one-line addition to that pr
   Entur's trip query takes `arriveBy: true`. "Be at school by 08:00" is the question actually
   being asked; the departure times fall out of the answer, while the reverse does not hold.
 
-## Transit design (agreed, not built)
+## Transit design (built)
 
-Journeys are configured centrally in the Local services settings section, not per-card:
+Journeys are configured centrally in the Local services settings section, not per-card. Each is
+name, from/to (Entur stop search), `arriveByMinute`, `leadMinutes` and **days of week** - without
+days, Friday evening would show Saturday's school bus.
 
-- Each journey: name, from/to (Entur place search), active time window (e.g. 06:30–08:00), and
-  **days of week** — without days, Friday evening would show Saturday's school bus.
-- The card shows currently-active journeys ordered by next departure; when nothing is active
-  (evening), it rolls forward to the next upcoming one.
-- Show 2–3 alternatives per journey.
+The card shows every journey inside its lead window ordered by deadline; when none is active
+(evening) it rolls forward to the next one. 2-3 alternatives per journey, by card size.
+
+**The agreed "active time window" became `arriveByMinute` + `leadMinutes`.** Under arrive-by
+modelling a window and a deadline are two ways of saying the same thing, and a separate window can
+be configured so it does not contain its own journey. A lead time cannot. `leadMinutes` only
+decides how early the card starts showing the journey.
+
+**Stop search is bounded by the weather location.** Entur's `bbox` is its only hard filter -
+verified: `lat`/`lon` focus and `radius` are weak bias, and a search for "skole" centred on
+Sarpsborg still ranks Kongsberg first. `buildSearchBoundingBox` derives a ~50 km box from the
+already-configured weather location, so transit needed no second place setting. Without a weather
+location, search is nationwide.
+
+Where it lives: `packages/core/src/transit-journey.ts` (pure config model, mirrors
+`geo-location.ts`), `packages/app/src/features/transit/` (Entur client, mapper, hook, card),
+`settings-transit-journeys.tsx`, and an `entur-proxy` pair (njs + vite) mirroring the Yr proxy.
+The proxy forwards the GraphQL body rather than building it, so the query and its mapper stay
+together in tested TypeScript.
 
 ### Live vehicle tracking is available, but deliberately out of scope for v1
 

@@ -1,5 +1,5 @@
 import type { TranslateFn } from '@navet/app/hooks';
-import { Zap as EnergyIcon, Gauge, MessageCircle, Sparkles } from 'lucide-react';
+import { BusFront, Zap as EnergyIcon, Gauge, MessageCircle, Sparkles } from 'lucide-react';
 import type { SVGProps } from 'react';
 import type { ButtonWidgetData } from '../widgets/button-widget';
 import type { CardTemplate } from './types';
@@ -153,6 +153,15 @@ export function createCardTemplates(t: TranslateFn): CardTemplate[] {
       icon: <Newspaper className="w-5 h-5" />,
       defaultSize: 'large',
       supportedSizes: ['medium', 'large'],
+    },
+    {
+      id: 'transit',
+      cardType: 'transit',
+      nameKey: 'dashboard.addCard.templates.transit.name',
+      descriptionKey: 'dashboard.addCard.templates.transit.description',
+      icon: <BusFront className="w-5 h-5" />,
+      defaultSize: 'medium',
+      supportedSizes: ['small', 'medium', 'large'],
     },
     {
       id: 'photo',

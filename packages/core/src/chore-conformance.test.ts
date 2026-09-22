@@ -22,7 +22,11 @@ describe('shared chore conformance vectors', () => {
       });
 
       expect(
-        occurrences.map(({ scheduledAt, assigneeIds }) => ({ scheduledAt, assigneeIds }))
+        occurrences.map(({ scheduledAt, dueAt, assigneeIds }) => ({
+          scheduledAt,
+          dueAt,
+          assigneeIds,
+        }))
       ).toEqual(vector.expected);
     });
   }

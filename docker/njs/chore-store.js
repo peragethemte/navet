@@ -1125,6 +1125,10 @@ function materializeDefinition(definition, participantsById, rangeStart, rangeEn
       (schedule.endDate === undefined || nextDate <= schedule.endDate) &&
       !includesValue(schedule.excludedDates, nextDate)
     ) dates.push(nextDate);
+  } else if (schedule.frequency === 'once') {
+    if (schedule.date <= finalDate && choreCalendarPolicy.isScheduledOnDate(schedule, schedule.date)) {
+      dates.push(schedule.date);
+    }
   } else {
     let dateKey = choreCalendarPolicy.scheduleStartDate(schedule);
     while (dateKey <= finalDate) {

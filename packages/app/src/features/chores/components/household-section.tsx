@@ -34,11 +34,13 @@ import {
   type ChoreRewardGoal,
   normalizeChoreExperienceState,
 } from '@navet/core/chore-experience';
+import { createHomeworkDefinition } from '@navet/core/chore-homework';
 import {
   type ChoreDefinition,
   type ChoreParticipant,
   type ChoreWorkspaceAction,
   getChoreExperiencePointBalances,
+  isHomeworkDefinition,
 } from '@navet/core/chores';
 import {
   AlertTriangle,
@@ -50,12 +52,15 @@ import {
   Users,
 } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { createHomeworkId, excludeHomework } from '../chore-homework-selectors';
 import { getChoreMaterializationRange, materializeChoreWorkspace } from '../chore-workspace-model';
 import { useChoreWorkspaceStore } from '../chore-workspace-store';
+import { useChoreHomeworkRetention } from '../use-chore-homework-retention';
 import { useChoreReminderDelivery } from '../use-chore-reminder-delivery';
 import { useChoreWorkspaceSync } from '../use-chore-workspace-sync';
 import { ChoreDataRecovery } from './chore-data-recovery';
 import { MissionDialog, RewardDialog } from './chore-experience-dialogs';
+import { ChoreHomeworkView, type HomeworkEntryDraft } from './chore-homework-view';
 import {
   AllChoresView,
   ChoreSettingsView,
@@ -75,6 +80,7 @@ import { ChoreTodayView } from './chore-today-view';
 type HouseholdView =
   | 'today'
   | 'chores'
+  | 'homework'
   | 'missions'
   | 'rewards'
   | 'progress'
@@ -367,6 +373,10 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
     };
   }, [authorityHandlesActions, execute, syncEnabled]);
 
+  // The homework board writes one definition per entry; hold the auto-materialize effect so a
+  // burst of entries costs one materialization instead of one per entry.
+  const homeworkBatchRef = useRef(false);
+
   const allParticipants = useMemo(() => (data ? Object.values(data.participantsById) : []), [data]);
   const participants = useMemo(
     () => allParticipants.filter((participant) => !participant.pausedAt),
@@ -386,6 +396,7 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
     if (
       !syncEnabled ||
       authoritySchedules ||
+      homeworkBatchRef.current ||
       status !== 'ready' ||
       !data ||
       Object.keys(data.definitionsById).length === 0
@@ -402,6 +413,8 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
       (participant) =>
         participant.id === selectedParticipantId && participant.capabilities.includes('manage')
     )?.id ?? participants.find((participant) => participant.capabilities.includes('manage'))?.id;
+
+  useChoreHomeworkRetention(syncEnabled, managerActorId);
 
   const saveParticipant = (participant: ChoreParticipant) => {
     const current = useChoreWorkspaceStore.getState().data;
@@ -490,6 +503,67 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
         [definition.id]: presentation,
       },
     }));
+  };
+
+  const materializeAfterHomework = async () => {
+    homeworkBatchRef.current = false;
+    await execute({ type: 'materialize_occurrences', ...getChoreMaterializationRange() });
+  };
+
+  const saveHomeworkDefinition = async (definition: ChoreDefinition) => {
+    if (!managerActorId) return false;
+    const current = useChoreWorkspaceStore.getState().data;
+    return execute(
+      current?.definitionsById[definition.id]
+        ? { type: 'definition_update', actorParticipantId: managerActorId, definition }
+        : { type: 'definition_create', actorParticipantId: managerActorId, definition }
+    );
+  };
+
+  const addHomework = async ({ participantId, dateKey, title }: HomeworkEntryDraft) => {
+    if (!managerActorId || !participantId) return false;
+    homeworkBatchRef.current = true;
+    const timestamp = new Date().toISOString();
+    const saved = await saveHomeworkDefinition(
+      createHomeworkDefinition({
+        id: createHomeworkId(dateKey),
+        title,
+        dateKey,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+        participantId,
+        timestamp,
+      })
+    );
+    await materializeAfterHomework();
+    return saved;
+  };
+
+  const renameHomework = async (definitionId: string, title: string) => {
+    const definition = useChoreWorkspaceStore.getState().data?.definitionsById[definitionId];
+    if (!definition) return false;
+    return saveHomeworkDefinition({
+      ...definition,
+      title: title.trim(),
+      updatedAt: new Date().toISOString(),
+    });
+  };
+
+  const removeHomework = (definitionId: string) => {
+    if (!managerActorId) return;
+    void execute({
+      type: 'definition_delete',
+      actorParticipantId: managerActorId,
+      definitionId,
+    });
+  };
+
+  const completeHomework = (occurrenceId: string, participantId: string) => {
+    if (!participantId) return;
+    void execute({
+      type: 'occurrence_action',
+      occurrenceId,
+      action: { type: 'complete', participantId },
+    });
   };
 
   const duplicateDefinition = async (definition: ChoreDefinition) => {
@@ -596,7 +670,8 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
     const actor = Object.values(current.participantsById).find((participant) =>
       participant.capabilities.includes('manage')
     );
-    if (!actor || Object.keys(current.definitionsById).length === 0) return false;
+    const choreCount = excludeHomework(Object.values(current.definitionsById)).length;
+    if (!actor || choreCount === 0) return false;
     const currentExperience = normalizeChoreExperienceState(current.experience);
     const timestamp = new Date().toISOString();
     return execute({
@@ -673,7 +748,7 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
     }
   }, [motivationEnabled, view]);
   const activeDefinitions = Object.values(data?.definitionsById ?? {}).filter(
-    (definition) => !definition.archivedAt
+    (definition) => !definition.archivedAt && !isHomeworkDefinition(definition)
   );
   const legacySetupComplete =
     !experience.setupStartedAt && participants.length > 0 && activeDefinitions.length > 0;
@@ -767,6 +842,7 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
           {[
             { value: 'today' as const, label: t('household.tabs.today') },
             { value: 'chores' as const, label: t('household.tabs.chores') },
+            { value: 'homework' as const, label: t('household.tabs.homework') },
             ...(motivationEnabled
               ? [
                   { value: 'missions' as const, label: t('household.tabs.missions') },
@@ -789,7 +865,9 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
                 variant="ghost"
                 className="room-nav-item shrink-0 whitespace-nowrap rounded-[22px] transition-colors"
                 onClick={() => {
-                  if (['chores', 'missions', 'rewards', 'settings'].includes(item.value)) {
+                  if (
+                    ['chores', 'homework', 'missions', 'rewards', 'settings'].includes(item.value)
+                  ) {
                     withManagementAccess(() => setView(item.value));
                     return;
                   }
@@ -857,6 +935,21 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
                   definitionId: definition.id,
                 });
               }}
+            />
+          ) : null
+        )}
+      </HouseholdViewPanel>
+      <HouseholdViewPanel value="homework" activeValue={view}>
+        {renderWorkspace(
+          data ? (
+            <ChoreHomeworkView
+              data={data}
+              participants={participants}
+              canManage={Boolean(managerActorId)}
+              onAdd={addHomework}
+              onRename={renameHomework}
+              onRemove={removeHomework}
+              onComplete={completeHomework}
             />
           ) : null
         )}

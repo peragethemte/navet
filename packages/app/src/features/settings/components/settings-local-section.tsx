@@ -18,6 +18,7 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 import type { SettingsSectionStyles } from '../hooks/settings-section-styles';
 import type { SettingsSectionController } from '../hooks/use-settings-section-controller';
 import { SettingsItem, SettingsSectionShell } from './settings-section-shell';
+import { SettingsTransitJourneys } from './settings-transit-journeys';
 
 interface SettingsLocalSectionProps {
   controller: SettingsSectionController;
@@ -261,6 +262,14 @@ export function SettingsLocalSection({ controller }: SettingsLocalSectionProps) 
             </Button>
           </div>
         </div>
+      </SettingsItem>
+
+      <SettingsItem
+        title={t('settings.local.transit.title')}
+        description={t('settings.local.transit.description')}
+        styles={styles}
+      >
+        <SettingsTransitJourneys styles={styles} />
       </SettingsItem>
     </SettingsSectionShell>
   );

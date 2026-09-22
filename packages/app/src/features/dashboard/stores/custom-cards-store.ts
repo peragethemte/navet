@@ -27,6 +27,7 @@ export type CardType =
   | 'button'
   | 'assist'
   | 'map'
+  | 'transit'
   | 'entity';
 
 export interface CustomCard {
@@ -128,6 +129,15 @@ export function normalizeCustomCard(card: NormalizableCustomCard): CustomCard {
 
   if (
     normalizedCard.type === 'media-stack' &&
+    normalizedCard.size !== 'small' &&
+    normalizedCard.size !== 'medium' &&
+    normalizedCard.size !== 'large'
+  ) {
+    return { ...normalizedCard, size: 'medium' };
+  }
+
+  if (
+    normalizedCard.type === 'transit' &&
     normalizedCard.size !== 'small' &&
     normalizedCard.size !== 'medium' &&
     normalizedCard.size !== 'large'

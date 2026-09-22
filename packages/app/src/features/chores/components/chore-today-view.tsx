@@ -35,6 +35,7 @@ import {
   getRewardProgressList,
   getTodayChoresForParticipant,
 } from '../chore-dashboard-selectors';
+import { excludeHomework } from '../chore-homework-selectors';
 import { ChoreFocusCard } from './chore-card';
 import { ChoreDashboardGrid } from './chore-dashboard-grid';
 import { HousePulse, MissionCard, RewardGoalCard } from './chore-support-cards';
@@ -60,7 +61,7 @@ function SectionHeading({ id, title, count }: { id?: string; title: string; coun
   );
 }
 
-function getParticipantInitials(displayName: string) {
+export function getParticipantInitials(displayName: string) {
   return displayName
     .trim()
     .split(/\s+/)
@@ -70,7 +71,7 @@ function getParticipantInitials(displayName: string) {
     .join('');
 }
 
-function ParticipantAvatar({
+export function ParticipantAvatar({
   participant,
   className,
 }: {
@@ -188,6 +189,8 @@ export function ChoreTodayView({
 }) {
   const { t } = useI18n();
   const [rewardsVisible, setRewardsVisible] = useState(false);
+  // Homework is authored on its own board, so it must not satisfy the "add your first chore" prompt.
+  const choreCount = excludeHomework(Object.values(data.definitionsById)).length;
   const breakpointCols = useBreakpointCols();
   const cardsPerRow = Math.max(1, Math.floor(breakpointCols / 2));
   const [now, setNow] = useState(() => new Date());
@@ -303,10 +306,8 @@ export function ChoreTodayView({
             icon={CalendarCheck}
             title={t('household.today.emptyTitle')}
             description={t('household.today.emptyDescription')}
-            actionLabel={
-              Object.keys(data.definitionsById).length === 0 ? t('household.chores.add') : undefined
-            }
-            onAction={Object.keys(data.definitionsById).length === 0 ? onAddChore : undefined}
+            actionLabel={choreCount === 0 ? t('household.chores.add') : undefined}
+            onAction={choreCount === 0 ? onAddChore : undefined}
             actionIcon={Plus}
           />
         ) : (

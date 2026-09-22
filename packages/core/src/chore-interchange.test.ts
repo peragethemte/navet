@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { createHomeworkDefinition } from './chore-homework';
 import {
   convertChoreOpsChores,
   convertHomeAssistantTodoItems,
@@ -6,7 +7,7 @@ import {
   mergeChoreInterchange,
   parseChoreInterchangeDocument,
 } from './chore-interchange';
-import { type ChoreParticipant, createEmptyChoreWorkspace } from './chores';
+import { type ChoreParticipant, createEmptyChoreWorkspace, isHomeworkDefinition } from './chores';
 
 const participant: ChoreParticipant = {
   id: 'maya',
@@ -29,6 +30,38 @@ describe('chore interchange', () => {
     expect(() => parseChoreInterchangeDocument({ ...document, version: 2 })).toThrow(
       'Unsupported chore interchange document'
     );
+  });
+
+  it('preserves the homework kind through backup and merge', () => {
+    const current = createEmptyChoreWorkspace();
+    current.participantsById.maya = participant;
+    const importedWorkspace = createEmptyChoreWorkspace();
+    importedWorkspace.participantsById.maya = participant;
+    importedWorkspace.definitionsById['homework:2026-08-15:maths'] = createHomeworkDefinition({
+      id: 'homework:2026-08-15:maths',
+      title: 'Maths page 42',
+      dateKey: '2026-08-15',
+      timeZone: 'Europe/Oslo',
+      participantId: 'maya',
+      timestamp: '2026-08-14T08:00:00.000Z',
+    });
+    const document = createChoreInterchangeDocument({
+      workspace: importedWorkspace,
+      events: [],
+      exportedAt: '2026-08-14T08:00:00.000Z',
+    });
+
+    const parsed = parseChoreInterchangeDocument(JSON.parse(JSON.stringify(document)));
+    expect(parsed.workspace.definitionsById['homework:2026-08-15:maths'].kind).toBe('homework');
+
+    const merged = mergeChoreInterchange({
+      current,
+      currentEvents: [],
+      imported: parsed,
+      importedAt: '2026-08-16T08:00:00.000Z',
+    });
+    const mergedDefinition = Object.values(merged.data.definitionsById)[0];
+    expect(isHomeworkDefinition(mergedDefinition)).toBe(true);
   });
 
   it('merges colliding IDs by renaming and remaps every reference without replaying outbox work', () => {

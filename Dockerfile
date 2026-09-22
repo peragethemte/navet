@@ -69,6 +69,7 @@ COPY docker/nginx.main.conf /etc/nginx/nginx.conf
 COPY docker/resolver.conf /etc/nginx/resolver.conf
 COPY docker/njs/rss-proxy.js /etc/nginx/njs/rss-proxy.js
 COPY docker/njs/yr-proxy.js /etc/nginx/njs/yr-proxy.js
+COPY docker/njs/entur-proxy.js /etc/nginx/njs/entur-proxy.js
 COPY docker/njs/icloud-proxy.js /etc/nginx/njs/icloud-proxy.js
 COPY docker/njs/resource-host-policy.js /etc/nginx/njs/resource-host-policy.js
 COPY docker/njs/profile-store.js /etc/nginx/njs/profile-store.js
@@ -88,6 +89,7 @@ COPY docker/njs/homey-proxy.js /etc/nginx/njs/homey-proxy.js
 COPY docker/njs/ha-proxy.template.js /etc/navet-nginx/ha-proxy.template.js
 COPY docker/snippets/navet-rss-proxy.conf /etc/nginx/snippets/navet-rss-proxy.conf
 COPY docker/snippets/navet-yr-proxy.conf /etc/nginx/snippets/navet-yr-proxy.conf
+COPY docker/snippets/navet-entur-proxy.conf /etc/nginx/snippets/navet-entur-proxy.conf
 COPY docker/snippets/navet-icloud-proxy.conf /etc/nginx/snippets/navet-icloud-proxy.conf
 COPY docker/snippets/navet-icloud-backend.conf /etc/nginx/snippets/navet-icloud-backend.conf
 COPY docker/snippets/navet-rss-transport.conf /etc/nginx/snippets/navet-rss-transport.conf
