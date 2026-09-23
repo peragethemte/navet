@@ -13,7 +13,7 @@ export type HomeEditorSection = HomeDashboardLayoutState['sections'][number] & {
 };
 
 export type DragMeta =
-  | { source: 'home'; cardId: string; sectionId?: string; type: 'card' }
+  | { source: 'home'; cardId: string; sectionId?: string; type: 'card'; free?: boolean }
   | { source: 'column'; sectionId: string; type: 'column' }
   | { source: 'section'; sectionId: string; type: 'section' };
 

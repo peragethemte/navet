@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
-import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
+import { SortableContext, type SortingStrategy } from '@dnd-kit/sortable';
 import {
   type CardSpan,
   getMinCardSpan,
@@ -11,7 +11,15 @@ import type { getThemeSurfaceTokens } from '@navet/app/components/shared/theme/t
 import { useI18n } from '@navet/app/hooks';
 import type { DeviceWithType } from '@navet/app/types/device.types';
 import { Plus } from 'lucide-react';
-import { type CSSProperties, memo, type ReactNode, useCallback, useMemo, useState } from 'react';
+import {
+  type CSSProperties,
+  memo,
+  type ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   useActiveHomeCardSpans,
   useDashboardCollectionStore,
@@ -19,6 +27,7 @@ import {
 import type { DropMeta } from '../hooks/use-home-dashboard-editor';
 import { useHomeGridRuntime } from '../hooks/use-home-grid-runtime';
 import type { CustomCard } from '../stores/custom-cards-store';
+import type { FreeGridPosition } from '../utils/free-grid-layout';
 import { DashboardCardItem, getAllowedSizes } from './dashboard-card-item';
 import { HOME_CARD_GRID_ATTRIBUTE, HomeCardResizeHandle } from './home-card-resize-handle';
 import {
@@ -27,6 +36,10 @@ import {
   isCustomCard,
 } from './home-dashboard-overview.shared';
 import { HomeCardSlot } from './home-dashboard-overview-card-slot';
+import { HomeFreeGridDragMonitor } from './home-free-grid-drag-monitor';
+
+// Free placement: neighbours stay put while a card is dragged; the drop cell decides.
+const freePlacementStrategy: SortingStrategy = () => null;
 
 export function FlowCanvas({
   cardIds,
@@ -59,7 +72,7 @@ export function FlowCanvas({
   const sortableItems = useMemo(() => cardIds.map((cardId) => `home-card-${cardId}`), [cardIds]);
 
   return (
-    <SortableContext items={sortableItems} strategy={rectSortingStrategy}>
+    <SortableContext items={sortableItems} strategy={freePlacementStrategy}>
       <HomeContainerDropZone cardIds={cardIds}>
         {cardIds.length > 0 ? (
           <CardGrid
@@ -74,6 +87,7 @@ export function FlowCanvas({
             onRemoveFromLayout={onRemoveFromLayout}
             showHero={showHero}
             onOpenAddCardDialog={onOpenAddCardDialog}
+            freePlacement
           />
         ) : (
           <EmptyCanvas
@@ -143,15 +157,29 @@ export const CardGrid = memo(function CardGrid({
   showHero,
   onOpenAddCardDialog,
   sortable = true,
+  freePlacement = false,
 }: CardGridProps) {
   const { t } = useI18n();
   const hasTrailingAddCardSlot = isEditMode && Boolean(onOpenAddCardDialog);
   const [spanOverride, setSpanOverride] = useState<{ cardId: string; span: CardSpan } | null>(null);
   const updateActiveCardSpan = useDashboardCollectionStore((state) => state.updateActiveCardSpan);
   const storedCardSpans = useActiveHomeCardSpans();
+  const updateActiveHomeLayout = useDashboardCollectionStore(
+    (state) => state.updateActiveHomeLayout
+  );
+  const [positionOverride, setPositionOverride] = useState<{
+    cardId: string;
+    position: FreeGridPosition;
+  } | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
   const canResize = isEditMode && sortable;
+  const canPlaceFreely = canResize && freePlacement;
   const {
+    buildFreePositions,
     cardSpans,
+    freeBottomRow,
+    gridPlacements,
+    isFreeLayout,
     getCardGridArea,
     gridGapPx,
     gridRowHeightPx,
@@ -173,7 +201,20 @@ export const CardGrid = memo(function CardGrid({
     isEditMode,
     sortable,
     spanOverride,
+    freePlacement,
+    positionOverride,
   });
+  const handleFreeDrop = useCallback(
+    (cardId: string, position: FreeGridPosition) => {
+      const cardPositions = buildFreePositions({ cardId, position });
+      updateActiveHomeLayout((previous) => ({ ...previous, cardPositions }));
+    },
+    [buildFreePositions, updateActiveHomeLayout]
+  );
+  const draggedSpan = positionOverride ? cardSpans.get(positionOverride.cardId) : undefined;
+  const draggedPlacement = positionOverride
+    ? gridPlacements.get(positionOverride.cardId)
+    : undefined;
   const addCardSlotCols = Math.min(renderedGridCols, 4);
   const hasInlineAddCardSlot = hasTrailingAddCardSlot;
   const handleAddCard = useCallback(() => {
@@ -182,13 +223,13 @@ export const CardGrid = memo(function CardGrid({
   const addCardSlotStyle = useMemo(
     () =>
       ({
-        gridColumn: `span ${addCardSlotCols} / span ${addCardSlotCols}`,
-        gridRow: 'span 2 / span 2',
+        gridColumn: `${isFreeLayout ? 1 : 'auto'} / span ${addCardSlotCols}`,
+        gridRow: `${isFreeLayout ? freeBottomRow + 1 : 'auto'} / span 2`,
         borderColor: 'rgba(255,255,255,0.16)',
         background:
           'radial-gradient(circle at top left, rgba(159,176,255,0.1), transparent 34%), radial-gradient(circle at bottom right, rgba(159,176,255,0.06), transparent 28%)',
       }) as CSSProperties,
-    [addCardSlotCols]
+    [addCardSlotCols, freeBottomRow, isFreeLayout]
   );
 
   return (
@@ -199,10 +240,36 @@ export const CardGrid = memo(function CardGrid({
         style={innerContainerStyle}
       >
         <div
+          ref={gridRef}
           className="grid w-full grid-flow-row-dense"
           style={gridStyle}
           {...{ [HOME_CARD_GRID_ATTRIBUTE]: '' }}
         >
+          {canPlaceFreely ? (
+            <HomeFreeGridDragMonitor
+              gridRef={gridRef}
+              placements={gridPlacements}
+              cardSpans={cardSpans}
+              columns={renderedGridCols}
+              gapPx={gridGapPx}
+              rowHeightPx={gridRowHeightPx}
+              scale={scale}
+              onPreview={setPositionOverride}
+              onDrop={handleFreeDrop}
+            />
+          ) : null}
+          {draggedSpan && draggedPlacement ? (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none rounded-[20px] border-2 border-dashed border-white/35 bg-white/5"
+              style={{
+                gridColumnStart: draggedPlacement.column,
+                gridColumnEnd: `span ${Math.min(renderedGridCols, draggedSpan.w)}`,
+                gridRowStart: draggedPlacement.row,
+                gridRowEnd: `span ${draggedSpan.h}`,
+              }}
+            />
+          ) : null}
           {visibleCardIds.map((cardId) => {
             const entry = allCards.get(cardId);
             if (!entry) {
@@ -234,6 +301,7 @@ export const CardGrid = memo(function CardGrid({
                 isPreviewHidden={activeDragCard === cardId}
                 className=""
                 style={getCardGridArea(cardId)}
+                freePlacement={canPlaceFreely}
                 resizeHandle={
                   canResize && span && allowedSizes.length > 0 ? (
                     <HomeCardResizeHandle
@@ -247,6 +315,10 @@ export const CardGrid = memo(function CardGrid({
                       onPreview={(next) => setSpanOverride(next ? { cardId, span: next } : null)}
                       onCommit={(next) => {
                         const preset = getPresetForCardSpan(next, allowedSizes);
+                        if (canPlaceFreely) {
+                          const cardPositions = buildFreePositions({ cardId, span: next });
+                          updateActiveHomeLayout((previous) => ({ ...previous, cardPositions }));
+                        }
                         updateActiveCardSpan(
                           cardId,
                           preset ? null : next,

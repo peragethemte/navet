@@ -11,6 +11,7 @@ function SortableHomeCard({
   className,
   style,
   resizeHandle,
+  freePlacement,
   optimizeOffscreenPaint,
   children,
 }: {
@@ -21,13 +22,20 @@ function SortableHomeCard({
   className: string;
   style?: CSSProperties;
   resizeHandle?: ReactNode;
+  freePlacement?: boolean;
   /** When true, skip layout/paint for off-screen cards (not used at `effectsQuality: high`). */
   optimizeOffscreenPaint: boolean;
   children: ReactNode;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: `home-card-${cardId}`,
-    data: { source: 'home', cardId, sectionId, type: 'card' } as DragMeta & DropMeta,
+    data: {
+      source: 'home',
+      cardId,
+      sectionId,
+      type: 'card',
+      free: freePlacement,
+    } as DragMeta & DropMeta,
   });
 
   return (
@@ -65,6 +73,7 @@ export function HomeCardSlot({
   className,
   style,
   resizeHandle,
+  freePlacement,
   content,
   optimizeOffscreenPaint = false,
 }: {
@@ -76,6 +85,7 @@ export function HomeCardSlot({
   className: string;
   style?: CSSProperties;
   resizeHandle?: ReactNode;
+  freePlacement?: boolean;
   content: ReactNode;
   optimizeOffscreenPaint?: boolean;
 }) {
@@ -103,6 +113,7 @@ export function HomeCardSlot({
       className={className}
       style={style}
       resizeHandle={resizeHandle}
+      freePlacement={freePlacement}
       optimizeOffscreenPaint={optimizeOffscreenPaint}
     >
       {content}

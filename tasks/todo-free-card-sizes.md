@@ -83,3 +83,17 @@ otherwise, resizable with the same handle. Reuses the order + size model, so no 
 - The edit grid now uses the same explicit packer placements as the view grid, so what you resize
   is what the wall shows.
 - Not done: phase 2 spacers; undo/redo for sizes (never covered sizes).
+
+## Free placement (flow mode)
+
+Settled: push overlapped cards down, flow mode only, narrower grids pack in reading order.
+
+- [x] `cardPositions { columns, byId }` on the home layout, so undo/redo covers moves
+- [x] `resolveFreeGridPlacements`: mover wins, overlaps slide down, unpositioned cards go below
+- [x] dnd-kit drag in flow mode drops on the snapped cell (no-op sorting strategy + monitor)
+- [x] Resize on the free grid pushes neighbours down too
+- [x] Verified in `pnpm dev`: drop into empty space keeps the gap, push-down cascades, view mode
+      matches edit mode, undo restores the packed layout
+
+Open: positions only apply when the grid has the same column count they were made on. If the
+desktop editing the layout and the Pi land on different breakpoints, the Pi falls back to packing.

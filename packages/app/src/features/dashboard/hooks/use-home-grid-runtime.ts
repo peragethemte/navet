@@ -14,11 +14,20 @@ import { settingsSelectors } from '@navet/app/stores/selectors';
 import { useSettingsStore } from '@navet/app/stores/settings-store';
 import type { DeviceWithType } from '@navet/app/types/device.types';
 import { detectDeviceTier } from '@navet/app/utils/detect-device-tier';
-import { type CSSProperties, useMemo } from 'react';
+import { type CSSProperties, useCallback, useMemo } from 'react';
 import { getCardGridGapPx } from '../components/home-dashboard-overview.shared';
-import { useActiveHomeCardSpans } from '../dashboards/dashboard-collection-store';
+import {
+  useActiveHomeCardPositions,
+  useActiveHomeCardSpans,
+} from '../dashboards/dashboard-collection-store';
 import { packDashboardGridItems } from '../device-grid/device-grid-layout';
 import type { CustomCard } from '../stores/custom-cards-store';
+import type { HomeCardPositions } from '../stores/home-dashboard-layout-store';
+import {
+  type FreeGridPosition,
+  resolveFreeGridPlacements,
+  sortByFreeGridPosition,
+} from '../utils/free-grid-layout';
 import { useAutoScaledGridMeasurements } from './use-auto-scaled-grid-measurements';
 import { resolveDashboardPerformanceProfile } from './use-dashboard-performance-mode';
 import { useProgressiveBatching } from './use-progressive-batching';
@@ -33,6 +42,16 @@ interface UseHomeGridRuntimeOptions {
   sortable?: boolean;
   /** Live footprint while a resize handle is dragged. */
   spanOverride?: { cardId: string; span: CardSpan } | null;
+  /** Flow mode: cards sit at stored positions instead of being packed in order. */
+  freePlacement?: boolean;
+  /** Live target cell while a card is dragged on the free grid. */
+  positionOverride?: { cardId: string; position: FreeGridPosition } | null;
+}
+
+export interface FreeLayoutChange {
+  cardId: string;
+  position?: FreeGridPosition;
+  span?: CardSpan;
 }
 
 export function useHomeGridRuntime({
@@ -43,8 +62,11 @@ export function useHomeGridRuntime({
   gridCols,
   isEditMode,
   spanOverride,
+  freePlacement = false,
+  positionOverride,
 }: UseHomeGridRuntimeOptions) {
   const storedCardSpans = useActiveHomeCardSpans();
+  const storedPositions = useActiveHomeCardPositions();
   const disableAnimations = useSettingsStore(settingsSelectors.disableAnimations);
   const effectsQuality = useSettingsStore(settingsSelectors.effectsQuality);
   const lowPowerMode = useSettingsStore(settingsSelectors.lowPowerMode);
@@ -163,10 +185,15 @@ export function useHomeGridRuntime({
       }) as CSSProperties,
     [gridGapPx, microCardMinWidth, renderedGridCols, rowHeightPx]
   );
-  const gridPlacements = useMemo(
+  const positions = freePlacement ? storedPositions : undefined;
+  const isFreeLayout = positions?.columns === renderedGridCols;
+  const packedPlacements = useMemo(
     () =>
       packDashboardGridItems(
-        cardIds.flatMap((cardId) => {
+        (positions && !isFreeLayout
+          ? sortByFreeGridPosition(cardIds, positions.byId)
+          : cardIds
+        ).flatMap((cardId) => {
           const entry = allCards.get(cardId);
           if (!entry) return [];
 
@@ -183,7 +210,75 @@ export function useHomeGridRuntime({
         renderedGridCols,
         { placementPreference: 'leftmost', cellScale: HOME_GRID_SUBDIVISION }
       ),
-    [allCards, breakpointCols, cardIds, cardSizes, renderedGridCols, spanOverride, storedCardSpans]
+    [
+      allCards,
+      breakpointCols,
+      cardIds,
+      cardSizes,
+      isFreeLayout,
+      positions,
+      renderedGridCols,
+      spanOverride,
+      storedCardSpans,
+    ]
+  );
+  const resolveFreePositions = useCallback(
+    (
+      base: Record<string, FreeGridPosition> | undefined,
+      change?: FreeLayoutChange | null
+    ): Map<string, FreeGridPosition> =>
+      resolveFreeGridPlacements(
+        cardIds.flatMap((cardId) => {
+          const span =
+            change?.cardId === cardId && change.span ? change.span : cardSpans.get(cardId);
+          if (!span) return [];
+          const position =
+            change?.cardId === cardId && change.position ? change.position : base?.[cardId];
+          return [{ id: cardId, span, position }];
+        }),
+        renderedGridCols,
+        change?.cardId
+      ),
+    [cardIds, cardSpans, renderedGridCols]
+  );
+  const gridPlacements = useMemo(() => {
+    if (!isFreeLayout) return packedPlacements;
+    const change = positionOverride ?? (spanOverride ? { cardId: spanOverride.cardId } : null);
+    return new Map(
+      [...resolveFreePositions(positions?.byId, change)].map(([cardId, position]) => [
+        cardId,
+        { column: position.x + 1, row: position.y + 1 },
+      ])
+    );
+  }, [
+    isFreeLayout,
+    packedPlacements,
+    positionOverride,
+    positions,
+    resolveFreePositions,
+    spanOverride,
+  ]);
+  /** Positions to store after a move or resize, starting from what is on screen now. */
+  const buildFreePositions = useCallback(
+    (change: FreeLayoutChange): HomeCardPositions => {
+      const current = Object.fromEntries(
+        [...gridPlacements].map(([cardId, placement]) => [
+          cardId,
+          { x: placement.column - 1, y: placement.row - 1 },
+        ])
+      );
+      return {
+        columns: renderedGridCols,
+        byId: Object.fromEntries(resolveFreePositions(current, change)),
+      };
+    },
+    [gridPlacements, renderedGridCols, resolveFreePositions]
+  );
+  const freeBottomRow = Math.max(
+    0,
+    ...[...gridPlacements].map(
+      ([cardId, placement]) => placement.row - 1 + (cardSpans.get(cardId)?.h ?? 1)
+    )
   );
   const getCardGridArea = (cardId: string): CSSProperties => {
     const span = cardSpans.get(cardId);
@@ -197,7 +292,10 @@ export function useHomeGridRuntime({
   };
   return {
     breakpointCols,
+    buildFreePositions,
     cardSpans,
+    freeBottomRow,
+    isFreeLayout,
     getCardGridArea,
     gridGapPx,
     gridRowHeightPx: rowHeightPx,

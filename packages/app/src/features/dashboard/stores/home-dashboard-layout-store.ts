@@ -7,6 +7,7 @@ import {
 import { ensureCanonicalEntityId } from '@navet/app/utils/provider-entity-id';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import type { FreeGridPosition } from '../utils/free-grid-layout';
 import type { SectionLayoutItem } from '../utils/layout-engine';
 import { normalizeLayout } from '../utils/layout-migration';
 
@@ -17,12 +18,19 @@ export interface HomeDashboardSection extends SectionLayoutItem {
   span: HomeDashboardSectionSpan;
 }
 
+/** Free placement for flow mode, valid only on a grid with exactly `columns` fine cells. */
+export interface HomeCardPositions {
+  columns: number;
+  byId: Record<string, FreeGridPosition>;
+}
+
 export interface HomeDashboardLayoutState {
   mode: HomeLayoutMode;
   showHero: boolean;
   cardIds: string[];
   sections: HomeDashboardSection[];
   cardSectionAssignments: Record<string, string>;
+  cardPositions?: HomeCardPositions;
 }
 
 interface HomeDashboardLayoutStore extends HomeDashboardLayoutState {

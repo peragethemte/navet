@@ -265,6 +265,9 @@ export function useDashboardDragState({
       return;
     }
 
+    // The free flow grid places the card itself from the drop position; order is irrelevant there.
+    if (activeMeta.free) return;
+
     const targetSectionId = overMeta.sectionId;
     const overCardId = overMeta.type === 'card' ? overMeta.cardId : null;
 

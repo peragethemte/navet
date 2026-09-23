@@ -162,6 +162,14 @@ function pickLayout(layout: HomeDashboardLayoutState): HomeDashboardLayoutState 
     cardIds: [...layout.cardIds],
     sections: layout.sections.map((section) => ({ ...section })),
     cardSectionAssignments: { ...layout.cardSectionAssignments },
+    ...(layout.cardPositions
+      ? {
+          cardPositions: {
+            columns: layout.cardPositions.columns,
+            byId: { ...layout.cardPositions.byId },
+          },
+        }
+      : {}),
   };
 }
 
@@ -592,6 +600,12 @@ export const useDashboardCollectionStore = create<DashboardCollectionState>()(
 );
 
 const EMPTY_CARD_SPANS: Record<string, CardSpan> = {};
+
+export function useActiveHomeCardPositions() {
+  return useDashboardCollectionStore(
+    (state) => state.collection.dashboardsById[state.activeDashboardId]?.homeLayout.cardPositions
+  );
+}
 
 export function useActiveHomeCardSpans() {
   return useDashboardCollectionStore(

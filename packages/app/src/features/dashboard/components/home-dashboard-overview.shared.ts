@@ -92,6 +92,8 @@ export type CardGridProps = {
   showHero: boolean;
   onOpenAddCardDialog?: (sectionId?: string) => void;
   sortable?: boolean;
+  /** Flow mode: drag drops cards on any cell instead of reordering them. */
+  freePlacement?: boolean;
 };
 
 export type SectionCanvasProps = {

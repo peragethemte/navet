@@ -1,4 +1,5 @@
 import type { HomeDashboardLayoutState } from '../hooks/use-home-dashboard-layout';
+import type { HomeCardPositions } from '../stores/home-dashboard-layout-store';
 import type { SectionLayoutItem } from './layout-engine';
 
 interface LegacyLayoutState {
@@ -15,6 +16,26 @@ interface LegacyLayoutState {
     span?: number;
   }>;
   cardSectionAssignments?: Record<string, string>;
+  cardPositions?: unknown;
+}
+
+const MAX_POSITION_COLUMNS = 96;
+const MAX_POSITION_ROW = 2000;
+
+function isCellIndex(value: unknown, max: number): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value < max;
+}
+
+function normalizeCardPositions(raw: unknown): HomeCardPositions | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const { columns, byId } = raw as { columns?: unknown; byId?: unknown };
+  if (!isCellIndex(columns, MAX_POSITION_COLUMNS + 1) || columns < 1) return undefined;
+  if (!byId || typeof byId !== 'object' || Array.isArray(byId)) return undefined;
+  const entries = Object.entries(byId).flatMap(([id, position]) => {
+    const { x, y } = (position ?? {}) as { x?: unknown; y?: unknown };
+    return isCellIndex(x, columns) && isCellIndex(y, MAX_POSITION_ROW) ? [[id, { x, y }]] : [];
+  });
+  return entries.length > 0 ? { columns, byId: Object.fromEntries(entries) } : undefined;
 }
 
 function isValidSection(section: unknown): section is SectionLayoutItem {
@@ -91,11 +112,14 @@ export function normalizeLayout(raw: unknown): Omit<HomeDashboardLayoutState, 's
     }
   }
 
+  const cardPositions = normalizeCardPositions(obj.cardPositions);
+
   return {
     mode,
     showHero,
     cardIds,
     sections,
     cardSectionAssignments,
+    ...(cardPositions ? { cardPositions } : {}),
   };
 }

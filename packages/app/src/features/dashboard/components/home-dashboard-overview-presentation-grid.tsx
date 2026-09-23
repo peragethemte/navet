@@ -15,6 +15,7 @@ interface PresentationCardGridProps {
   onUpdateCard?: (cardId: string, data: Record<string, unknown>) => void;
   showHero: boolean;
   densePerformanceMode?: boolean;
+  freePlacement?: boolean;
 }
 
 export const PresentationCardGrid = memo(function PresentationCardGrid({
@@ -26,6 +27,7 @@ export const PresentationCardGrid = memo(function PresentationCardGrid({
   onUpdateCard,
   showHero,
   densePerformanceMode = false,
+  freePlacement = false,
 }: PresentationCardGridProps) {
   const {
     getCardGridArea,
@@ -44,6 +46,7 @@ export const PresentationCardGrid = memo(function PresentationCardGrid({
     densePerformanceMode,
     gridCols,
     isEditMode: false,
+    freePlacement,
   });
 
   return (
@@ -107,6 +110,7 @@ function arePresentationCardGridPropsEqual(
     previous.onUpdateCard === next.onUpdateCard &&
     previous.showHero === next.showHero &&
     previous.densePerformanceMode === next.densePerformanceMode &&
+    previous.freePlacement === next.freePlacement &&
     areCardIdsStable(
       previous.cardIds,
       next.cardIds,

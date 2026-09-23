@@ -137,6 +137,7 @@ export function HomePresentation({
         onUpdateCard={onUpdateCard}
         showHero={showHero}
         densePerformanceMode={densePerformanceMode}
+        freePlacement
       />
     );
   }
