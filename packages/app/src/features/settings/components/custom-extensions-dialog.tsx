@@ -237,9 +237,10 @@ export function CustomExtensionsDialog({
             >
               <Input
                 value={draft.label}
-                onChange={(event) =>
-                  setDraft((current) => ({ ...current, label: event.currentTarget.value }))
-                }
+                onChange={(event) => {
+                  const label = event.currentTarget.value;
+                  setDraft((current) => ({ ...current, label }));
+                }}
                 placeholder={t('settings.customExtensions.dialog.namePlaceholder')}
                 aria-label={t('settings.customExtensions.sidebar.labelAria')}
                 maxLength={28}
@@ -254,11 +255,10 @@ export function CustomExtensionsDialog({
             >
               <Select
                 value={draft.targetType}
-                onChange={(event) =>
-                  setDraft((current) => {
-                    const nextType = event.currentTarget.value as CustomSidebarAction['targetType'];
-
-                    return nextType === 'section'
+                onChange={(event) => {
+                  const nextType = event.currentTarget.value as CustomSidebarAction['targetType'];
+                  setDraft((current) =>
+                    nextType === 'section'
                       ? {
                           ...current,
                           targetType: 'section',
@@ -270,9 +270,9 @@ export function CustomExtensionsDialog({
                           targetType: nextType,
                           targetSection: undefined,
                           targetUrl: current.targetUrl ?? '',
-                        };
-                  })
-                }
+                        }
+                  );
+                }}
                 aria-label={t('settings.customExtensions.sidebar.targetAria')}
               >
                 <option value="section">{t('settings.customExtensions.target.section')}</option>
@@ -297,15 +297,16 @@ export function CustomExtensionsDialog({
                 {draft.targetType === 'section' ? (
                   <Select
                     value={draft.targetSection ?? 'home'}
-                    onChange={(event) =>
+                    onChange={(event) => {
+                      const targetSection = event.currentTarget
+                        .value as CustomSidebarAction['targetSection'];
                       setDraft((current) => ({
                         ...current,
                         targetType: 'section',
-                        targetSection: event.currentTarget
-                          .value as CustomSidebarAction['targetSection'],
+                        targetSection,
                         targetUrl: undefined,
-                      }))
-                    }
+                      }));
+                    }}
                     aria-label={t('settings.customExtensions.sidebar.sectionAria')}
                   >
                     {SECTION_OPTIONS.map(([value, label]) => (
@@ -317,14 +318,15 @@ export function CustomExtensionsDialog({
                 ) : (
                   <Input
                     value={draft.targetUrl ?? ''}
-                    onChange={(event) =>
+                    onChange={(event) => {
+                      const targetUrl = event.currentTarget.value;
                       setDraft((current) => ({
                         ...current,
                         targetType: current.targetType === 'iframe' ? 'iframe' : 'url',
                         targetSection: undefined,
-                        targetUrl: event.currentTarget.value,
-                      }))
-                    }
+                        targetUrl,
+                      }));
+                    }}
                     placeholder="https://navet.app/"
                     aria-label={t('settings.customExtensions.sidebar.urlAria')}
                   />
