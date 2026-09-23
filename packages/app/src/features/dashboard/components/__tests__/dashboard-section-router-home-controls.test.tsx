@@ -245,7 +245,8 @@ describe('DashboardSectionRouter home controls', () => {
         expect.objectContaining({ id: 'room-chore-today-dishwasher', size: 'medium' }),
       ],
     });
-    expect(screen.getByText(/1 overdue/)).toBeInTheDocument();
+    expect(screen.getByText(/1 remaining/)).toBeInTheDocument();
+    expect(screen.queryByText(/overdue/)).not.toBeInTheDocument();
   });
 
   it('hides room chore summaries and cards when chores are disabled', () => {

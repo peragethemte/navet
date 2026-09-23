@@ -95,12 +95,14 @@ function definitionFor(data: ChoreWorkspaceData, occurrence: ChoreOccurrence) {
  */
 export interface ChoreTodayOptions {
   includeHomework?: boolean;
+  /** Off drops unfinished work from earlier days once its due window has closed. */
+  carryOver?: boolean;
 }
 
 export function getHouseholdTodayOccurrences(
   data: ChoreWorkspaceData,
   now = new Date(),
-  { includeHomework = true }: ChoreTodayOptions = {}
+  { includeHomework = true, carryOver = true }: ChoreTodayOptions = {}
 ): ChoreOccurrence[] {
   const dayStart = startOfLocalDay(now);
   return Object.values(data.occurrencesById)
@@ -109,7 +111,9 @@ export function getHouseholdTodayOccurrences(
       if (!definition || !isVisibleWork(occurrence)) return false;
       if (!includeHomework && isHomeworkDefinition(definition)) return false;
       if (occursOnLocalDay(occurrence, dayStart)) return true;
-      return !isFinal(occurrence) && getChoreTiming(occurrence, now) === 'overdue';
+      if (isFinal(occurrence)) return false;
+      const timing = getChoreTiming(occurrence, now);
+      return carryOver ? timing === 'overdue' : timing === 'due';
     })
     .sort((left, right) => {
       const statePriority = (occurrence: ChoreOccurrence) => {
@@ -220,8 +224,12 @@ function getCompletionStreak(data: ChoreWorkspaceData, now: Date) {
   return streakDays;
 }
 
-export function getHousePulse(data: ChoreWorkspaceData, now = new Date()): ChoreHousePulse {
-  const occurrences = getHouseholdTodayOccurrences(data, now);
+export function getHousePulse(
+  data: ChoreWorkspaceData,
+  now = new Date(),
+  options: ChoreTodayOptions = {}
+): ChoreHousePulse {
+  const occurrences = getHouseholdTodayOccurrences(data, now, options);
   const completed = occurrences.filter(isFinal).length;
   const total = occurrences.length;
   return {
@@ -267,12 +275,13 @@ export function getRoomChoreSummaries(
 export function getRoomTodayChores(
   data: ChoreWorkspaceData,
   room: { label: string; canonicalIds?: readonly string[] },
-  now = new Date()
+  now = new Date(),
+  options: ChoreTodayOptions = {}
 ) {
   const normalizedLabel = room.label.trim().toLowerCase();
   const canonicalIds = new Set(room.canonicalIds ?? []);
 
-  return getHouseholdTodayOccurrences(data, now).filter((occurrence) => {
+  return getHouseholdTodayOccurrences(data, now, options).filter((occurrence) => {
     const roomRef = definitionFor(data, occurrence)?.roomRef;
     if (!roomRef) return false;
     return (

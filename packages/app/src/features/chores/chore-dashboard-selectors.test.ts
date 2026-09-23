@@ -164,6 +164,26 @@ describe('chore dashboard selectors', () => {
     });
   });
 
+  it('drops unfinished work from earlier days once its due window closes when carry-over is off', () => {
+    const data = workspace();
+    data.occurrencesById.stale = {
+      ...occurrence('stale', 'toys', 'available'),
+      scheduledAt: '2026-08-14T09:00:00.000Z',
+      dueAt: '2026-08-14T10:00:00.000Z',
+    };
+    data.occurrencesById.open = {
+      ...occurrence('open', 'shoes', 'available'),
+      scheduledAt: '2026-08-14T09:00:00.000Z',
+      dueAt: '2026-08-16T09:00:00.000Z',
+    };
+    const ids = (options?: { carryOver: boolean }) =>
+      getHouseholdTodayOccurrences(data, now, options).map((entry) => entry.id);
+
+    expect(ids()).toContain('stale');
+    expect(ids({ carryOver: false })).not.toContain('stale');
+    expect(ids({ carryOver: false })).toEqual(expect.arrayContaining(['open', 'toys', 'shoes']));
+  });
+
   it('keeps participant focus and room summaries derived from the same occurrences', () => {
     const data = workspace();
     expect(getTodayChoresForParticipant(data, 'maya', now)).toHaveLength(3);

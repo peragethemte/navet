@@ -12,7 +12,6 @@ export interface HomeworkCardRow {
   definition: ChoreDefinition;
   occurrence?: ChoreOccurrence;
   action?: ChoreCardAction;
-  overdue: boolean;
 }
 
 /** How many rows stay readable at a glance for each supported size. */
@@ -30,7 +29,6 @@ export function HomeworkCardView({
   participantsById,
   now,
   remaining,
-  overdue,
   tintColor,
   onOpenSettings,
 }: {
@@ -42,7 +40,6 @@ export function HomeworkCardView({
   participantsById: Record<string, ChoreParticipant>;
   now: Date;
   remaining: number;
-  overdue: number;
   tintColor?: string;
   onOpenSettings: () => void;
 }) {
@@ -60,15 +57,8 @@ export function HomeworkCardView({
       title={title}
       meta={
         state === 'ready' ? (
-          <span
-            className={cn(
-              'text-xs font-semibold tabular-nums',
-              overdue > 0 ? 'text-red-400' : surface.textSecondary
-            )}
-          >
-            {overdue > 0
-              ? t('homework.card.overdueCount', { count: overdue })
-              : t('homework.card.remaining', { count: remaining })}
+          <span className={cn('text-xs font-semibold tabular-nums', surface.textSecondary)}>
+            {t('homework.card.remaining', { count: remaining })}
           </span>
         ) : undefined
       }
@@ -83,7 +73,6 @@ export function HomeworkCardView({
       settingsLabel={t('homework.card.openSettings')}
       onOpenSettings={onOpenSettings}
       tintColor={tintColor}
-      hasOverdue={overdue > 0}
     >
       <ul className="min-w-0">
         {visible.map((row) => (

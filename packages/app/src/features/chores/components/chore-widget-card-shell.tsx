@@ -3,7 +3,6 @@ import { BaseCard } from '@navet/app/components/primitives';
 import { CardSettingsActionButton } from '@navet/app/components/shared/card-settings-action-button';
 import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { getCustomCardTintSurface } from '@navet/app/components/shared/theme/custom-card-tint-surface';
-import { themeColorValues } from '@navet/app/components/shared/theme/theme-colors';
 import { getThemeSurfaceTokens } from '@navet/app/components/shared/theme/theme-surface-tokens';
 import { cn } from '@navet/app/components/ui/utils';
 import type { ThemeType } from '@navet/app/hooks';
@@ -33,7 +32,6 @@ export function ChoreWidgetCardShell({
   settingsLabel,
   onOpenSettings,
   tintColor,
-  hasOverdue = false,
   children,
 }: {
   size: CardSize;
@@ -53,22 +51,14 @@ export function ChoreWidgetCardShell({
   onOpenSettings: () => void;
   /** Resolved household colour, or the user's own tint when they set one. */
   tintColor?: string;
-  hasOverdue?: boolean;
   children?: ReactNode;
 }) {
   const surface = getThemeSurfaceTokens(theme);
   const tintSurface = getCustomCardTintSurface(theme, tintColor);
-  const overdueEdge = hasOverdue
-    ? {
-        borderColor: themeColorValues.red,
-        boxShadow: `inset 0 1px 0 ${themeColorValues.red}24, 0 0 0 1px ${themeColorValues.red}14`,
-      }
-    : undefined;
-
   return (
     <BaseCard
       size={size}
-      style={{ ...tintSurface.panelStyle, ...overdueEdge }}
+      style={tintSurface.panelStyle}
       readableBackgroundColor={tintSurface.backgroundColor}
       overlay={
         tintSurface.glowStyle ? (

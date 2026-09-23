@@ -37,6 +37,7 @@ export default function RoomChoreCard({
       action={getChoreCardAction(occurrence, definition, 'all', execute, t)}
       childMode={experience.gamificationMode === 'adventure'}
       now={now}
+      flagLate={false}
     />
   );
 }

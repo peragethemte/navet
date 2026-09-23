@@ -27,6 +27,7 @@ const STATUS_TONE: Record<string, 'red' | 'yellow' | 'green' | 'purple' | 'prima
 /**
  * One item inside a dashboard chores or homework card. It carries the Household card's colour,
  * icon and avatar language at row density; the full composition stays in `ChoreFocusCard`.
+ * Late work is never flagged here: the dashboard shows today, not a backlog.
  */
 export function ChoreWidgetRow({
   definition,
@@ -56,7 +57,9 @@ export function ChoreWidgetRow({
   const i18n = useI18n();
   const { theme } = useTheme();
   const surface = getThemeSurfaceTokens(theme);
-  const status = occurrence ? getChoreStatusDetails(occurrence, now, i18n) : undefined;
+  const status = occurrence
+    ? getChoreStatusDetails(occurrence, now, i18n, { flagLate: false })
+    : undefined;
   const done = occurrence?.status === 'done';
   const palette = resolveChoreColorPalette(getChorePaletteKey(definition), presentation?.color);
   const baseColor = done ? undefined : palette.primary;

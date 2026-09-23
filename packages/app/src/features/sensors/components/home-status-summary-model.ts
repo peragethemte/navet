@@ -40,7 +40,6 @@ export interface StatusSummaryOptions {
   routineCount?: number;
   securityAlertCount?: number;
   pendingChoreCount?: number;
-  overdueChoreCount?: number;
   temperatureUnit?: TemperatureUnit;
   customSummaryPills?: CustomSummaryPill[];
 }
@@ -249,7 +248,6 @@ function getMediaSummary(devices: DeviceWithType[], t: TranslateFn): HomeStatusS
 
 function getChoreSummary(
   pendingChoreCount: number | undefined,
-  overdueChoreCount: number | undefined,
   t: TranslateFn
 ): HomeStatusSummaryItem | null {
   if (pendingChoreCount === undefined) {
@@ -260,16 +258,12 @@ function getChoreSummary(
     id: 'chores',
     title: t('household.tabs.chores'),
     value:
-      (overdueChoreCount ?? 0) > 0
-        ? t('household.rooms.overdue', { count: overdueChoreCount ?? 0 })
-        : pendingChoreCount === 0
-          ? t('household.rooms.allDone')
-          : t('household.rooms.remaining', { count: pendingChoreCount }),
+      pendingChoreCount === 0
+        ? t('household.rooms.allDone')
+        : t('household.rooms.remaining', { count: pendingChoreCount }),
     icon: ClipboardCheck,
-    iconColor:
-      (overdueChoreCount ?? 0) > 0 ? '#f87171' : pendingChoreCount === 0 ? '#22c55e' : '#fb923c',
-    priority: (overdueChoreCount ?? 0) > 0 ? 'attention' : 'current',
-    tone: (overdueChoreCount ?? 0) > 0 ? 'danger' : undefined,
+    iconColor: pendingChoreCount === 0 ? '#22c55e' : '#fb923c',
+    priority: 'current',
     targetSection: 'tasks',
   };
 }
@@ -520,7 +514,7 @@ function buildStatusSummaryItems(
     securitySummary,
     getLightSummary(devices, t),
     getMediaSummary(devices, t),
-    getChoreSummary(options.pendingChoreCount, options.overdueChoreCount, t),
+    getChoreSummary(options.pendingChoreCount, t),
     ...buildCustomSummaryItems(deviceMap, options.customSummaryPills, t),
   ].filter((item): item is HomeStatusSummaryItem => item !== null);
 }

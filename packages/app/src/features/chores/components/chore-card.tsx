@@ -141,7 +141,9 @@ function occurrenceScheduleLabel(
 export function getChoreStatusDetails(
   occurrence: ChoreOccurrence,
   now: Date,
-  i18n: ReturnType<typeof useI18n>
+  i18n: ReturnType<typeof useI18n>,
+  /** Off reads late work as plainly due, for surfaces that never nag. */
+  { flagLate = true }: { flagLate?: boolean } = {}
 ) {
   const { t } = i18n;
   const timing = getChoreTiming(occurrence, now);
@@ -158,15 +160,17 @@ export function getChoreStatusDetails(
   if (occurrence.status === 'claimed') {
     return { label: t('household.today.claimed'), tone: 'accent' as const, Icon: CircleDashed };
   }
-  if (occurrence.status === 'missed') {
+  if (flagLate && occurrence.status === 'missed') {
     return { label: t('household.today.missed'), tone: 'danger' as const, Icon: RotateCcw };
   }
-  if (timing === 'overdue') {
+  if (flagLate && timing === 'overdue') {
     return { label: t('household.today.overdue'), tone: 'danger' as const, Icon: Clock3 };
   }
   return {
     label:
-      timing === 'due' ? t('household.today.due') : occurrenceScheduleLabel(occurrence, now, i18n),
+      timing === 'upcoming'
+        ? occurrenceScheduleLabel(occurrence, now, i18n)
+        : t('household.today.due'),
     tone: 'neutral' as const,
     Icon: Circle,
   };
@@ -310,6 +314,7 @@ export function ChoreFocusCard({
   action,
   childMode = false,
   now = new Date(),
+  flagLate = true,
 }: {
   size?: 'small' | 'medium';
   definition: ChoreDefinition;
@@ -319,12 +324,14 @@ export function ChoreFocusCard({
   action?: ChoreCardAction;
   childMode?: boolean;
   now?: Date;
+  /** Off drops the late styling, for dashboard surfaces that show today rather than a backlog. */
+  flagLate?: boolean;
 }) {
   const i18n = useI18n();
   const { t } = i18n;
   const { theme } = useTheme();
   const surface = getThemeSurfaceTokens(theme);
-  const status = getChoreStatusDetails(occurrence, now, i18n);
+  const status = getChoreStatusDetails(occurrence, now, i18n, { flagLate });
   const missedScheduleLabel =
     occurrence.status === 'missed' ? occurrenceScheduleLabel(occurrence, now, i18n) : undefined;
   const completed = occurrence.status === 'done';
@@ -348,7 +355,7 @@ export function ChoreFocusCard({
           ? { primary: '14', secondary: '10', bridge: '06' }
           : { primary: '16', secondary: '12', bridge: '07' };
   const isOverdue =
-    occurrence.status === 'available' && getChoreTiming(occurrence, now) === 'overdue';
+    flagLate && occurrence.status === 'available' && getChoreTiming(occurrence, now) === 'overdue';
   const statusColor =
     status.tone === 'danger'
       ? themeColorValues.red

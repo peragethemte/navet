@@ -63,7 +63,6 @@ export function PersonCardView({
   participantsById,
   now,
   remaining,
-  overdue,
   tintColor,
   childMode = false,
   showPoints = true,
@@ -78,7 +77,6 @@ export function PersonCardView({
   participantsById: Record<string, ChoreParticipant>;
   now: Date;
   remaining: number;
-  overdue: number;
   tintColor?: string;
   childMode?: boolean;
   showPoints?: boolean;
@@ -105,15 +103,8 @@ export function PersonCardView({
       title={title}
       meta={
         state === 'ready' ? (
-          <span
-            className={cn(
-              'text-xs font-semibold tabular-nums',
-              overdue > 0 ? 'text-red-400' : surface.textSecondary
-            )}
-          >
-            {overdue > 0
-              ? t('chores.card.overdueCount', { count: overdue })
-              : t('chores.card.remaining', { count: remaining })}
+          <span className={cn('text-xs font-semibold tabular-nums', surface.textSecondary)}>
+            {t('chores.card.remaining', { count: remaining })}
           </span>
         ) : undefined
       }
@@ -128,7 +119,6 @@ export function PersonCardView({
       settingsLabel={t('household.personCard.openSettings')}
       onOpenSettings={onOpenSettings}
       tintColor={tintColor}
-      hasOverdue={overdue > 0}
     >
       {visibleChores.length > 0 ? (
         <PersonCardSection label={t('chores.card.title')} theme={theme} first>

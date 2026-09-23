@@ -111,6 +111,40 @@ describe('person dashboard card', () => {
     expect(screen.getByRole('heading', { name: 'Homework' })).toBeInTheDocument();
   });
 
+  it('drops chores and homework left unfinished on earlier days, without flagging anything late', () => {
+    const data = workspace();
+    data.definitionsById.shoes = chore('shoes', 'Tidy the shoes', {
+      mode: 'person',
+      participantIds: ['sam'],
+    });
+    data.occurrencesById['occ-shoes'] = {
+      ...occurrence('shoes', ['sam'], 'sam'),
+      scheduledAt: '2026-09-21T09:00:00.000Z',
+      dueAt: '2026-09-21T19:00:00.000Z',
+    };
+    data.definitionsById.maths = createHomeworkDefinition({
+      id: 'maths',
+      title: 'Maths sheet',
+      dateKey: '2026-09-21',
+      timeZone: 'UTC',
+      participantId: 'sam',
+      timestamp,
+    });
+    data.occurrencesById['occ-maths'] = {
+      ...occurrence('maths', ['sam'], 'sam'),
+      scheduledAt: '2026-09-21T00:00:00.000Z',
+      dueAt: '2026-09-21T23:59:00.000Z',
+    };
+    data.occurrencesById['occ-dishes'].dueAt = '2026-09-22T09:30:00.000Z';
+    useChoreWorkspaceStore.getState().setPreviewDocument({ data });
+    renderWithProviders(<PersonCard size="large" data={{ participantId: 'sam' }} />);
+
+    expect(screen.queryByText('Tidy the shoes')).not.toBeInTheDocument();
+    expect(screen.queryByText('Maths sheet')).not.toBeInTheDocument();
+    expect(screen.getByText('Empty the dishwasher')).toBeInTheDocument();
+    expect(screen.queryByText(/overdue/i)).not.toBeInTheDocument();
+  });
+
   it("titles itself with the person's name until a title is set", () => {
     const { unmount } = renderWithProviders(
       <PersonCard size="large" data={{ participantId: 'sam' }} />

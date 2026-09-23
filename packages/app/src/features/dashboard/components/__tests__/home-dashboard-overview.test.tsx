@@ -26,7 +26,6 @@ vi.mock('@navet/app/hooks', async () => {
           'homeSummary.security': 'Security',
           'homeSummary.noAlerts': 'No Alerts',
           'household.tabs.chores': 'Chores',
-          'household.rooms.overdue': `${String(values?.count ?? 0)} overdue`,
           'dashboard.summary.openSection': `Open ${String(values?.name ?? '')}`,
         })[key] ?? key,
     }),
@@ -181,7 +180,7 @@ describe('HomeDashboardOverview', () => {
     expect(screen.queryByText('1 Alert')).not.toBeInTheDocument();
   });
 
-  it('navigates an overdue Chores summary to the tasks section', () => {
+  it('navigates the Chores summary to the tasks section', () => {
     useChoreWorkspaceStore.getState().setPreviewDocument({
       data: createChoreDemoWorkspace({ copy: choreCopy }),
     });

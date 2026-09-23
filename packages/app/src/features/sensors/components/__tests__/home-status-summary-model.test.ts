@@ -110,21 +110,6 @@ describe('home status summary model', () => {
     ]);
   });
 
-  it('marks overdue chores as a danger summary with visible overdue copy', () => {
-    const items = buildHomeStatusSummaryItems(new Map(), {
-      pendingChoreCount: 4,
-      overdueChoreCount: 1,
-    });
-
-    expect(items).toEqual([
-      expect.objectContaining({
-        id: 'chores',
-        value: '1 overdue',
-        tone: 'danger',
-      }),
-    ]);
-  });
-
   it('adds a chore summary to a room that has chores today', () => {
     const items = buildRoomStatusSummaryItems(new Map(), 'Kitchen', { pendingChoreCount: 2 });
 

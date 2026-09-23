@@ -3,7 +3,6 @@ import { themeColorValues } from '@navet/app/components/shared/theme/theme-color
 import { useDashboardWidgetRoomOptions } from '@navet/app/features/dashboard/components/widgets/use-widget-room-options';
 import { useAreaRooms, useI18n, useTheme } from '@navet/app/hooks';
 import { normalizeChoreExperienceState } from '@navet/core/chore-experience';
-import { getChoreTiming } from '@navet/core/chores';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { getChoreCardAction } from '../../chore-card-action';
 import { getChorePaletteKey, resolveChoreColorPalette } from '../../chore-color-palette';
@@ -59,17 +58,16 @@ export const ChoresCard = memo(function ChoresCard({
   const occurrences = useMemo(
     () =>
       workspace
-        ? getTodayChoresForParticipant(workspace, participantId, now, { includeHomework: false })
+        ? getTodayChoresForParticipant(workspace, participantId, now, {
+            includeHomework: false,
+            carryOver: false,
+          })
         : [],
     [now, participantId, workspace]
   );
   const pending = useMemo(
     () => occurrences.filter((occurrence) => occurrence.status !== 'done'),
     [occurrences]
-  );
-  const overdue = useMemo(
-    () => pending.filter((occurrence) => getChoreTiming(occurrence, now) === 'overdue').length,
-    [now, pending]
   );
 
   const rows = useMemo<ChoresCardRow[]>(() => {
@@ -96,7 +94,6 @@ export const ChoresCard = memo(function ChoresCard({
   const tintColor = useMemo(() => {
     if (typeof data?.tintColor === 'string') return data.tintColor;
     if (!workspace) return undefined;
-    if (overdue > 0) return themeColorValues.red;
     if (pending.length === 0 && occurrences.length > 0) return themeColorValues.green;
     const selected =
       participantId === CHORE_CARD_EVERYONE ? undefined : workspace.participantsById[participantId];
@@ -106,15 +103,7 @@ export const ChoresCard = memo(function ChoresCard({
       ? resolveChoreColorPalette(getChorePaletteKey(first.definition), first.presentation?.color)
           .primary
       : undefined;
-  }, [
-    data?.tintColor,
-    occurrences.length,
-    overdue,
-    participantId,
-    pending.length,
-    rows,
-    workspace,
-  ]);
+  }, [data?.tintColor, occurrences.length, participantId, pending.length, rows, workspace]);
 
   const state = resolveChoreWidgetState({
     choresEnabled,
@@ -134,7 +123,6 @@ export const ChoresCard = memo(function ChoresCard({
         participantsById={workspace?.participantsById ?? {}}
         now={now}
         remaining={pending.length}
-        overdue={overdue}
         tintColor={tintColor}
         childMode={childMode}
         showPoints={showPoints}

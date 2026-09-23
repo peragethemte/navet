@@ -76,7 +76,7 @@ function occurrence(
 const LATER = '2026-09-22T20:00:00.000Z';
 const PAST = '2026-09-22T12:00:00.000Z';
 
-function rows(variant: 'default' | 'overdue' | 'allDone'): ChoresCardRow[] {
+function rows(variant: 'default' | 'pastDue' | 'allDone'): ChoresCardRow[] {
   const entries: Array<[string, string, string, string, ChoreOccurrence['status'], string]> = [
     ['dishes', 'Empty the dishwasher', 'sam', 'Utensils', 'available', LATER],
     ['bins', 'Take out the bins', 'lea', 'Trash2', 'available', LATER],
@@ -87,7 +87,7 @@ function rows(variant: 'default' | 'overdue' | 'allDone'): ChoresCardRow[] {
 
   return entries.map(([id, title, participantId, icon, status, dueAt], index) => {
     const resolvedStatus = variant === 'allDone' ? 'done' : status;
-    const resolvedDueAt = variant === 'overdue' && index < 2 ? PAST : dueAt;
+    const resolvedDueAt = variant === 'pastDue' && index < 2 ? PAST : dueAt;
     return {
       definition: definition(id, title, participantId, icon),
       occurrence: occurrence(id, participantId, resolvedStatus, resolvedDueAt),
@@ -107,13 +107,12 @@ function ChoresStory({
   tintColor,
 }: {
   size: CardSize;
-  variant: 'default' | 'overdue' | 'allDone';
+  variant: 'default' | 'pastDue' | 'allDone';
   state: ChoreWidgetCardState;
   tintColor?: string;
 }) {
   const { theme } = useTheme();
   const cardRows = state === 'ready' ? rows(variant) : [];
-  const overdue = variant === 'overdue' ? 2 : 0;
   const remaining = variant === 'allDone' ? 0 : cardRows.length;
 
   return (
@@ -127,7 +126,6 @@ function ChoresStory({
         participantsById={PARTICIPANTS}
         now={NOW}
         remaining={remaining}
-        overdue={overdue}
         tintColor={tintColor}
         onOpenSettings={() => {}}
       />
@@ -141,7 +139,7 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'inline-radio', options: ['small', 'medium', 'large'] },
-    variant: { control: 'inline-radio', options: ['default', 'overdue', 'allDone'] },
+    variant: { control: 'inline-radio', options: ['default', 'pastDue', 'allDone'] },
     state: {
       control: 'inline-radio',
       options: ['ready', 'empty', 'loading', 'disabled', 'unavailable'],
@@ -153,7 +151,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Today's household chores on the dashboard. Each row keeps the chore's own colour, icon and assignee avatar from the Household cards, and the card itself takes the colour of the state it is in: red while anything is overdue, green once the day is clear.",
+          "Today's household chores on the dashboard. Each row keeps the chore's own colour, icon and assignee avatar from the Household cards, and the card turns green once the day is clear. Work past its due time is never flagged, and anything left from earlier days is gone.",
       },
     },
   },
@@ -171,7 +169,7 @@ export const Medium: Story = { args: { size: 'medium' } };
 
 export const Large: Story = { args: { size: 'large' } };
 
-export const Overdue: Story = { args: { size: 'large', variant: 'overdue' } };
+export const PastDue: Story = { args: { size: 'large', variant: 'pastDue' } };
 
 export const AllDone: Story = { args: { size: 'large', variant: 'allDone' } };
 

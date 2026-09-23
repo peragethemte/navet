@@ -33,7 +33,6 @@ export const esMessages = {
   'household.rooms.title': 'Por toda la casa',
   'household.rooms.allDone': 'Todo hecho hoy',
   'household.rooms.remaining': 'Quedan {count}',
-  'household.rooms.overdue': '{count} atrasadas',
   'household.rooms.open': 'Mostrar tareas de {room}',
   'household.card.minutes': 'Unos {count} min',
   'household.card.compactMinutes': '{count} min.',
@@ -640,7 +639,6 @@ export const esMessages = {
   'transit.empty.noDepartures': 'No se han encontrado salidas',
   'chores.card.title': 'Tareas',
   'chores.card.remaining': '{count} pendientes',
-  'chores.card.overdueCount': '{count} atrasadas',
   'chores.card.emptyTitle': 'Nada pendiente hoy',
   'chores.card.emptyDescription': 'Las tareas aparecen aquí el día en que vencen.',
   'chores.card.disabledTitle': 'Las tareas están desactivadas',
@@ -658,7 +656,6 @@ export const esMessages = {
   'chores.card.more': '{count} más',
   'homework.card.title': 'Deberes',
   'homework.card.remaining': '{count} pendientes',
-  'homework.card.overdueCount': '{count} atrasados',
   'homework.card.emptyTitle': 'Sin deberes hoy',
   'homework.card.emptyDescription':
     'Los deberes creados en Hogar aparecen aquí el día que corresponde.',

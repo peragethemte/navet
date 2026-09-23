@@ -47,18 +47,17 @@ function occurrence(
   };
 }
 
-type Variant = 'default' | 'overdue' | 'allDone' | 'notReady';
+type Variant = 'default' | 'allDone' | 'notReady';
 
 function rows(variant: Variant): HomeworkCardRow[] {
-  const entries: Array<[string, string, string, string, boolean]> = [
-    ['spelling', 'Spelling words, page 14', 'sam', '2026-09-22', false],
-    ['maths', 'Maths sheet 3B', 'lea', '2026-09-20', true],
-    ['reading', 'Read two chapters', 'sam', '2026-09-22', false],
-    ['french', 'French glossary', 'lea', '2026-09-22', false],
+  const entries: Array<[string, string, string, string]> = [
+    ['spelling', 'Spelling words, page 14', 'sam', '2026-09-22'],
+    ['maths', 'Maths sheet 3B', 'lea', '2026-09-22'],
+    ['reading', 'Read two chapters', 'sam', '2026-09-22'],
+    ['french', 'French glossary', 'lea', '2026-09-22'],
   ];
 
-  return entries.flatMap<HomeworkCardRow>(([id, title, participantId, dateKey, overdue]) => {
-    if (variant !== 'overdue' && overdue) return [];
+  return entries.flatMap<HomeworkCardRow>(([id, title, participantId, dateKey]) => {
     const definition = createHomeworkDefinition({
       id,
       title,
@@ -68,14 +67,13 @@ function rows(variant: Variant): HomeworkCardRow[] {
       timestamp: TIMESTAMP,
     });
     if (variant === 'notReady' && id === 'spelling') {
-      return [{ definition, overdue: false }];
+      return [{ definition }];
     }
     const status = variant === 'allDone' ? ('done' as const) : ('available' as const);
     return [
       {
         definition,
         occurrence: occurrence(id, participantId, status, dateKey),
-        overdue,
         action:
           status === 'done'
             ? undefined
@@ -98,7 +96,6 @@ function HomeworkStory({
 }) {
   const { theme } = useTheme();
   const cardRows = state === 'ready' ? rows(variant) : [];
-  const overdue = cardRows.filter((row) => row.overdue).length;
   const remaining = cardRows.filter((row) => row.occurrence?.status !== 'done').length;
 
   return (
@@ -112,7 +109,6 @@ function HomeworkStory({
         participantsById={PARTICIPANTS}
         now={NOW}
         remaining={remaining}
-        overdue={overdue}
         tintColor={tintColor}
         onOpenSettings={() => {}}
       />
@@ -126,7 +122,7 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'inline-radio', options: ['small', 'medium', 'large'] },
-    variant: { control: 'inline-radio', options: ['default', 'overdue', 'allDone', 'notReady'] },
+    variant: { control: 'inline-radio', options: ['default', 'allDone', 'notReady'] },
     state: {
       control: 'inline-radio',
       options: ['ready', 'empty', 'loading', 'disabled', 'unavailable'],
@@ -138,7 +134,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Today's homework, plus anything still overdue, ticked off from the dashboard. Homework keeps one colour per person, so a card filtered to one child reads as theirs at a glance.",
+          "Today's homework, ticked off from the dashboard. Anything left from earlier days drops off here and stays on the Homework page. Homework keeps one colour per person, so a card filtered to one child reads as theirs at a glance.",
       },
     },
   },
@@ -155,8 +151,6 @@ export const Small: Story = { args: { size: 'small' } };
 export const Medium: Story = { args: { size: 'medium' } };
 
 export const Large: Story = { args: { size: 'large' } };
-
-export const Overdue: Story = { args: { size: 'large', variant: 'overdue' } };
 
 export const AllDone: Story = { args: { size: 'large', variant: 'allDone' } };
 

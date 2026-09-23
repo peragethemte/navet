@@ -33,7 +33,6 @@ export const nlMessages = {
   'household.rooms.title': 'Door het hele huis',
   'household.rooms.allDone': 'Alles klaar voor vandaag',
   'household.rooms.remaining': 'Nog {count}',
-  'household.rooms.overdue': '{count} te laat',
   'household.rooms.open': 'Toon klusjes in {room}',
   'household.card.minutes': 'Ongeveer {count} min',
   'household.card.compactMinutes': '{count} min.',
@@ -639,7 +638,6 @@ export const nlMessages = {
   'transit.empty.noDepartures': 'Geen vertrektijden gevonden',
   'chores.card.title': 'Klusjes',
   'chores.card.remaining': 'Nog {count}',
-  'chores.card.overdueCount': '{count} te laat',
   'chores.card.emptyTitle': 'Vandaag niets meer',
   'chores.card.emptyDescription': 'Klusjes verschijnen hier op de dag dat ze aan de beurt zijn.',
   'chores.card.disabledTitle': 'Klusjes staan uit',
@@ -657,7 +655,6 @@ export const nlMessages = {
   'chores.card.more': 'Nog {count}',
   'homework.card.title': 'Huiswerk',
   'homework.card.remaining': 'Nog {count}',
-  'homework.card.overdueCount': '{count} te laat',
   'homework.card.emptyTitle': 'Vandaag geen huiswerk',
   'homework.card.emptyDescription':
     'Huiswerk dat in Huishouden is ingevoerd verschijnt hier op zijn dag.',

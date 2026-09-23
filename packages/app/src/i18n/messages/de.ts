@@ -34,7 +34,6 @@ export const deMessages = {
   'household.rooms.title': 'Im ganzen Haus',
   'household.rooms.allDone': 'Heute alles erledigt',
   'household.rooms.remaining': '{count} übrig',
-  'household.rooms.overdue': '{count} überfällig',
   'household.rooms.open': 'Aufgaben in {room} anzeigen',
   'household.card.minutes': 'Etwa {count} Min.',
   'household.card.compactMinutes': '{count} Min.',
@@ -644,7 +643,6 @@ export const deMessages = {
   'transit.empty.noDepartures': 'Keine Abfahrten gefunden',
   'chores.card.title': 'Aufgaben',
   'chores.card.remaining': 'Noch {count}',
-  'chores.card.overdueCount': '{count} überfällig',
   'chores.card.emptyTitle': 'Heute nichts mehr offen',
   'chores.card.emptyDescription': 'Aufgaben erscheinen hier an dem Tag, an dem sie fällig sind.',
   'chores.card.disabledTitle': 'Aufgaben sind ausgeschaltet',
@@ -662,7 +660,6 @@ export const deMessages = {
   'chores.card.more': '{count} weitere',
   'homework.card.title': 'Hausaufgaben',
   'homework.card.remaining': 'Noch {count}',
-  'homework.card.overdueCount': '{count} überfällig',
   'homework.card.emptyTitle': 'Heute keine Hausaufgaben',
   'homework.card.emptyDescription':
     'Im Haushalt eingetragene Hausaufgaben erscheinen hier an ihrem Tag.',

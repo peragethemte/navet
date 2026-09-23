@@ -5,7 +5,7 @@ import { useAreaRooms, useI18n, useTheme } from '@navet/app/hooks';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { getChoreCardAction } from '../../chore-card-action';
 import { resolveChoreColorPalette } from '../../chore-color-palette';
-import { getHomeworkBoard, type HomeworkBoardEntry } from '../../chore-homework-selectors';
+import { getHomeworkBoard } from '../../chore-homework-selectors';
 import { resolveChoreWidgetState, useChoreCardParticipant } from '../../use-chore-card-participant';
 import { CHORE_CARD_EVERYONE, ChoreCardPersonDialog } from '../chore-card-person-dialog';
 import { type HomeworkCardRow, HomeworkCardView } from './view';
@@ -25,10 +25,6 @@ export interface HomeworkCardProps {
   room?: string;
   onRoomChange?: (room: string) => void;
   openSettingsRequestKey?: number;
-}
-
-function homeworkDate(entry: HomeworkBoardEntry) {
-  return entry.definition.schedule.frequency === 'once' ? entry.definition.schedule.date : '';
 }
 
 export const HomeworkCard = memo(function HomeworkCard({
@@ -60,20 +56,16 @@ export const HomeworkCard = memo(function HomeworkCard({
       days: 1,
     });
     const activeIds = new Set(participants.map((participant) => participant.id));
-    const keep = (entry: HomeworkBoardEntry) =>
-      entry.definition.assignment.participantIds.some((id) => activeIds.has(id));
-    // The board orders overdue by creation time; on a card the oldest due date reads better.
-    const overdueEntries = [...board.overdue]
-      .filter(keep)
-      .sort((left, right) => homeworkDate(left).localeCompare(homeworkDate(right)));
-    const todayEntries = (board.days[0]?.entries ?? []).filter(keep);
+    // Unfinished homework from earlier days stays off the dashboard; the Homework page keeps it.
+    const todayEntries = (board.days[0]?.entries ?? []).filter((entry) =>
+      entry.definition.assignment.participantIds.some((id) => activeIds.has(id))
+    );
 
-    return [...overdueEntries, ...todayEntries].map((entry) => {
+    return todayEntries.map((entry) => {
       const assignee = entry.definition.assignment.participantIds[0] ?? '';
       return {
         definition: entry.definition,
         occurrence: entry.occurrence,
-        overdue: overdueEntries.includes(entry),
         action:
           entry.occurrence && assignee
             ? getChoreCardAction(entry.occurrence, entry.definition, assignee, execute, t)
@@ -83,19 +75,17 @@ export const HomeworkCard = memo(function HomeworkCard({
   }, [execute, now, participantId, participants, t, workspace]);
 
   const remaining = rows.filter((row) => row.occurrence?.status !== 'done').length;
-  const overdue = rows.filter((row) => row.overdue && row.occurrence?.status !== 'done').length;
 
   const tintColor = useMemo(() => {
     if (typeof data?.tintColor === 'string') return data.tintColor;
     if (!workspace) return undefined;
-    if (overdue > 0) return themeColorValues.red;
     if (remaining === 0 && rows.length > 0) return themeColorValues.green;
     const selected =
       participantId === CHORE_CARD_EVERYONE ? undefined : workspace.participantsById[participantId];
     return selected
       ? resolveChoreColorPalette(`person:${selected.id}`, selected.color).primary
       : undefined;
-  }, [data?.tintColor, overdue, participantId, remaining, rows.length, workspace]);
+  }, [data?.tintColor, participantId, remaining, rows.length, workspace]);
 
   const state = resolveChoreWidgetState({
     choresEnabled,
@@ -115,7 +105,6 @@ export const HomeworkCard = memo(function HomeworkCard({
         participantsById={workspace?.participantsById ?? {}}
         now={now}
         remaining={remaining}
-        overdue={overdue}
         tintColor={tintColor}
         onOpenSettings={() => setIsSettingsOpen(true)}
       />

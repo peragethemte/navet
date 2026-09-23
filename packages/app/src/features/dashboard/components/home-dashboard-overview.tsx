@@ -44,7 +44,10 @@ const HomeStatusSummary = memo(function HomeStatusSummary({
   const choreWorkspace = useChoreWorkspaceStore((state) => state.data);
   useChoreWorkspaceSync(choresEnabled);
   const choreSummary = useMemo(
-    () => (choresEnabled && choreWorkspace ? getHousePulse(choreWorkspace) : undefined),
+    () =>
+      choresEnabled && choreWorkspace
+        ? getHousePulse(choreWorkspace, new Date(), { carryOver: false })
+        : undefined,
     [choreWorkspace, choresEnabled]
   );
   const statusSummaryItems = useMemo(
@@ -56,7 +59,6 @@ const HomeStatusSummary = memo(function HomeStatusSummary({
           routineCount,
           securityAlertCount,
           pendingChoreCount: choreSummary?.remaining,
-          overdueChoreCount: choreSummary?.overdue,
           temperatureUnit,
           customSummaryPills: advancedCustomizationEnabled ? customSummaryPills : [],
         },

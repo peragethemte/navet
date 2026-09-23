@@ -54,11 +54,13 @@ function workspace(): ChoreWorkspaceData {
     definitionsById: {
       spelling: homework('spelling', 'Spelling words', '2026-09-22', 'sam'),
       maths: homework('maths', 'Maths sheet', '2026-09-20', 'lea'),
+      reading: homework('reading', 'Reading log', '2026-09-22', 'lea'),
       history: homework('history', 'History essay', '2026-09-25', 'sam'),
     },
     occurrencesById: {
       'occ-spelling': occurrence('spelling', 'sam', '2026-09-22'),
       'occ-maths': occurrence('maths', 'lea', '2026-09-20'),
+      'occ-reading': occurrence('reading', 'lea', '2026-09-22'),
     },
     activity: [],
     outbox: [],
@@ -78,18 +80,20 @@ afterEach(() => {
 });
 
 describe('homework dashboard card', () => {
-  it('shows today and overdue homework, but nothing from later days', () => {
+  it("shows only today's homework, dropping unfinished work from earlier days", () => {
     renderWithProviders(<HomeworkCard size="large" />);
 
     expect(screen.getByText('Spelling words')).toBeInTheDocument();
-    expect(screen.getByText('Maths sheet')).toBeInTheDocument();
+    expect(screen.getByText('Reading log')).toBeInTheDocument();
+    expect(screen.queryByText('Maths sheet')).not.toBeInTheDocument();
     expect(screen.queryByText('History essay')).not.toBeInTheDocument();
+    expect(screen.queryByText(/overdue/i)).not.toBeInTheDocument();
   });
 
   it('narrows to one person without falling back to an empty board', () => {
     renderWithProviders(<HomeworkCard size="large" data={{ participantId: 'lea' }} />);
 
-    expect(screen.getByText('Maths sheet')).toBeInTheDocument();
+    expect(screen.getByText('Reading log')).toBeInTheDocument();
     expect(screen.queryByText('Spelling words')).not.toBeInTheDocument();
   });
 

@@ -25,7 +25,6 @@ import { useNavigationStore, useSettingsStore } from '@navet/app/stores';
 import { integrationSelectors, settingsSelectors } from '@navet/app/stores/selectors';
 import { getDeviceRoomLabel } from '@navet/app/utils/device-location';
 import { normalizeRoomName, roomNamesMatch } from '@navet/app/utils/room-name';
-import { getChoreTiming } from '@navet/core/chores';
 import { Thermometer } from 'lucide-react';
 import { lazy, type ReactNode, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { DeviceGrid } from '../device-grid';
@@ -163,7 +162,8 @@ function DashboardSectionRouterComponent({ controller }: DashboardSectionRouterP
               label: activeRoom,
               canonicalIds: activeRoomWorkspace?.sourceRefs.map((source) => source.canonicalId),
             },
-            roomChoreNow
+            roomChoreNow,
+            { carryOver: false }
           )
         : [],
     [activeRoom, activeRoomWorkspace, choreWorkspace, choresEnabled, roomChoreNow]
@@ -171,13 +171,6 @@ function DashboardSectionRouterComponent({ controller }: DashboardSectionRouterP
   const pendingRoomChores = useMemo(
     () => roomTodayChores.filter((occurrence) => occurrence.status !== 'done'),
     [roomTodayChores]
-  );
-  const overdueRoomChoreCount = useMemo(
-    () =>
-      pendingRoomChores.filter(
-        (occurrence) => getChoreTiming(occurrence, roomChoreNow) === 'overdue'
-      ).length,
-    [pendingRoomChores, roomChoreNow]
   );
   const manageableRoomReferences = useMemo(
     () => Object.values(manageableRoomsByProviderId).flat(),
@@ -270,7 +263,6 @@ function DashboardSectionRouterComponent({ controller }: DashboardSectionRouterP
       {
         climateEntityIds: roomClimateEntityIds,
         pendingChoreCount: roomTodayChores.length > 0 ? pendingRoomChores.length : undefined,
-        overdueChoreCount: overdueRoomChoreCount,
         routineCount,
         securityAlertCount: controller.activeRoomSecurityAlertCount,
         temperatureUnit,
@@ -281,7 +273,6 @@ function DashboardSectionRouterComponent({ controller }: DashboardSectionRouterP
     activeRoom,
     availableDeviceMap,
     pendingRoomChores.length,
-    overdueRoomChoreCount,
     roomClimateEntityIds,
     controller.activeRoomSecurityAlertCount,
     roomTodayChores.length,

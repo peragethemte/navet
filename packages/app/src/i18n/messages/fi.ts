@@ -33,7 +33,6 @@ export const fiMessages = {
   'household.rooms.title': 'Kodin eri puolilla',
   'household.rooms.allDone': 'Kaikki tehty tänään',
   'household.rooms.remaining': '{count} jäljellä',
-  'household.rooms.overdue': '{count} myöhässä',
   'household.rooms.open': 'Näytä huoneen {room} kotityöt',
   'household.card.minutes': 'Noin {count} min',
   'household.card.compactMinutes': '{count} min.',
@@ -638,7 +637,6 @@ export const fiMessages = {
   'transit.empty.noDepartures': 'Lähtöjä ei löytynyt',
   'chores.card.title': 'Kotityöt',
   'chores.card.remaining': '{count} jäljellä',
-  'chores.card.overdueCount': '{count} myöhässä',
   'chores.card.emptyTitle': 'Ei enää tehtävää tänään',
   'chores.card.emptyDescription': 'Kotityöt ilmestyvät tähän sinä päivänä, jona ne on määrä tehdä.',
   'chores.card.disabledTitle': 'Kotityöt on poistettu käytöstä',
@@ -655,7 +653,6 @@ export const fiMessages = {
   'chores.card.more': '{count} lisää',
   'homework.card.title': 'Läksyt',
   'homework.card.remaining': '{count} jäljellä',
-  'homework.card.overdueCount': '{count} myöhässä',
   'homework.card.emptyTitle': 'Ei läksyjä tänään',
   'homework.card.emptyDescription':
     'Kotitalous-osiossa asetetut läksyt näkyvät tässä omana päivänään.',

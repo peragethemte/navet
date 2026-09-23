@@ -33,7 +33,6 @@ export const plMessages = {
   'household.rooms.title': 'W całym domu',
   'household.rooms.allDone': 'Wszystko na dziś gotowe',
   'household.rooms.remaining': 'Pozostało: {count}',
-  'household.rooms.overdue': '{count} zaległe',
   'household.rooms.open': 'Pokaż obowiązki w {room}',
   'household.card.minutes': 'Około {count} min',
   'household.card.compactMinutes': '{count} min.',
@@ -637,7 +636,6 @@ export const plMessages = {
   'transit.empty.noDepartures': 'Nie znaleziono odjazdów',
   'chores.card.title': 'Obowiązki',
   'chores.card.remaining': 'Pozostało {count}',
-  'chores.card.overdueCount': '{count} zaległych',
   'chores.card.emptyTitle': 'Nic już na dziś',
   'chores.card.emptyDescription': 'Obowiązki pojawiają się tutaj w dniu, w którym przypadają.',
   'chores.card.disabledTitle': 'Obowiązki są wyłączone',
@@ -655,7 +653,6 @@ export const plMessages = {
   'chores.card.more': 'Jeszcze {count}',
   'homework.card.title': 'Zadania domowe',
   'homework.card.remaining': 'Pozostało {count}',
-  'homework.card.overdueCount': '{count} zaległych',
   'homework.card.emptyTitle': 'Dziś brak zadań domowych',
   'homework.card.emptyDescription':
     'Zadania domowe dodane w sekcji Dom pojawiają się tutaj w swoim dniu.',

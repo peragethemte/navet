@@ -33,7 +33,6 @@ export const ptMessages = {
   'household.rooms.title': 'Pela casa',
   'household.rooms.allDone': 'Tudo feito hoje',
   'household.rooms.remaining': 'Faltam {count}',
-  'household.rooms.overdue': '{count} atrasadas',
   'household.rooms.open': 'Mostrar tarefas em {room}',
   'household.card.minutes': 'Cerca de {count} min',
   'household.card.compactMinutes': '{count} min.',
@@ -639,7 +638,6 @@ export const ptMessages = {
   'transit.empty.noDepartures': 'Não foram encontradas partidas',
   'chores.card.title': 'Tarefas',
   'chores.card.remaining': '{count} por fazer',
-  'chores.card.overdueCount': '{count} atrasadas',
   'chores.card.emptyTitle': 'Nada por fazer hoje',
   'chores.card.emptyDescription': 'As tarefas aparecem aqui no dia em que são devidas.',
   'chores.card.disabledTitle': 'As tarefas estão desativadas',
@@ -658,7 +656,6 @@ export const ptMessages = {
   'chores.card.more': 'Mais {count}',
   'homework.card.title': 'Trabalhos de casa',
   'homework.card.remaining': '{count} por fazer',
-  'homework.card.overdueCount': '{count} atrasados',
   'homework.card.emptyTitle': 'Sem trabalhos de casa hoje',
   'homework.card.emptyDescription':
     'Os trabalhos de casa definidos em Casa aparecem aqui no seu dia.',
