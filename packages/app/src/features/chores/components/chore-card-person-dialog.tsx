@@ -8,6 +8,7 @@ import { getThemeColorValue } from '@navet/app/components/shared/theme/theme-col
 import { getDashboardWidgetSurfaceTokens } from '@navet/app/features/dashboard/components/widgets/widget-surface-tokens';
 import { useI18n, useTheme } from '@navet/app/hooks';
 import type { ChoreParticipant } from '@navet/core/chores';
+import { useState } from 'react';
 import { ChoreAssigneeAvatar } from './chore-card';
 
 export const CHORE_CARD_EVERYONE = 'all';
@@ -69,6 +70,9 @@ export function ChoreCardPersonDialog({
 }) {
   const { t } = useI18n();
   const { theme, primaryColor } = useTheme();
+  // Profile sync trims stored strings and echoes them back, which would eat a trailing space
+  // mid-typing; the field owns its text while the dialog is open.
+  const [titleDraft, setTitleDraft] = useState(cardTitle ?? '');
   const surface = getDashboardWidgetSurfaceTokens(theme, tintColor);
   const rowFill = getDashboardWidgetSurfaceTokens(theme).subtleFill;
   const fieldStyle = { ...getInheritedDialogSectionStyle(theme, tintColor), background: rowFill };
@@ -102,8 +106,11 @@ export function ChoreCardPersonDialog({
           {onCardTitleChange ? (
             <CardDialogSection label={t('chores.card.name')}>
               <Input
-                value={cardTitle ?? ''}
-                onChange={(event) => onCardTitleChange(event.target.value)}
+                value={titleDraft}
+                onChange={(event) => {
+                  setTitleDraft(event.target.value);
+                  onCardTitleChange(event.target.value);
+                }}
                 placeholder={cardTitlePlaceholder ?? t('chores.card.namePlaceholder')}
                 maxLength={CHORE_CARD_TITLE_MAX_LENGTH}
                 inputClassName={`w-full ${surface.borderClassName} bg-transparent ${surface.textPrimary} rounded-xl py-2`}

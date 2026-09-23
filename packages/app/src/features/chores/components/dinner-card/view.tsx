@@ -1,3 +1,5 @@
+import { BaseCard } from '@navet/app/components/primitives';
+import { CardSettingsActionButton } from '@navet/app/components/shared/card-settings-action-button';
 import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { getThemeSurfaceTokens } from '@navet/app/components/shared/theme/theme-surface-tokens';
 import { cn } from '@navet/app/components/ui/utils';
@@ -88,6 +90,71 @@ export function DinnerCardView({
   );
   const hidden = rows.length - listed.length - (hero ? 1 : 0);
 
+  if (state === 'ready' && hero) {
+    return (
+      <BaseCard
+        size={size}
+        fullBleed
+        frameClassName="border-0!"
+        disableDefaultSheen
+        disableDefaultLightOverlay
+        underlay={
+          <DinnerImage
+            url={hero.dinner.imageUrl}
+            className="absolute inset-0 h-full w-full"
+            fallbackClassName={cn(surface.subtleBg, surface.textPrimary)}
+            iconClassName="h-10 w-10"
+          />
+        }
+      >
+        <div className="relative flex h-full min-h-0 flex-col justify-end">
+          <CardSettingsActionButton
+            theme={theme}
+            size="small"
+            variant="soft"
+            disableHoverEffects
+            aria-label={t('dinner.card.openSettings')}
+            className="absolute top-2 right-2 z-10"
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpenSettings();
+            }}
+            onPointerDown={(event) => event.stopPropagation()}
+          />
+          <div className="bg-linear-to-t from-black/80 via-black/45 to-transparent px-4 pt-10 pb-3 text-white">
+            <span className="block text-[11px] font-semibold uppercase tracking-wide text-white/80">
+              {dayLabel(hero.dateKey)}
+            </span>
+            <span className="line-clamp-2 text-lg font-semibold leading-tight">
+              {hero.dinner.title}
+            </span>
+            {listed.length > 0 ? (
+              <ul className="mt-2 grid gap-1">
+                {listed.map((row) => (
+                  <li key={row.dinner.id} className="flex min-w-0 items-center gap-2 text-sm">
+                    <DinnerImage
+                      url={row.dinner.imageUrl}
+                      className="h-6 w-6 shrink-0 rounded-md"
+                      fallbackClassName="bg-white/15"
+                      iconClassName="h-3.5 w-3.5"
+                    />
+                    <span className="shrink-0 text-white/70">{dayLabel(row.dateKey)}</span>
+                    <span className="min-w-0 truncate">{row.dinner.title}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {hidden > 0 ? (
+              <p className="pt-1 text-[11px] text-white/70">
+                {t('chores.card.more', { count: hidden })}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </BaseCard>
+    );
+  }
+
   return (
     <ChoreWidgetCardShell
       size={size}
@@ -107,29 +174,6 @@ export function DinnerCardView({
       tintColor={tintColor}
     >
       <div className="flex h-full min-h-0 flex-col gap-2">
-        {hero ? (
-          <figure
-            className={cn(
-              'relative min-h-[5.5rem] flex-1 overflow-hidden rounded-2xl',
-              surface.textPrimary
-            )}
-          >
-            <DinnerImage
-              url={hero.dinner.imageUrl}
-              className="absolute inset-0 h-full w-full"
-              fallbackClassName={surface.subtleBg}
-              iconClassName="h-10 w-10"
-            />
-            <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-3 pt-6 pb-2 text-white">
-              <span className="block text-[11px] font-semibold uppercase tracking-wide text-white/80">
-                {dayLabel(hero.dateKey)}
-              </span>
-              <span className="line-clamp-2 text-base font-semibold leading-tight">
-                {hero.dinner.title}
-              </span>
-            </figcaption>
-          </figure>
-        ) : null}
         {listed.length > 0 ? (
           <ul className="grid shrink-0 gap-1.5">
             {listed.map((row) => (
