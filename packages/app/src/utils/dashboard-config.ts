@@ -289,6 +289,7 @@ const cardTypes = new Set<CardType>([
   'countdown',
   'chores',
   'homework',
+  'dinner',
   'household-person',
   'entity',
 ]);
@@ -633,11 +634,22 @@ function sanitizeCustomCardData(
     });
   }
 
-  if (type === 'chores' || type === 'homework' || type === 'household-person') {
+  if (
+    type === 'chores' ||
+    type === 'homework' ||
+    type === 'dinner' ||
+    type === 'household-person'
+  ) {
     return omitUndefinedEntries({
-      participantId: stringValue(data.participantId, 120),
+      participantId: type === 'dinner' ? undefined : stringValue(data.participantId, 120),
       title: stringValue(data.title, 80),
       tintColor: stringValue(data.tintColor, 40),
+      days:
+        (type === 'homework' || type === 'dinner') &&
+        typeof data.days === 'number' &&
+        Number.isFinite(data.days)
+          ? Math.max(1, Math.min(7, Math.round(data.days)))
+          : undefined,
     });
   }
 

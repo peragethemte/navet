@@ -5,6 +5,7 @@ import {
   type ChoreOccurrence,
   type ChoreWorkspaceData,
   isHomeworkDefinition,
+  isHouseholdChoreDefinition,
 } from '@navet/core/chores';
 
 export const HOMEWORK_BOARD_DAYS = 10;
@@ -37,8 +38,9 @@ export function createHomeworkId(dateKey: string) {
   return `homework:${dateKey}:${suffix}`;
 }
 
-export function excludeHomework(definitions: ChoreDefinition[]) {
-  return definitions.filter((definition) => !isHomeworkDefinition(definition));
+/** Drops homework, dinners and any future non-chore kind from chore counts and libraries. */
+export function onlyHouseholdChores(definitions: ChoreDefinition[]) {
+  return definitions.filter(isHouseholdChoreDefinition);
 }
 
 function homeworkDateKey(definition: ChoreDefinition) {

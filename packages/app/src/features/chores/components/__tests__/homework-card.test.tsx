@@ -119,4 +119,12 @@ describe('homework dashboard card', () => {
 
     expect(screen.getByText('Not ready')).toBeInTheDocument();
   });
+
+  it('shows the next N days grouped under a day heading when configured', () => {
+    renderWithProviders(<HomeworkCard size="large" data={{ participantId: 'sam', days: 4 }} />);
+
+    expect(screen.getByText('Spelling words')).toBeInTheDocument();
+    expect(screen.getByText('History essay')).toBeInTheDocument();
+    expect(screen.getByText('Today')).toBeInTheDocument();
+  });
 });

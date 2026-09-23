@@ -9,6 +9,7 @@ import {
   MessageCircle,
   Sparkles,
   UserRound,
+  UtensilsCrossed,
 } from 'lucide-react';
 import type { SVGProps } from 'react';
 import type { ButtonWidgetData } from '../widgets/button-widget';
@@ -188,6 +189,15 @@ export function createCardTemplates(t: TranslateFn): CardTemplate[] {
       nameKey: 'dashboard.addCard.templates.homework.name',
       descriptionKey: 'dashboard.addCard.templates.homework.description',
       icon: <GraduationCap className="w-5 h-5" />,
+      defaultSize: 'medium',
+      supportedSizes: ['small', 'medium', 'large'],
+    },
+    {
+      id: 'dinner',
+      cardType: 'dinner',
+      nameKey: 'dashboard.addCard.templates.dinner.name',
+      descriptionKey: 'dashboard.addCard.templates.dinner.description',
+      icon: <UtensilsCrossed className="w-5 h-5" />,
       defaultSize: 'medium',
       supportedSizes: ['small', 'medium', 'large'],
     },

@@ -365,7 +365,7 @@ describe('dashboard-config import hardening', () => {
     ]);
   });
 
-  it('keeps transit, chores and homework cards through an import', () => {
+  it('keeps transit, chores, homework and dinner cards through an import', () => {
     importDashboardConfig({
       ...baseConfig,
       customCards: [
@@ -386,6 +386,14 @@ describe('dashboard-config import hardening', () => {
           createdAt: 3,
           data: { participantId: 42 },
         },
+        {
+          id: 'custom-dinner',
+          type: 'dinner',
+          size: 'medium',
+          room: 'Kitchen',
+          createdAt: 4,
+          data: { participantId: 'person:1', days: 30, title: 'Middag' },
+        },
       ],
     });
 
@@ -397,6 +405,11 @@ describe('dashboard-config import hardening', () => {
         data: { participantId: 'person:1', tintColor: '#123456' },
       }),
       expect.objectContaining({ id: 'custom-homework', type: 'homework', data: {} }),
+      expect.objectContaining({
+        id: 'custom-dinner',
+        type: 'dinner',
+        data: { title: 'Middag', days: 7 },
+      }),
     ]);
   });
 

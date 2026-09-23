@@ -35,7 +35,7 @@ import {
   getRewardProgressList,
   getTodayChoresForParticipant,
 } from '../chore-dashboard-selectors';
-import { excludeHomework } from '../chore-homework-selectors';
+import { onlyHouseholdChores } from '../chore-homework-selectors';
 import { useChoreClock } from '../use-chore-clock';
 import { ChoreFocusCard } from './chore-card';
 import { ChoreDashboardGrid } from './chore-dashboard-grid';
@@ -191,7 +191,7 @@ export function ChoreTodayView({
   const { t } = useI18n();
   const [rewardsVisible, setRewardsVisible] = useState(false);
   // Homework is authored on its own board, so it must not satisfy the "add your first chore" prompt.
-  const choreCount = excludeHomework(Object.values(data.definitionsById)).length;
+  const choreCount = onlyHouseholdChores(Object.values(data.definitionsById)).length;
   const breakpointCols = useBreakpointCols();
   const cardsPerRow = Math.max(1, Math.floor(breakpointCols / 2));
   const now = useChoreClock();

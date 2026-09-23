@@ -146,7 +146,7 @@ export interface ChoreApprovalPolicy {
   approverIds: string[];
 }
 
-export type ChoreDefinitionKind = 'chore' | 'homework';
+export type ChoreDefinitionKind = 'chore' | 'homework' | 'dinner';
 
 export interface ChoreDefinition {
   id: string;
@@ -155,6 +155,8 @@ export interface ChoreDefinition {
   title: string;
   description?: string;
   icon?: string;
+  /** Only dinner sets this; an external image URL shown on the dinner card. */
+  imageUrl?: string;
   roomRef?: {
     canonicalId: string;
     label: string;
@@ -692,6 +694,7 @@ function isChoreDefinition(value: unknown, expectedId: string) {
     value.title.trim().length > 0 &&
     (value.description === undefined || typeof value.description === 'string') &&
     (value.icon === undefined || typeof value.icon === 'string') &&
+    (value.imageUrl === undefined || typeof value.imageUrl === 'string') &&
     // Kept open on purpose: an unknown kind must not invalidate the whole workspace.
     (value.kind === undefined || typeof value.kind === 'string') &&
     (value.roomRef === undefined ||
@@ -1041,6 +1044,15 @@ export function isHomeworkDefinition(definition: Pick<ChoreDefinition, 'kind'>) 
   return definition.kind === 'homework';
 }
 
+export function isDinnerDefinition(definition: Pick<ChoreDefinition, 'kind'>) {
+  return definition.kind === 'dinner';
+}
+
+/** Recurring household chores only: no homework, no dinner plan and no future kind. */
+export function isHouseholdChoreDefinition(definition: Pick<ChoreDefinition, 'kind'>) {
+  return definition.kind === undefined || definition.kind === 'chore';
+}
+
 export function getChoreTiming(occurrence: ChoreOccurrence, now = new Date()): ChoreTiming {
   const nowTime = now.getTime();
   if (nowTime < new Date(occurrence.scheduledAt).getTime()) {
@@ -1060,7 +1072,8 @@ export function materializeChoreOccurrences({
   existingOccurrences = {},
   latestCompletedAt,
 }: MaterializeChoreOccurrencesInput): ChoreOccurrence[] {
-  if (!definition.enabled || definition.archivedAt) {
+  // A dinner is a plan, not a task: it never gets an occurrence to complete.
+  if (!definition.enabled || definition.archivedAt || isDinnerDefinition(definition)) {
     return [];
   }
 
@@ -1512,7 +1525,7 @@ function assertWorkspaceManager(workspace: ChoreWorkspaceData, participantId: st
 }
 
 function assertDefinitionReferences(workspace: ChoreWorkspaceData, definition: ChoreDefinition) {
-  if (definition.assignment.participantIds.length === 0) {
+  if (definition.assignment.participantIds.length === 0 && !isDinnerDefinition(definition)) {
     throw new Error('A chore needs at least one eligible participant');
   }
   for (const participantId of definition.assignment.participantIds) {

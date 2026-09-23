@@ -1,3 +1,44 @@
+# Household dinner plan
+
+"What's for dinner" per day with an optional image URL, edited on a Middag tab in Household and shown
+on a dashboard card for today or the next N days. Homework and Dinner cards both get the N-days setting.
+
+Decided: chore kind `dinner`, one per day, URL-only images, hero for today and thumbnails after,
+edited only in Household (PIN-gated like Homework).
+
+## Plan
+
+- [x] Core: `ChoreDefinitionKind` gains `dinner`, `ChoreDefinition.imageUrl?` (string-validated)
+- [x] Core: `chore-dinner.ts` with `createDinnerDefinition`. Id is `dinner:<dateKey>`, so "one per day"
+      is structural rather than enforced by UI. `once` at 00:00, `everyone` with no participants, no room
+- [x] Core + `docker/njs/chore-store.js`: materialization skips `dinner`, so no occurrence, no Today,
+      no points, no pulse. Empty participants allowed for dinner in core `assertDefinitionReferences`
+      and in njs `isValidDefinitionInput` (the plan assumed njs already allowed it; it did not)
+- [x] App: replace `excludeHomework` with one "household chores only" filter at the 5 count/library sites
+- [x] App: `chore-dinner-selectors.ts` with `getDinnerBoard` and `getExpiredDinnerDefinitions` (14-day
+      retention). The retention hook sweeps both kinds
+- [x] App: `chore-dinner-view.tsx` + Middag tab. 10-day board, one row per day: dish, image URL,
+      thumbnail, edit, clear. URL goes through `sanitizeImageUrl`. A broken image falls back to the icon
+- [x] App: `dinner-card`. Today is a hero image with the dish over it, later days are thumbnail rows
+      labelled I dag / I morgen / weekday. Settings: title, days (1-7), room, tint
+- [x] App: homework card `days` (default 1). Rows are grouped by day when >1
+- [x] Wiring: CardType, `dashboard-config` allow-list + sanitize (days clamped 1-7), zone default,
+      catalog template, hidden when chores disabled, widget-card lazy case, settings dock
+- [x] i18n: `no` + `en` written, English copied to the other 11
+- [x] Tests: core (dinner never materializes, empty participants accepted), dinner board selector,
+      dinner card data sanitize round-trip
+- [x] Verify: typecheck, lint, focused vitest, check:i18n, check:docker. `pnpm dev` visual check not
+      done: the chrome-devtools browser profile was locked by another session
+
+## Review
+
+- `check:i18n` rejects English copied verbatim into other locales, which contradicts AGENTS.md, so
+  all 13 locales got real translations.
+- Interchange import can remap a `dinner:<date>` id on collision; `getDinnerBoard` keeps the most
+  recently updated dinner per day, so a duplicate is never shown twice.
+
+---
+
 # Household homework
 
 Set homework per household member on a 10-day board, completed in Today like a chore.

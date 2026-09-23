@@ -1,5 +1,5 @@
 import { CardDialogSection, SelectableCheckboxRow } from '@navet/app/components/patterns';
-import { BaseCardDialogWithState, Input } from '@navet/app/components/primitives';
+import { BaseCardDialogWithState, Input, Select } from '@navet/app/components/primitives';
 import {
   getInheritedDialogSectionStyle,
   normalizeCustomCardTint,
@@ -12,10 +12,18 @@ import { ChoreAssigneeAvatar } from './chore-card';
 
 export const CHORE_CARD_EVERYONE = 'all';
 export const CHORE_CARD_TITLE_MAX_LENGTH = 80;
+/** Upper bound for "today or the next N days" on the Homework and Dinner cards. */
+export const CHORE_CARD_MAX_DAYS = 7;
+
+export function clampChoreCardDays(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? Math.min(CHORE_CARD_MAX_DAYS, Math.max(1, Math.round(value)))
+    : 1;
+}
 
 /**
- * Card settings for the Chores and Homework dashboard cards. The person list is single-select:
- * a household can place one card per member on a shared display.
+ * Card settings for the Chores, Homework and Dinner dashboard cards. The person list is single-select:
+ * a household can place one card per member on a shared display. Dinner has no person list.
  */
 export function ChoreCardPersonDialog({
   isOpen,
@@ -28,6 +36,8 @@ export function ChoreCardPersonDialog({
   cardTitle,
   cardTitlePlaceholder,
   onCardTitleChange,
+  days,
+  onDaysChange,
   roomValue,
   roomLabel,
   roomOptions,
@@ -41,11 +51,15 @@ export function ChoreCardPersonDialog({
   description: string;
   participants: ChoreParticipant[];
   selectedParticipantId: string;
-  onSelectedParticipantChange: (participantId: string) => void;
+  /** Omitted hides the person list. */
+  onSelectedParticipantChange?: (participantId: string) => void;
   /** Header the card shows. Empty falls back to `cardTitlePlaceholder`. */
   cardTitle?: string;
   cardTitlePlaceholder?: string;
   onCardTitleChange?: (title: string) => void;
+  /** How many days the card shows from today. Omitted hides the control. */
+  days?: number;
+  onDaysChange?: (days: number) => void;
   roomValue: string;
   roomLabel: string;
   roomOptions: Array<{ label: string; value: string }>;
@@ -97,41 +111,63 @@ export function ChoreCardPersonDialog({
               />
             </CardDialogSection>
           ) : null}
-          <CardDialogSection label={t('chores.card.person')}>
-            {participants.length === 0 ? (
-              <p
-                className={`rounded-2xl border px-4 py-4 text-sm ${surface.borderClassName} ${surface.textMuted}`}
+          {onDaysChange ? (
+            <CardDialogSection label={t('chores.card.days')}>
+              <Select
+                value={String(clampChoreCardDays(days))}
+                onChange={(event) => onDaysChange(Number(event.currentTarget.value))}
+                aria-label={t('chores.card.days')}
+                accentColorOverride={accentHex}
               >
-                {t('chores.card.noPeople')}
-              </p>
-            ) : (
-              <ul className="min-w-0 max-w-full space-y-1.5 sm:max-h-72 sm:overflow-y-auto sm:pr-1">
-                {options.map((option) => (
-                  <li key={option.id} className="w-full min-w-0 max-w-full">
-                    <SelectableCheckboxRow
-                      checked={option.id === selectedParticipantId}
-                      onCheckedChange={() => onSelectedParticipantChange(option.id)}
-                      label={
-                        <span className="block truncate" title={option.label}>
-                          {option.label}
-                        </span>
-                      }
-                      leading={
-                        option.participant ? (
-                          <ChoreAssigneeAvatar participant={option.participant} />
-                        ) : undefined
-                      }
-                      rowClassName={`w-full min-w-0 max-w-full overflow-hidden ${surface.borderClassName} ${surface.textPrimary}`}
-                      labelClassName="truncate"
-                      checkboxPaletteColor={accentHex}
-                      style={{ background: rowFill }}
-                      selectedStyle={{ background: rowFill, borderColor: `${accentHex}4d` }}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardDialogSection>
+                {Array.from({ length: CHORE_CARD_MAX_DAYS }, (_, index) => index + 1).map(
+                  (count) => (
+                    <option key={count} value={count}>
+                      {count === 1
+                        ? t('chores.card.daysToday')
+                        : t('chores.card.daysCount', { count })}
+                    </option>
+                  )
+                )}
+              </Select>
+            </CardDialogSection>
+          ) : null}
+          {onSelectedParticipantChange ? (
+            <CardDialogSection label={t('chores.card.person')}>
+              {participants.length === 0 ? (
+                <p
+                  className={`rounded-2xl border px-4 py-4 text-sm ${surface.borderClassName} ${surface.textMuted}`}
+                >
+                  {t('chores.card.noPeople')}
+                </p>
+              ) : (
+                <ul className="min-w-0 max-w-full space-y-1.5 sm:max-h-72 sm:overflow-y-auto sm:pr-1">
+                  {options.map((option) => (
+                    <li key={option.id} className="w-full min-w-0 max-w-full">
+                      <SelectableCheckboxRow
+                        checked={option.id === selectedParticipantId}
+                        onCheckedChange={() => onSelectedParticipantChange(option.id)}
+                        label={
+                          <span className="block truncate" title={option.label}>
+                            {option.label}
+                          </span>
+                        }
+                        leading={
+                          option.participant ? (
+                            <ChoreAssigneeAvatar participant={option.participant} />
+                          ) : undefined
+                        }
+                        rowClassName={`w-full min-w-0 max-w-full overflow-hidden ${surface.borderClassName} ${surface.textPrimary}`}
+                        labelClassName="truncate"
+                        checkboxPaletteColor={accentHex}
+                        style={{ background: rowFill }}
+                        selectedStyle={{ background: rowFill, borderColor: `${accentHex}4d` }}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardDialogSection>
+          ) : null}
         </div>
       }
       theme={theme}

@@ -31,6 +31,7 @@ export type CardType =
   | 'countdown'
   | 'chores'
   | 'homework'
+  | 'dinner'
   | 'household-person'
   | 'entity';
 
@@ -162,6 +163,7 @@ export function normalizeCustomCard(card: NormalizableCustomCard): CustomCard {
   if (
     (normalizedCard.type === 'chores' ||
       normalizedCard.type === 'homework' ||
+      normalizedCard.type === 'dinner' ||
       normalizedCard.type === 'household-person') &&
     normalizedCard.size !== 'small' &&
     normalizedCard.size !== 'medium' &&

@@ -2,6 +2,7 @@ import { BaseCard } from '@navet/app/components/primitives';
 import type { CardSize } from '@navet/app/components/shared/card-size-selector';
 import { useEditModeSettingsRequest } from '@navet/app/components/shared/edit-mode-settings-request';
 import type { ChoresCardData } from '@navet/app/features/chores/components/chores-card';
+import type { DinnerCardData } from '@navet/app/features/chores/components/dinner-card';
 import type { HomeworkCardData } from '@navet/app/features/chores/components/homework-card';
 import type { PersonCardData } from '@navet/app/features/chores/components/person-card';
 import type { RSSCardData } from '@navet/app/features/rss';
@@ -122,6 +123,10 @@ const ChoresCard = lazy(async () => {
   return { default: module.ChoresCard };
 });
 
+const DinnerCard = lazy(async () => {
+  const module = await import('@navet/app/features/chores/components/dinner-card');
+  return { default: module.DinnerCard };
+});
 const HomeworkCard = lazy(async () => {
   const module = await import('@navet/app/features/chores/components/homework-card');
   return { default: module.HomeworkCard };
@@ -403,6 +408,21 @@ export function WidgetCard({
           size={card.size}
           room={card.room}
           data={card.data as HomeworkCardData | undefined}
+          onRoomChange={(nextRoom) => handleCardUpdate(card.id, { room: nextRoom })}
+          onUpdate={(nextData) =>
+            handleCardUpdate(card.id, { data: { ...card.data, ...nextData } })
+          }
+          isEditMode={isEditMode}
+          openSettingsRequestKey={resolvedOpenSettingsRequestKey}
+        />
+      );
+      break;
+    case 'dinner':
+      widgetContent = (
+        <DinnerCard
+          size={card.size}
+          room={card.room}
+          data={card.data as DinnerCardData | undefined}
           onRoomChange={(nextRoom) => handleCardUpdate(card.id, { room: nextRoom })}
           onUpdate={(nextData) =>
             handleCardUpdate(card.id, { data: { ...card.data, ...nextData } })

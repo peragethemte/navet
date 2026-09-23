@@ -1109,7 +1109,8 @@ function getZonedDateKey(timestamp, timeZone) {
 }
 
 function materializeDefinition(definition, participantsById, rangeStart, rangeEnd, existing, latestCompletedAt) {
-  if (!definition.enabled || definition.archivedAt !== undefined) return [];
+  // A dinner is a plan, not a task: it never gets an occurrence to complete.
+  if (!definition.enabled || definition.archivedAt !== undefined || definition.kind === 'dinner') return [];
   const startTime = Date.parse(rangeStart);
   const endTime = Date.parse(rangeEnd);
   const schedule = definition.schedule;
@@ -1486,7 +1487,8 @@ function isValidDefinitionInput(definition) {
     isRecord(definition.assignment) &&
     ['person', 'anyone', 'everyone', 'rotation'].indexOf(definition.assignment.mode) !== -1 &&
     Array.isArray(definition.assignment.participantIds) &&
-    definition.assignment.participantIds.length > 0 &&
+    // A dinner belongs to the household, not to anyone in it.
+    (definition.assignment.participantIds.length > 0 || definition.kind === 'dinner') &&
     isRecord(definition.schedule) &&
     ['once', 'daily', 'weekly', 'monthly', 'after_completion'].indexOf(
       definition.schedule.frequency

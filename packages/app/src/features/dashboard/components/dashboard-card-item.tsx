@@ -836,6 +836,7 @@ function supportsCustomCardEditModeSettingsDock(card?: CustomCard) {
     'countdown',
     'chores',
     'homework',
+    'dinner',
     'household-person',
   ].includes(card.type);
 }

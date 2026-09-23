@@ -7,11 +7,17 @@ import { getChoreCardAction } from '../../chore-card-action';
 import { resolveChoreColorPalette } from '../../chore-color-palette';
 import { getHomeworkBoard } from '../../chore-homework-selectors';
 import { resolveChoreWidgetState, useChoreCardParticipant } from '../../use-chore-card-participant';
-import { CHORE_CARD_EVERYONE, ChoreCardPersonDialog } from '../chore-card-person-dialog';
+import {
+  CHORE_CARD_EVERYONE,
+  ChoreCardPersonDialog,
+  clampChoreCardDays,
+} from '../chore-card-person-dialog';
 import { type HomeworkCardRow, HomeworkCardView } from './view';
 
 export interface HomeworkCardData {
   participantId?: string;
+  /** Days shown from today; 1 (the default) is today only. */
+  days?: number;
   /** Header override. Empty falls back to the generic "Homework" label. */
   title?: string;
   tintColor?: string;
@@ -47,23 +53,29 @@ export const HomeworkCard = memo(function HomeworkCard({
     if (openSettingsRequestKey > 0) setIsSettingsOpen(true);
   }, [openSettingsRequestKey]);
 
+  const days = clampChoreCardDays(data?.days);
   const rows = useMemo<HomeworkCardRow[]>(() => {
     if (!workspace) return [];
     // getHomeworkBoard filters on a real participant id; it has no "everyone" sentinel.
     const board = getHomeworkBoard(workspace, {
       participantId: participantId === CHORE_CARD_EVERYONE ? undefined : participantId,
       now,
-      days: 1,
+      days,
     });
     const activeIds = new Set(participants.map((participant) => participant.id));
     // Unfinished homework from earlier days stays off the dashboard; the Homework page keeps it.
-    const todayEntries = (board.days[0]?.entries ?? []).filter((entry) =>
-      entry.definition.assignment.participantIds.some((id) => activeIds.has(id))
+    const entries = board.days.flatMap((day) =>
+      day.entries
+        .filter((entry) =>
+          entry.definition.assignment.participantIds.some((id) => activeIds.has(id))
+        )
+        .map((entry) => ({ ...entry, dateKey: day.dateKey }))
     );
 
-    return todayEntries.map((entry) => {
+    return entries.map((entry) => {
       const assignee = entry.definition.assignment.participantIds[0] ?? '';
       return {
+        dateKey: entry.dateKey,
         definition: entry.definition,
         occurrence: entry.occurrence,
         action:
@@ -72,7 +84,7 @@ export const HomeworkCard = memo(function HomeworkCard({
             : undefined,
       };
     });
-  }, [execute, now, participantId, participants, t, workspace]);
+  }, [days, execute, now, participantId, participants, t, workspace]);
 
   const remaining = rows.filter((row) => row.occurrence?.status !== 'done').length;
 
@@ -102,6 +114,7 @@ export const HomeworkCard = memo(function HomeworkCard({
         state={state}
         title={data?.title?.trim() || t('homework.card.title')}
         rows={rows}
+        days={days}
         participantsById={workspace?.participantsById ?? {}}
         now={now}
         remaining={remaining}
@@ -121,6 +134,8 @@ export const HomeworkCard = memo(function HomeworkCard({
           onCardTitleChange={
             onUpdate ? (nextTitle) => onUpdate({ ...data, title: nextTitle }) : undefined
           }
+          days={days}
+          onDaysChange={onUpdate ? (nextDays) => onUpdate({ ...data, days: nextDays }) : undefined}
           onSelectedParticipantChange={(nextParticipantId) =>
             onUpdate?.({
               ...data,

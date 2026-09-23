@@ -22,6 +22,7 @@ import {
   subscribeIntegrationChoreActionRequests,
 } from '@navet/app/services/integration-chore-projection.service';
 import { integrationStore } from '@navet/app/stores/integration-store';
+import { createDinnerDefinition, dinnerDefinitionId } from '@navet/core/chore-dinner';
 import {
   type ChoreExperienceState,
   type ChoreGamificationMode,
@@ -36,7 +37,7 @@ import {
   type ChoreParticipant,
   type ChoreWorkspaceAction,
   getChoreExperiencePointBalances,
-  isHomeworkDefinition,
+  isHouseholdChoreDefinition,
 } from '@navet/core/chores';
 import {
   AlertTriangle,
@@ -48,7 +49,7 @@ import {
   Users,
 } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { createHomeworkId, excludeHomework } from '../chore-homework-selectors';
+import { createHomeworkId, onlyHouseholdChores } from '../chore-homework-selectors';
 import { getChoreMaterializationRange } from '../chore-workspace-model';
 import { useChoreWorkspaceStore } from '../chore-workspace-store';
 import { useChoreHomeworkRetention } from '../use-chore-homework-retention';
@@ -56,6 +57,7 @@ import { useChoreMaterialization } from '../use-chore-materialization';
 import { useChoreReminderDelivery } from '../use-chore-reminder-delivery';
 import { useChoreWorkspaceSync } from '../use-chore-workspace-sync';
 import { ChoreDataRecovery } from './chore-data-recovery';
+import { ChoreDinnerView, type DinnerDraft } from './chore-dinner-view';
 import { MissionDialog, RewardDialog } from './chore-experience-dialogs';
 import { ChoreHomeworkView, type HomeworkEntryDraft } from './chore-homework-view';
 import {
@@ -78,6 +80,7 @@ type HouseholdView =
   | 'today'
   | 'chores'
   | 'homework'
+  | 'dinner'
   | 'missions'
   | 'rewards'
   | 'progress'
@@ -524,6 +527,21 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
     });
   };
 
+  const saveDinner = ({ dateKey, title, imageUrl }: DinnerDraft) => {
+    const existing =
+      useChoreWorkspaceStore.getState().data?.definitionsById[dinnerDefinitionId(dateKey)];
+    return saveHomeworkDefinition(
+      createDinnerDefinition({
+        title,
+        dateKey,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+        imageUrl,
+        timestamp: new Date().toISOString(),
+        createdAt: existing?.createdAt,
+      })
+    );
+  };
+
   const completeHomework = (occurrenceId: string, participantId: string) => {
     if (!participantId) return;
     void execute({
@@ -637,7 +655,7 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
     const actor = Object.values(current.participantsById).find((participant) =>
       participant.capabilities.includes('manage')
     );
-    const choreCount = excludeHomework(Object.values(current.definitionsById)).length;
+    const choreCount = onlyHouseholdChores(Object.values(current.definitionsById)).length;
     if (!actor || choreCount === 0) return false;
     const currentExperience = normalizeChoreExperienceState(current.experience);
     const timestamp = new Date().toISOString();
@@ -715,7 +733,7 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
     }
   }, [motivationEnabled, view]);
   const activeDefinitions = Object.values(data?.definitionsById ?? {}).filter(
-    (definition) => !definition.archivedAt && !isHomeworkDefinition(definition)
+    (definition) => !definition.archivedAt && isHouseholdChoreDefinition(definition)
   );
   const legacySetupComplete =
     !experience.setupStartedAt && participants.length > 0 && activeDefinitions.length > 0;
@@ -810,6 +828,7 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
             { value: 'today' as const, label: t('household.tabs.today') },
             { value: 'chores' as const, label: t('household.tabs.chores') },
             { value: 'homework' as const, label: t('household.tabs.homework') },
+            { value: 'dinner' as const, label: t('household.tabs.dinner') },
             ...(motivationEnabled
               ? [
                   { value: 'missions' as const, label: t('household.tabs.missions') },
@@ -833,7 +852,9 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
                 className="room-nav-item shrink-0 whitespace-nowrap rounded-[22px] transition-colors"
                 onClick={() => {
                   if (
-                    ['chores', 'homework', 'missions', 'rewards', 'settings'].includes(item.value)
+                    ['chores', 'homework', 'dinner', 'missions', 'rewards', 'settings'].includes(
+                      item.value
+                    )
                   ) {
                     withManagementAccess(() => setView(item.value));
                     return;
@@ -917,6 +938,18 @@ export function HouseholdSection({ syncEnabled = true }: { syncEnabled?: boolean
               onRename={renameHomework}
               onRemove={removeHomework}
               onComplete={completeHomework}
+            />
+          ) : null
+        )}
+      </HouseholdViewPanel>
+      <HouseholdViewPanel value="dinner" activeValue={view}>
+        {renderWorkspace(
+          data ? (
+            <ChoreDinnerView
+              data={data}
+              canManage={Boolean(managerActorId)}
+              onSave={saveDinner}
+              onRemove={removeHomework}
             />
           ) : null
         )}

@@ -73,6 +73,7 @@ export type CardType =
   | 'countdown'
   | 'chores'
   | 'homework'
+  | 'dinner'
   | 'household-person'
   | 'entity';
 

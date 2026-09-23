@@ -76,7 +76,7 @@ import {
   getParticipantPointHistory,
   getRewardProgressList,
 } from '../chore-dashboard-selectors';
-import { excludeHomework } from '../chore-homework-selectors';
+import { onlyHouseholdChores } from '../chore-homework-selectors';
 import { ChoreBaseCard } from './chore-base-card';
 import { ChoreDashboardGrid } from './chore-dashboard-grid';
 import {
@@ -318,7 +318,7 @@ export function AllChoresView({
     if (initialRoomId) setRoom(initialRoomId);
   }, [initialRoomId]);
   const experience = normalizeChoreExperienceState(data.experience);
-  const choreDefinitions = excludeHomework(Object.values(data.definitionsById));
+  const choreDefinitions = onlyHouseholdChores(Object.values(data.definitionsById));
   const roomOptions = [
     ...new Map(
       choreDefinitions.flatMap((definition) =>

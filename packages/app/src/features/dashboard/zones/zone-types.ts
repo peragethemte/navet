@@ -44,6 +44,7 @@ export const ZONE_DEFAULTS_BY_DEVICE_TYPE: Record<string, ZoneName> = {
   assist: 'actions',
   chores: 'actions',
   homework: 'actions',
+  dinner: 'actions',
   'household-person': 'actions',
   presence: 'status',
 };

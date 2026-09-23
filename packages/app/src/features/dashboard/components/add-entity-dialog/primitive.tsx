@@ -73,6 +73,7 @@ export function AddEntityDialogPrimitive({
           (template) =>
             template.id !== 'chores' &&
             template.id !== 'homework' &&
+            template.id !== 'dinner' &&
             template.id !== 'household-person'
         );
     const visibleTemplates = allowedIds

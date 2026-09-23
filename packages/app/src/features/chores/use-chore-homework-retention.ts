@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { getExpiredDinnerDefinitions } from './chore-dinner-selectors';
 import { getExpiredHomeworkDefinitions } from './chore-homework-selectors';
 import { useChoreWorkspaceStore } from './chore-workspace-store';
 
@@ -6,7 +7,7 @@ import { useChoreWorkspaceStore } from './chore-workspace-store';
 const HOMEWORK_SWEEP_BUDGET = 10;
 
 /**
- * Homework definitions are one-off, so they accumulate where recurring chores do not. Occurrences
+ * Homework and dinner definitions are one-off, so they accumulate where recurring chores do not. Occurrences
  * are pruned by the authority but definitions are not, so the client sweeps its own expired
  * homework. The sweep stays silent: a household that never unlocks management simply keeps them.
  */
@@ -34,7 +35,10 @@ export function useChoreHomeworkRetention(
     const sweep = async () => {
       const data = useChoreWorkspaceStore.getState().data;
       if (!data) return;
-      const expired = getExpiredHomeworkDefinitions(data).slice(0, HOMEWORK_SWEEP_BUDGET);
+      const expired = [
+        ...getExpiredDinnerDefinitions(data),
+        ...getExpiredHomeworkDefinitions(data),
+      ].slice(0, HOMEWORK_SWEEP_BUDGET);
       for (const definition of expired) {
         if (cancelled) return;
         const current = useChoreWorkspaceStore.getState();
