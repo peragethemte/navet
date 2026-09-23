@@ -832,6 +832,9 @@ export const nlMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Vegen tussen kamers',
   'dashboard.kiosk.swipeRooms.description':
     'Veeg links of rechts over lege dashboardruimte om door zichtbare kamers te gaan.',
+  'dashboard.kiosk.swipeDashboards.title': 'Vegen tussen dashboards',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Veeg voorbij de laatste ruimte, of terug vanaf het overzicht, om van dashboard te wisselen. Zonder vegen tussen ruimtes wisselt elke veeg van dashboard.',
   'dashboard.kiosk.exit': 'Kioskmodus afsluiten',
   'dashboard.kiosk.exitDescription': 'Herstel de normale Navet-kop en zijbalk op dit scherm.',
   'dashboard.kiosk.manage': 'Beheren',

@@ -177,6 +177,12 @@ const SETTINGS: SearchSettingDefinition[] = [
     descriptionKey: 'dashboard.kiosk.swipeRooms.description',
   },
   {
+    id: 'dashboard-kiosk-swipe-dashboards',
+    sectionId: 'dashboard',
+    labelKey: 'dashboard.kiosk.swipeDashboards.title',
+    descriptionKey: 'dashboard.kiosk.swipeDashboards.description',
+  },
+  {
     id: 'dashboard-keep-awake',
     sectionId: 'dashboard',
     labelKey: 'settings.dashboard.keepAwake.title',

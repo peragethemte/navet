@@ -50,6 +50,7 @@ export const DashboardLayout = memo(function DashboardLayout({
   );
   const kioskMode = useSettingsStore(settingsSelectors.kioskMode);
   const kioskSwipeRooms = useSettingsStore(settingsSelectors.kioskSwipeRooms);
+  const kioskSwipeDashboards = useSettingsStore(settingsSelectors.kioskSwipeDashboards);
   const isEditMode = useEditModeStore(editModeSelectors.isEditMode);
   const activeCustomSidebarActionId = useNavigationStore(
     (state) => state.activeCustomSidebarActionId
@@ -89,11 +90,13 @@ export const DashboardLayout = memo(function DashboardLayout({
   const kioskSwipeHandlers = useKioskRoomSwipeNavigation({
     enabled:
       kioskMode &&
-      kioskSwipeRooms &&
+      (kioskSwipeRooms || kioskSwipeDashboards) &&
       !isEditMode &&
       !isKioskControlCenterOpen &&
       activeCustomSidebarActionId === null,
     navigation: mobileRoomNavigation,
+    swipeDashboards: kioskSwipeDashboards,
+    swipeRooms: kioskSwipeRooms,
   });
   const wallpaperBackgroundImage = resolveWallpaperBackgroundImage(wallpaper);
   const accentColorValue = getThemeColorValue(primaryColor);
@@ -235,6 +238,7 @@ export const DashboardLayout = memo(function DashboardLayout({
         <div
           data-testid="dashboard-layout-content"
           data-kiosk-room-swipe={kioskMode && kioskSwipeRooms ? 'enabled' : undefined}
+          data-kiosk-dashboard-swipe={kioskMode && kioskSwipeDashboards ? 'enabled' : undefined}
           onPointerCancel={kioskSwipeHandlers.onPointerCancel}
           onPointerDown={kioskSwipeHandlers.onPointerDown}
           onPointerUp={kioskSwipeHandlers.onPointerUp}

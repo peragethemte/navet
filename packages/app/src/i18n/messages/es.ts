@@ -831,6 +831,9 @@ export const esMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Deslizar entre habitaciones',
   'dashboard.kiosk.swipeRooms.description':
     'Desliza a izquierda o derecha sobre un espacio vacío para recorrer las habitaciones visibles.',
+  'dashboard.kiosk.swipeDashboards.title': 'Deslizar entre paneles',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Desliza más allá de la última habitación, o hacia atrás desde la vista general, para cambiar de panel. Sin deslizar entre habitaciones, cada deslizamiento cambia de panel.',
   'dashboard.kiosk.exit': 'Salir del modo quiosco',
   'dashboard.kiosk.exitDescription': 'Restaura la cabecera y la barra lateral habituales de Navet.',
   'dashboard.kiosk.manage': 'Gestionar',

@@ -831,6 +831,9 @@ export const plMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Przesuwaj między pokojami',
   'dashboard.kiosk.swipeRooms.description':
     'Przesuń w lewo lub w prawo po pustym miejscu, aby przejść między widocznymi pokojami.',
+  'dashboard.kiosk.swipeDashboards.title': 'Przesuwaj między pulpitami',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Przesuń za ostatni pokój lub wstecz z przeglądu, aby zmienić pulpit. Bez przesuwania między pokojami każde przesunięcie zmienia pulpit.',
   'dashboard.kiosk.exit': 'Wyjdź z trybu kiosku',
   'dashboard.kiosk.exitDescription': 'Przywróć zwykły nagłówek i pasek boczny Navet.',
   'dashboard.kiosk.manage': 'Zarządzaj',

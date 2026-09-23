@@ -3,6 +3,8 @@ import {
   filterHiddenRooms,
   getVisibleRoomNavRooms,
 } from '@navet/app/components/layout/room-nav.utils';
+import { useDashboardCollectionStore } from '@navet/app/features/dashboard/dashboards/dashboard-collection-store';
+import { openDashboardPreview } from '@navet/app/features/dashboard/dashboards/dashboard-switcher';
 import { roomNamesMatch } from '@navet/app/utils/room-name';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { useRef } from 'react';
@@ -22,7 +24,11 @@ interface SwipeOrigin {
 interface KioskRoomSwipeOptions {
   enabled: boolean;
   navigation?: MobileRoomNavigation;
+  swipeDashboards: boolean;
+  swipeRooms: boolean;
 }
+
+type SwipeDirection = 'next' | 'previous';
 
 const INTERACTIVE_SWIPE_EXCLUSION = [
   'a',
@@ -51,7 +57,7 @@ export function getAdjacentKioskRoom({
   rooms,
 }: {
   activeRoom: string;
-  direction: 'next' | 'previous';
+  direction: SwipeDirection;
   hiddenRoomNames?: string[];
   rooms: string[];
 }) {
@@ -63,6 +69,59 @@ export function getAdjacentKioskRoom({
 
   const nextIndex = direction === 'next' ? activeIndex + 1 : activeIndex - 1;
   return visibleRooms[nextIndex] ?? null;
+}
+
+export function getAdjacentDashboardId({
+  activeDashboardId,
+  dashboardIds,
+  direction,
+}: {
+  activeDashboardId: string;
+  dashboardIds: string[];
+  direction: SwipeDirection;
+}) {
+  const activeIndex = dashboardIds.indexOf(activeDashboardId);
+  if (activeIndex < 0) {
+    return null;
+  }
+
+  return dashboardIds[direction === 'next' ? activeIndex + 1 : activeIndex - 1] ?? null;
+}
+
+// Rooms first; past either end of the room list the swipe falls through to the adjacent dashboard
+export function resolveKioskSwipeTarget({
+  activeDashboardId,
+  dashboardIds,
+  direction,
+  navigation,
+  swipeDashboards,
+  swipeRooms,
+}: {
+  activeDashboardId: string;
+  dashboardIds: string[];
+  direction: SwipeDirection;
+  navigation?: Pick<MobileRoomNavigation, 'activeRoom' | 'hiddenRoomNames' | 'rooms'>;
+  swipeDashboards: boolean;
+  swipeRooms: boolean;
+}): { kind: 'room'; room: string } | { kind: 'dashboard'; dashboardId: string } | null {
+  if (swipeRooms && navigation) {
+    const room = getAdjacentKioskRoom({
+      activeRoom: navigation.activeRoom,
+      direction,
+      hiddenRoomNames: navigation.hiddenRoomNames,
+      rooms: navigation.rooms,
+    });
+    if (room) {
+      return { kind: 'room', room };
+    }
+  }
+
+  if (!swipeDashboards) {
+    return null;
+  }
+
+  const dashboardId = getAdjacentDashboardId({ activeDashboardId, dashboardIds, direction });
+  return dashboardId ? { kind: 'dashboard', dashboardId } : null;
 }
 
 export function resolveKioskRoomSwipe({
@@ -91,14 +150,19 @@ export function resolveKioskRoomSwipe({
   return deltaX < 0 ? 'next' : 'previous';
 }
 
-export function useKioskRoomSwipeNavigation({ enabled, navigation }: KioskRoomSwipeOptions) {
+export function useKioskRoomSwipeNavigation({
+  enabled,
+  navigation,
+  swipeDashboards,
+  swipeRooms,
+}: KioskRoomSwipeOptions) {
   const originRef = useRef<SwipeOrigin | null>(null);
 
   const onPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
     originRef.current = null;
     if (
       !enabled ||
-      !navigation ||
+      (!swipeDashboards && !(swipeRooms && navigation)) ||
       !event.isPrimary ||
       event.pointerType !== 'touch' ||
       shouldIgnoreKioskRoomSwipeTarget(event.target) ||
@@ -123,7 +187,7 @@ export function useKioskRoomSwipeNavigation({ enabled, navigation }: KioskRoomSw
   const onPointerUp = (event: ReactPointerEvent<HTMLElement>) => {
     const origin = originRef.current;
     originRef.current = null;
-    if (!origin || origin.pointerId !== event.pointerId || !navigation) {
+    if (!origin || origin.pointerId !== event.pointerId) {
       return;
     }
 
@@ -137,14 +201,19 @@ export function useKioskRoomSwipeNavigation({ enabled, navigation }: KioskRoomSw
       return;
     }
 
-    const room = getAdjacentKioskRoom({
-      activeRoom: navigation.activeRoom,
+    const { activeDashboardId, collection } = useDashboardCollectionStore.getState();
+    const target = resolveKioskSwipeTarget({
+      activeDashboardId,
+      dashboardIds: collection.order.filter((id) => collection.dashboardsById[id]),
       direction,
-      hiddenRoomNames: navigation.hiddenRoomNames,
-      rooms: navigation.rooms,
+      navigation,
+      swipeDashboards,
+      swipeRooms,
     });
-    if (room) {
-      navigation.onRoomChange(room);
+    if (target?.kind === 'room') {
+      navigation?.onRoomChange(target.room);
+    } else if (target?.kind === 'dashboard') {
+      openDashboardPreview(target.dashboardId);
     }
   };
 

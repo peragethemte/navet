@@ -742,6 +742,9 @@ export const zhMessages = {
   'dashboard.kiosk.behaviorDescription': '选择隐藏仪表板导航时此显示屏的工作方式。',
   'dashboard.kiosk.swipeRooms.title': '滑动切换房间',
   'dashboard.kiosk.swipeRooms.description': '在仪表板空白处左右滑动，在可见房间之间切换。',
+  'dashboard.kiosk.swipeDashboards.title': '在仪表板之间滑动',
+  'dashboard.kiosk.swipeDashboards.description':
+    '滑过最后一个房间，或从概览向回滑动，即可切换仪表板。未开启房间滑动时，每次滑动都会切换仪表板。',
   'dashboard.kiosk.exit': '退出信息亭模式',
   'dashboard.kiosk.exitDescription': '恢复 Navet 的常规页眉和侧边栏。',
   'dashboard.kiosk.manage': '管理',

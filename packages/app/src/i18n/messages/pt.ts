@@ -830,6 +830,9 @@ export const ptMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Deslizar entre divisões',
   'dashboard.kiosk.swipeRooms.description':
     'Deslize para a esquerda ou direita numa área vazia para percorrer as divisões visíveis.',
+  'dashboard.kiosk.swipeDashboards.title': 'Deslizar entre painéis',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Deslize para além da última divisão, ou para trás a partir da vista geral, para mudar de painel. Sem deslizar entre divisões, cada deslize muda de painel.',
   'dashboard.kiosk.exit': 'Sair do modo quiosque',
   'dashboard.kiosk.exitDescription': 'Restaure o cabeçalho e a barra lateral normais do Navet.',
   'dashboard.kiosk.manage': 'Gerir',

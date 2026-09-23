@@ -13,6 +13,7 @@ export interface DashboardProfileModeOption {
     | 'keepDeviceAwake'
     | 'kioskMode'
     | 'kioskSwipeRooms'
+    | 'kioskSwipeDashboards'
     | 'showHomeSummaryBar'
   >;
 }
@@ -29,6 +30,7 @@ export const DASHBOARD_PROFILE_MODE_OPTIONS: DashboardProfileModeOption[] = [
       keepDeviceAwake: false,
       kioskMode: false,
       kioskSwipeRooms: false,
+      kioskSwipeDashboards: false,
       showHomeSummaryBar: true,
     },
   },
@@ -43,6 +45,7 @@ export const DASHBOARD_PROFILE_MODE_OPTIONS: DashboardProfileModeOption[] = [
       keepDeviceAwake: true,
       kioskMode: true,
       kioskSwipeRooms: false,
+      kioskSwipeDashboards: false,
       showHomeSummaryBar: true,
     },
   },
@@ -55,6 +58,7 @@ export const DASHBOARD_PROFILE_MODE_SCOPE_KEYS = [
   'keepDeviceAwake',
   'kioskMode',
   'kioskSwipeRooms',
+  'kioskSwipeDashboards',
   'showHomeSummaryBar',
 ] as const;
 

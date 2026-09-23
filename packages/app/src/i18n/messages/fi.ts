@@ -827,6 +827,9 @@ export const fiMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Pyyhkäise huoneiden välillä',
   'dashboard.kiosk.swipeRooms.description':
     'Pyyhkäise tyhjällä alueella vasemmalle tai oikealle siirtyäksesi näkyvien huoneiden välillä.',
+  'dashboard.kiosk.swipeDashboards.title': 'Pyyhkäise kojelautojen välillä',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Pyyhkäise viimeisen huoneen ohi tai takaisin yleisnäkymästä vaihtaaksesi kojelautaa. Ilman huoneiden välistä pyyhkäisyä jokainen pyyhkäisy vaihtaa kojelautaa.',
   'dashboard.kiosk.exit': 'Poistu kioskitilasta',
   'dashboard.kiosk.exitDescription': 'Palauta Navetin tavallinen ylätunniste ja sivupalkki.',
   'dashboard.kiosk.manage': 'Hallitse',

@@ -474,6 +474,7 @@ function KioskBehaviorPanel({ onExitKiosk }: { onExitKiosk: () => void }) {
   const { theme } = useTheme();
   const surface = getThemeSurfaceTokens(theme);
   const kioskSwipeRooms = useSettingsStore(settingsSelectors.kioskSwipeRooms);
+  const kioskSwipeDashboards = useSettingsStore(settingsSelectors.kioskSwipeDashboards);
   const updateSettings = useSettingsStore(settingsSelectors.updateSettings);
 
   return (
@@ -498,6 +499,24 @@ function KioskBehaviorPanel({ onExitKiosk }: { onExitKiosk: () => void }) {
           checked={kioskSwipeRooms}
           onCheckedChange={(checked) => updateSettings({ kioskSwipeRooms: checked })}
           aria-label={t('dashboard.kiosk.swipeRooms.title')}
+          className="mt-0.5 shrink-0"
+        />
+      </section>
+      <section
+        className={cn('flex items-start justify-between gap-4 border-b px-1 pb-5', surface.border)}
+      >
+        <div className="min-w-0">
+          <h3 className={cn(navetTypographyTokens.titleMd, surface.textPrimary)}>
+            {t('dashboard.kiosk.swipeDashboards.title')}
+          </h3>
+          <p className={cn('mt-1 max-w-2xl text-sm leading-relaxed', surface.textSecondary)}>
+            {t('dashboard.kiosk.swipeDashboards.description')}
+          </p>
+        </div>
+        <Switch
+          checked={kioskSwipeDashboards}
+          onCheckedChange={(checked) => updateSettings({ kioskSwipeDashboards: checked })}
+          aria-label={t('dashboard.kiosk.swipeDashboards.title')}
           className="mt-0.5 shrink-0"
         />
       </section>

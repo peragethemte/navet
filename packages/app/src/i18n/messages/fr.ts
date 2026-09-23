@@ -837,6 +837,9 @@ export const frMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Balayer entre les pièces',
   'dashboard.kiosk.swipeRooms.description':
     'Balayez vers la gauche ou la droite sur une zone vide pour parcourir les pièces visibles.',
+  'dashboard.kiosk.swipeDashboards.title': 'Balayer entre les tableaux de bord',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Balayez au-delà de la dernière pièce, ou en arrière depuis la vue d’ensemble, pour changer de tableau de bord. Sans balayage entre les pièces, chaque balayage change de tableau de bord.',
   'dashboard.kiosk.exit': 'Quitter le mode kiosque',
   'dashboard.kiosk.exitDescription': 'Rétablit l’en-tête et la barre latérale habituels de Navet.',
   'dashboard.kiosk.manage': 'Gérer',

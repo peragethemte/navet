@@ -838,6 +838,9 @@ export const deMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Zwischen Räumen wischen',
   'dashboard.kiosk.swipeRooms.description':
     'Auf einer freien Dashboard-Fläche nach links oder rechts wischen, um sichtbare Räume zu wechseln.',
+  'dashboard.kiosk.swipeDashboards.title': 'Zwischen Dashboards wischen',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Wische über den letzten Raum hinaus oder von der Übersicht zurück, um das Dashboard zu wechseln. Ohne Wischen zwischen Räumen wechselt jedes Wischen das Dashboard.',
   'dashboard.kiosk.exit': 'Kioskmodus beenden',
   'dashboard.kiosk.exitDescription':
     'Die normale Navet-Kopfzeile und Seitenleiste wiederherstellen.',

@@ -822,6 +822,9 @@ export const daMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Stryg mellem rum',
   'dashboard.kiosk.swipeRooms.description':
     'Stryg til venstre eller højre på et tomt område for at gå mellem synlige rum.',
+  'dashboard.kiosk.swipeDashboards.title': 'Stryg mellem dashboards',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Stryg forbi det sidste rum, eller tilbage fra oversigten, for at skifte dashboard. Uden strygning mellem rum skifter hvert stryg dashboard.',
   'dashboard.kiosk.exit': 'Afslut kiosktilstand',
   'dashboard.kiosk.exitDescription': 'Gendan Navets normale sidehoved og sidepanel.',
   'dashboard.kiosk.manage': 'Administrer',

@@ -821,6 +821,9 @@ export const noMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Sveip mellom rom',
   'dashboard.kiosk.swipeRooms.description':
     'Sveip til venstre eller høyre på et tomt område for å gå mellom synlige rom.',
+  'dashboard.kiosk.swipeDashboards.title': 'Sveip mellom dashbord',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Sveip forbi siste rom eller tilbake fra oversikten for å bytte dashbord. Uten sveip mellom rom bytter hvert sveip dashbord.',
   'dashboard.kiosk.exit': 'Avslutt kioskmodus',
   'dashboard.kiosk.exitDescription': 'Gjenopprett Navets vanlige topp- og sidemeny.',
   'dashboard.kiosk.manage': 'Administrer',

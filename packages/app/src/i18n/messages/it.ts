@@ -841,6 +841,9 @@ export const itMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Scorri tra le stanze',
   'dashboard.kiosk.swipeRooms.description':
     'Scorri a sinistra o a destra su uno spazio vuoto per passare tra le stanze visibili.',
+  'dashboard.kiosk.swipeDashboards.title': 'Scorri tra le dashboard',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Scorri oltre l’ultima stanza, o indietro dalla panoramica, per cambiare dashboard. Senza lo scorrimento tra le stanze, ogni scorrimento cambia dashboard.',
   'dashboard.kiosk.exit': 'Esci dalla modalità chiosco',
   'dashboard.kiosk.exitDescription': 'Ripristina intestazione e barra laterale normali di Navet.',
   'dashboard.kiosk.manage': 'Gestisci',

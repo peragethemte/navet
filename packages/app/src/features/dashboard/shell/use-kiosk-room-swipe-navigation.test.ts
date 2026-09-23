@@ -2,10 +2,59 @@ import { describe, expect, it } from 'vitest';
 import {
   getAdjacentKioskRoom,
   resolveKioskRoomSwipe,
+  resolveKioskSwipeTarget,
   shouldIgnoreKioskRoomSwipeTarget,
 } from './use-kiosk-room-swipe-navigation';
 
 describe('kiosk room swipe navigation', () => {
+  it('falls through to the adjacent dashboard past either end of the rooms', () => {
+    const base = {
+      activeDashboardId: 'b',
+      dashboardIds: ['a', 'b', 'c'],
+      swipeDashboards: true,
+      swipeRooms: true,
+    };
+    const rooms = ['All', 'Kitchen'];
+
+    expect(
+      resolveKioskSwipeTarget({
+        ...base,
+        direction: 'next',
+        navigation: { activeRoom: 'All', rooms },
+      })
+    ).toEqual({ kind: 'room', room: 'Kitchen' });
+    expect(
+      resolveKioskSwipeTarget({
+        ...base,
+        direction: 'next',
+        navigation: { activeRoom: 'Kitchen', rooms },
+      })
+    ).toEqual({ kind: 'dashboard', dashboardId: 'c' });
+    expect(
+      resolveKioskSwipeTarget({
+        ...base,
+        direction: 'previous',
+        navigation: { activeRoom: 'All', rooms },
+      })
+    ).toEqual({ kind: 'dashboard', dashboardId: 'a' });
+    expect(
+      resolveKioskSwipeTarget({
+        ...base,
+        activeDashboardId: 'c',
+        direction: 'next',
+        navigation: { activeRoom: 'Kitchen', rooms },
+      })
+    ).toBeNull();
+    expect(
+      resolveKioskSwipeTarget({
+        ...base,
+        direction: 'next',
+        navigation: { activeRoom: 'All', rooms },
+        swipeRooms: false,
+      })
+    ).toEqual({ kind: 'dashboard', dashboardId: 'c' });
+  });
+
   it('matches the active and hidden rooms by name and skips duplicate provider labels', () => {
     expect(
       getAdjacentKioskRoom({

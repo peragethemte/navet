@@ -823,6 +823,9 @@ export const svMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Svep mellan rum',
   'dashboard.kiosk.swipeRooms.description':
     'Svep åt vänster eller höger på en tom yta för att gå mellan synliga rum.',
+  'dashboard.kiosk.swipeDashboards.title': 'Svep mellan instrumentpaneler',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Svep förbi sista rummet, eller bakåt från översikten, för att byta instrumentpanel. Utan svep mellan rum byter varje svep instrumentpanel.',
   'dashboard.kiosk.exit': 'Avsluta kioskläge',
   'dashboard.kiosk.exitDescription': 'Återställ Navets vanliga sidhuvud och sidofält på skärmen.',
   'dashboard.kiosk.manage': 'Hantera',

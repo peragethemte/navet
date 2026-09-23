@@ -337,6 +337,9 @@ export const enMessages = {
   'dashboard.kiosk.swipeRooms.title': 'Swipe between rooms',
   'dashboard.kiosk.swipeRooms.description':
     'Swipe left or right on empty dashboard space to move through visible rooms.',
+  'dashboard.kiosk.swipeDashboards.title': 'Swipe between dashboards',
+  'dashboard.kiosk.swipeDashboards.description':
+    'Swipe past the last room, or back from the overview, to switch dashboard. Without room swiping, every swipe switches dashboard.',
   'dashboard.kiosk.exit': 'Exit kiosk mode',
   'dashboard.kiosk.exitDescription':
     'Restore the regular Navet header and sidebar on this display.',
