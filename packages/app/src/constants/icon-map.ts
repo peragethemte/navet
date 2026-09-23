@@ -58,9 +58,13 @@ export const LIGHT_ICON_MAP: Record<string, LucideIcon> = {
 
 export const DEFAULT_LIGHT_ICON = 'Zap';
 const emojiIconRegex = /\p{Extended_Pictographic}/u;
+// Icon needs an iconNode prop and crashes when rendered bare; LucideProvider is a context provider
+const NON_ICON_LUCIDE_EXPORTS = new Set(['Icon', 'LucideProvider']);
 const lucideIconRegistry = new Map<string, LucideIcon>(
   Object.entries(LucideIcons).flatMap(([key, value]) =>
-    /^[A-Z]/.test(key) && (typeof value === 'function' || typeof value === 'object')
+    /^[A-Z]/.test(key) &&
+    !NON_ICON_LUCIDE_EXPORTS.has(key) &&
+    (typeof value === 'function' || typeof value === 'object')
       ? [[key, value as LucideIcon]]
       : []
   )
