@@ -7,3 +7,7 @@
   green on every check and changed nothing on the user's screen. Before calling UI work done, render
   it at the size the surface actually defaults to, not only at the size it looks best in. "Adapt
   intentionally at each size" is not a licence to silently ignore a setting the user chose.
+
+- Another session can share this worktree and leave its work staged. `git add <my files> && git
+  commit` then sweeps its staged changes into my commit. Before every commit, check
+  `git diff --cached --name-only` and commit only when the list is exactly my files.
