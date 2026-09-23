@@ -134,6 +134,21 @@ export function TransitDeparturesCardView({
   const tintSurface = getCustomCardTintSurface(theme, tintColor);
   const visible = board.slice(0, journeysForSize(size));
   const departureCount = departuresForSize(size);
+  const settingsButton = (
+    <CardSettingsActionButton
+      theme={theme}
+      size="small"
+      variant="soft"
+      disableHoverEffects
+      aria-label={t('transit.openSettings')}
+      className="shrink-0"
+      onClick={(event) => {
+        event.stopPropagation();
+        onOpenSettings();
+      }}
+      onPointerDown={(event) => event.stopPropagation()}
+    />
+  );
 
   return (
     <BaseCard
@@ -152,24 +167,14 @@ export function TransitDeparturesCardView({
       contentClassName="h-full"
     >
       <div className="flex h-full min-h-0 flex-col">
-        <div className="mb-1 flex items-start gap-2">
-          <h3 className={`min-w-0 flex-1 truncate text-sm font-semibold ${surface.textPrimary}`}>
-            {t('transit.title')}
-          </h3>
-          <CardSettingsActionButton
-            theme={theme}
-            size="small"
-            variant="soft"
-            disableHoverEffects
-            aria-label={t('transit.openSettings')}
-            className="shrink-0"
-            onClick={(event) => {
-              event.stopPropagation();
-              onOpenSettings();
-            }}
-            onPointerDown={(event) => event.stopPropagation()}
-          />
-        </div>
+        {visible.length === 0 ? (
+          <div className="mb-1 flex items-start gap-2">
+            <h3 className={`min-w-0 flex-1 truncate text-sm font-semibold ${surface.textPrimary}`}>
+              {t('transit.title')}
+            </h3>
+            {settingsButton}
+          </div>
+        ) : null}
 
         {!hasJourneys ? (
           <CardEmptyState
@@ -187,7 +192,7 @@ export function TransitDeparturesCardView({
           />
         ) : (
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto">
-            {visible.map((entry) => {
+            {visible.map((entry, index) => {
               const dayLabel = formatJourneyDay(entry.target, locale, now);
               const departures = entry.departures.slice(0, departureCount);
               const targetKey =
@@ -197,10 +202,10 @@ export function TransitDeparturesCardView({
 
               return (
                 <section key={entry.journey.id}>
-                  <div className="flex items-baseline gap-2">
-                    <span className={`truncate text-sm font-medium ${surface.textPrimary}`}>
+                  <div className="flex items-center gap-2">
+                    <h3 className={`min-w-0 truncate text-sm font-semibold ${surface.textPrimary}`}>
                       {entry.journey.name || entry.journey.to.name}
-                    </span>
+                    </h3>
                     <span className={`ml-auto shrink-0 text-xs ${surface.textSecondary}`}>
                       {dayLabel
                         ? t(targetKey.day, {
@@ -211,6 +216,7 @@ export function TransitDeparturesCardView({
                             time: formatDepartureClock(entry.target, locale, use24HourTime),
                           })}
                     </span>
+                    {index === 0 ? settingsButton : null}
                   </div>
                   <p className={`truncate text-xs ${surface.textSecondary}`}>
                     {entry.journey.from.name} → {entry.journey.to.name}
